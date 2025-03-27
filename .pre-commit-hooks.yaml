@@ -1,9 +1,8 @@
 - id: ignition-lint
   name: Ignition Lint
-  entry: ignition-lint  # Matches the console_scripts entry point in setup.py
+  entry: ignition-lint 
   language: python
   types: [json]
   files: view\.json$
   description: "Lints Ignition JSON files for style consistency"
-  # Optionally specify minimum pre-commit version or additional dependencies
-  # additional_dependencies: []
+  additional_dependencies: []
