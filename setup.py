@@ -14,7 +14,7 @@ setup(
     install_requires=[],
     entry_points={
         "console_scripts": [
-            "ignition-lint = ignition_lint:main",
+            "ignition-lint = ignition_lint.main:main",
         ],
     },
     author="Eric Knorr",
