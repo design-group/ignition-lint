@@ -8,7 +8,7 @@ setup(
     install_requires=[],  # Add dependencies if needed
     entry_points={
         "console_scripts": [
-            "ignition-lint = ignition_lint.ignition_lint:main",  # Updated path
+            "ignition-lint = ignition_lint:main",  # Updated path
         ],
     },
     author="Eric Knorr",
