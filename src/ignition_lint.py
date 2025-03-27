@@ -101,7 +101,7 @@ class JsonLinter:
 		Args:
 		file_path (str): The path to the file to be linted.
 
-		Returns:
+		Returns: 
 		int: The number of errors found in the file.
 		"""
         # Check for presence of glob special characters
