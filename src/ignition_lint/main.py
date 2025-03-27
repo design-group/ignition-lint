@@ -6,7 +6,7 @@ import argparse
 import os
 import glob
 import re
-from checker import StyleChecker
+from .checker import StyleChecker
 
 
 class JsonLinter:
