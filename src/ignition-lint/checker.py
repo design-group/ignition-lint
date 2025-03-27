@@ -1,6 +1,7 @@
 """Module for checking naming styles of variables, functions, classes, etc."""
 import re
 
+
 class StyleChecker:
     """Class for defining different naming styles and checking names against them."""
 
