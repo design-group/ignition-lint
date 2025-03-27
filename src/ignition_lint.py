@@ -32,6 +32,7 @@ class JsonLinter:
 	num_errors = linter.lint_file("path/to/file.json")
 	"""
 
+
 	def __init__(
 		self,
 		component_style,
