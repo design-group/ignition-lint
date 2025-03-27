@@ -10,27 +10,7 @@ from .checker import StyleChecker
 
 
 class JsonLinter:
-    """Class for linting Ignition view.json files for style inconsistencies in component and parameter names.
-
-	Attributes:
-
-	component_style (str): The naming convention style for components.
-	parameter_style (str): The naming convention style for parameters.
-	component_style_rgx (str): The regex pattern for naming convention style of components.
-	parameter_style_rgx (str): The regex pattern for naming convention style of parameters.
-	allow_acronyms (bool): Whether to allow acronyms in the names.
-	errors (dict): Dictionary to store the errors found in the files.
-	files_linted (int): The number of files linted.
-	parameter_areas (list): The areas in the file where parameters are found.
-	component_areas (list): The areas in the file where components are found.
-	keys_to_skip (list): The keys to skip while traversing the file.
-	component_style_checker (StyleChecker): The StyleChecker object for component names.
-	parameter_style_checker (StyleChecker): The StyleChecker object for parameter names
-
-	Usage:
-	linter = JsonLinter(component_style="PascalCase", parameter_style="snake_case")
-	num_errors = linter.lint_file("path/to/file.json")
-	"""
+    """Class for linting Ignition view.json files for style inconsistencies in component and parameter names."""
 
     def __init__(
         self,
@@ -98,12 +78,12 @@ class JsonLinter:
     def lint_file(self, file_path: str) -> int:
         """Lint the file at the given path.
 
-		Args:
-		file_path (str): The path to the file to be linted.
+        Args:
+        file_path (str): The path to the file to be linted.
 
-		Returns: 
-		int: The number of errors found in the file.
-		"""
+        Returns: 
+        int: The number of errors found in the file.
+        """
         # Check for presence of glob special characters
         if re.search(r"[\*\?\[\]]", file_path):
             # If the file_path contains a glob pattern
@@ -121,14 +101,18 @@ class JsonLinter:
     def lint_single_file(self, file_path: str) -> int:
         """Lint a single file.
 
-		Args:
-		file_path (str): The path to the file to be linted.
+        Args:
+        file_path (str): The path to the file to be linted.
 
-		Returns:
-		int: The number of errors found in the file.
-		"""
+        Returns:
+        int: The number of errors found in the file.
+        """
         if not os.path.exists(file_path):
             print(f"File not found: {file_path}")
+            return 0
+
+        # Only process view.json files when specific files are passed
+        if os.path.basename(file_path) != "view.json":
             return 0
 
         self.errors = {"components": [], "parameters": []}
@@ -149,16 +133,7 @@ class JsonLinter:
         return num_errors
 
     def check_parameter_names(self, data, errors: dict, parent_key: str = ""):
-        """Check the parameter names in the data.
-
-		Args:
-		data (dict): The data to be checked.
-		errors (dict): The dictionary to store the errors found.
-		parent_key (str): The parent key of the data.
-
-		Returns:
-		None
-		"""
+        """Check the parameter names in the data."""
         for key, value in data.items():
             if key in self.keys_to_skip:
                 continue
@@ -176,16 +151,7 @@ class JsonLinter:
                     f"{parent_key}.{key}" if parent_key else key)
 
     def check_component_names(self, value, errors: dict, parent_key: str = ""):
-        """Check the component names in the data.
-
-		Args:
-		value (dict): The data to be checked.
-		errors (dict): The dictionary to store the errors found.
-		parent_key (str): The parent key of the data.
-
-		Returns:
-		None
-		"""
+        """Check the component names in the data."""
         component_name = value.get("meta", {}).get("name")
         if component_name == "root":
             parent_key = component_name
@@ -214,15 +180,7 @@ class JsonLinter:
                     parent_key = parent_of_list
 
     def print_errors(self, file_path: str, errors: dict) -> None:
-        """Print the errors found in the file.
-
-		Args:
-		file_path (str): The path to the file.
-		errors (dict): The errors found in the file.
-
-		Returns:
-		None
-		"""
+        """Print the errors found in the file."""
         error_logs = []
         if errors["components"]:
             if self.component_style_rgx:
@@ -256,7 +214,6 @@ def main():
     parser = argparse.ArgumentParser(description="Lint Ignition JSON files")
     parser.add_argument(
         "--files",
-        default="**/view.json",  # Default glob pattern
         help="Comma-separated list of files or glob patterns to lint",
     )
     parser.add_argument(
@@ -277,14 +234,12 @@ def main():
         "--parameter-style-rgx",
         help="Regex pattern for naming convention style of parameters",
     )
-    # No positional "files" argument needed since we’re ignoring pre-commit’s input
+    # Added to accept filenames from pre-commit
+    parser.add_argument(
+        "filenames",
+        nargs="*",
+        help="Filenames to check. These are passed by pre-commit.")
     args = parser.parse_args()
-
-    # Use the --files argument exclusively
-    files_to_lint = args.files.split(",")
-    if not files_to_lint:
-        print("No files specified or found")
-        sys.exit(0)
 
     linter = JsonLinter(
         component_style=args.component_style,
@@ -294,10 +249,21 @@ def main():
     )
     number_of_errors = 0
 
-    for file_pattern in files_to_lint:
-        matched_files = glob.glob(file_pattern, recursive=True)
-        for file_path in matched_files:
+    # If --files is provided, use it as before
+    if args.files:
+        files_to_lint = args.files.split(",")
+        for file_pattern in files_to_lint:
+            matched_files = glob.glob(file_pattern, recursive=True)
+            for file_path in matched_files:
+                number_of_errors += linter.lint_file(file_path)
+    # Otherwise, use the filenames passed by pre-commit
+    elif args.filenames:
+        for file_path in args.filenames:
             number_of_errors += linter.lint_file(file_path)
+    else:
+        # Default behavior if neither --files nor filenames are provided
+        print("No files specified or found")
+        sys.exit(0)
 
     if not number_of_errors:
         print("No style inconsistencies found")

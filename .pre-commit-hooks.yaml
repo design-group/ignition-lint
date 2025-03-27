@@ -5,4 +5,5 @@
   types: [json]
   files: view\.json$
   description: "Lints Ignition JSON files for style consistency"
+  pass_filenames: true
   additional_dependencies: []
