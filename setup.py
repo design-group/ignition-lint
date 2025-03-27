@@ -1,14 +1,13 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name="ignition-lint",
     version="0.1.0",
-    packages=find_packages(where="src"),
-    package_dir={"": "src"},
-    install_requires=[],  # Add dependencies if needed
+    py_modules=["ignition_lint", "checker"],  # Treat as standalone modules
+    install_requires=[],
     entry_points={
         "console_scripts": [
-            "ignition-lint = ignition_lint:main",  # Updated path
+            "ignition-lint = ignition_lint:main",  # No package prefix
         ],
     },
     author="Eric Knorr",
