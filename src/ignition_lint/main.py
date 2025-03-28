@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """ This script is used to lint Ignition view.json files for style inconsistencies in component and parameter names. """
 
 import json
@@ -80,12 +79,12 @@ class JsonLinter:
 	def lint_file(self, file_path: str) -> int:
 		"""Lint the file at the given path.
 
-        Args:
-        file_path (str): The path to the file to be linted.
+		Args:
+		file_path (str): The path to the file to be linted.
 
-        Returns: 
-        int: The number of errors found in the file.
-        """
+		Returns: 
+		int: The number of errors found in the file.
+		"""
 		if re.search(r"[\*\?\[\]]", file_path):
 			files = glob.glob(file_path, recursive=True)
 			if not files:
@@ -101,12 +100,12 @@ class JsonLinter:
 	def lint_single_file(self, file_path: str) -> int:
 		"""Lint a single file.
 
-        Args:
-        file_path (str): The path to the file to be linted.
+		Args:
+		file_path (str): The path to the file to be linted.
 
-        Returns:
-        int: The number of errors found in the file.
-        """
+		Returns:
+		int: The number of errors found in the file.
+		"""
 		if not os.path.exists(file_path):
 			print(f"File not found: {file_path}")
 			return 0
