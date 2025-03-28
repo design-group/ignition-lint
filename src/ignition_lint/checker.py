@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 """Module for checking naming styles of variables, functions, classes, etc."""
 import re
 
@@ -70,3 +71,5 @@ class StyleChecker:
 
     def is_correct_style(self, name):
         return self.style_check_function(name)
+
+    def confirm_style(self, style_name, key):

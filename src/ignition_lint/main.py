@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ This script is used to lint Ignition view.json files for style inconsistencies in component and parameter names. """
 
 import json
