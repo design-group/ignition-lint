@@ -13,4 +13,5 @@ setup(
 	description="A linter for Ignition JSON files",
 	license="MIT",
 	url="https://github.com/design-group/ignition-lint",
+	python_requires=">=3.6",
 )
