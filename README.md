@@ -1,6 +1,6 @@
 # Ignition `view.json` Linter
 
-This GitHub Action performs linting on Ignition `view.json` files to ensure proper naming conventions are followed for component names and parameter keys.
+This repository supports Gihub Actions and Pre-Commit linting on Ignition Perspective `view.json` files to ensure proper naming conventions are followed for component names and parameter keys.
 
 ## Inputs
 
@@ -57,7 +57,25 @@ This input is useful when using `camelCase`, `PascalCase` or `Title Case` styles
 
 None
 
-## Usage
+## Usage - pre-commit hook
+
+To use this pre-commit hook in your repoistory, add the following content to a `.pre-commit-config.yaml` file in the root of the repository after installing pre-commit.
+
+``` yaml
+repos:
+  - repo: https://github.com/design-group/ignition-lint
+    rev: v0.1.0
+    hooks:
+      - id: ignition-lint
+        args: [
+          "--component-style", "PascalCase",
+          "--parameter-style", "camelCase",
+          "--allow-acronyms",
+        ]
+        files: view\.json$
+```
+
+## Usage - Github Action
 
 To use this Action in your workflow, create a workflow file (e.g., `.github/workflows/lint-ignition-views.yml`) in your repository and add one of the following configurations:
 
