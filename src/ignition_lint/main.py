@@ -12,14 +12,7 @@ from .checker import StyleChecker
 class JsonLinter:
 	"""Class for linting Ignition view.json files for style inconsistencies in component and parameter names."""
 
-	def __init__(
-		self,
-		component_style,
-		parameter_style,
-		component_style_rgx,
-		parameter_style_rgx,
-		allow_acronyms=False,
-	):
+	def __init__(self, component_style, parameter_style, component_style_rgx, parameter_style_rgx, allow_acronyms=False):
 		# Check if both named style and regex style are provided for the same type
 		if component_style_rgx not in [None, ""] and component_style not in [None, ""]:
 			message = "Cannot specify both (component_style: {}, component_style_rgx: {}). Please choose one or the other."
