@@ -1,5 +1,30 @@
-"""Module for checking naming styles of variables, functions, classes, etc."""
+"""
+This module contains common classes and functions used by the linting rules.
+"""
+
 import re
+from abc import ABC, abstractmethod
+
+
+class LintingRule(ABC):
+	"""Abstract base class for linting rules."""
+
+	@property
+	@abstractmethod
+	def error_key(self) -> str:
+		"""Key to use in the errors dict for this rule."""
+		pass
+
+	@property
+	@abstractmethod
+	def error_message(self) -> str:
+		"""Message to display for errors of this rule."""
+		pass
+
+	@abstractmethod
+	def check(self, data, errors: dict, parent_key: str = "") -> None:
+		"""Check the data and append errors to the errors dict."""
+		pass
 
 
 class StyleChecker:
