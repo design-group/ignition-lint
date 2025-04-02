@@ -71,13 +71,39 @@ class JsonLinter:
 def main():
 	"""Main function to lint Ignition view.json files for style inconsistencies."""
 	parser = argparse.ArgumentParser(description="Lint Ignition JSON files")
-	parser.add_argument("--files", default="**/view.json", help="Comma-separated list of files or glob patterns to lint")
-	parser.add_argument("--component-style", default="PascalCase", help="Naming convention style for components")
-	parser.add_argument("--parameter-style", default="camelCase", help="Naming convention style for parameters")
-	parser.add_argument("--component-style-rgx", help="Regex pattern for component naming")
-	parser.add_argument("--parameter-style-rgx", help="Regex pattern for parameter naming")
-	parser.add_argument("--allow-acronyms", action="store_true", help="Allow acronyms in naming styles")
-	parser.add_argument("filenames", nargs="*", help="Filenames to check (from pre-commit)")
+	parser.add_argument(
+		"--files",
+		default="**/view.json",
+		help="Comma-separated list of files or glob patterns to lint",
+	)
+	parser.add_argument(
+		"--component-style",
+		default="PascalCase",
+		help="Naming convention style for components",
+	)
+	parser.add_argument(
+		"--parameter-style",
+		default="camelCase",
+		help="Naming convention style for parameters",
+	)
+	parser.add_argument(
+		"--component-style-rgx",
+		help="Regex pattern for component naming",
+	)
+	parser.add_argument(
+		"--parameter-style-rgx",
+		help="Regex pattern for parameter naming",
+	)
+	parser.add_argument(
+		"--allow-acronyms",
+		action="store_true",
+		help="Allow acronyms in naming styles",
+	)
+	parser.add_argument(
+		"filenames",
+		nargs="*",
+		help="Filenames to check (from pre-commit)",
+	)
 	args = parser.parse_args()
 
 	rules = [
@@ -87,12 +113,13 @@ def main():
 	linter = JsonLinter(rules)
 	number_of_errors = 0
 
-	if args.files:
-		for file_pattern in args.files.split(","):
-			number_of_errors += linter.lint_file(file_pattern)
-	elif args.filenames:
+	# NOTE: priority is given to filenames passed as arguments for pre-commit
+	if args.filenames:
 		for file_path in args.filenames:
 			number_of_errors += linter.lint_file(file_path)
+	elif args.files:
+		for file_pattern in args.files.split(","):
+			number_of_errors += linter.lint_file(file_pattern)
 	else:
 		print("No files specified or found")
 		sys.exit(0)
