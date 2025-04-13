@@ -1,0 +1,23 @@
+{
+    "ComponentNameRule": {
+        "feedbackType": "error",
+        "kwargs": {
+            "style_name": "PascalCase",
+            "style_name_rgx": null,
+            "allow_acronyms": true
+        }
+    },
+    "ParameterNameRule": {
+        "feedbackType": "error",
+        "kwargs": {
+            "style_name": "camelCase",
+            "style_name_rgx": null
+        }
+    },
+    "ExpressionPollingRule": {
+        "feedbackType": "error",
+        "kwargs": {
+            "min_interval": 10000
+        }
+    }
+}

@@ -7,13 +7,13 @@ from .common import LintingRule, StyleChecker
 class ComponentNameRule(LintingRule):
 	"""Rule to check component naming style consistency."""
 
-	def __init__(self, style: str, style_rgx: str, allow_acronyms: bool):
-		if style_rgx not in [None, ""] and style not in [None, ""]:
-			raise ValueError(f"Cannot specify both (component_style: {style}, component_style_rgx: {style_rgx}). Choose one.")
-		if style_rgx is None and style is None:
-			raise ValueError("Component naming style not specified. Use either (component_style) or (component_style_rgx).")
+	def __init__(self, style_name: str, style_name_rgx: str, allow_acronyms: bool = False):
+		if style_name_rgx not in [None, ""] and style_name not in [None, ""]:
+			raise ValueError(f"Cannot specify both (style_name: {style_name}, style_name_rgx: {style_name_rgx}). Choose one.")
+		if style_name_rgx is None and style_name is None:
+			raise ValueError("Component naming style not specified. Use either (style_name) or (style_name_rgx).")
 
-		self._style = style_rgx or style
+		self._style = style_name_rgx or style_name
 		self.style_checker = StyleChecker(self._style, allow_acronyms)
 
 	@property
@@ -25,8 +25,7 @@ class ComponentNameRule(LintingRule):
 		return f"Component names should follow '{self._style}'"
 
 	def check(self, data, errors: dict, parent_key: str = ""):
-		if self.error_key not in errors:
-			errors[self.error_key] = []
+		errors.setdefault(self.error_key, [])
 
 		component_name = data.get("meta", {}).get("name")
 		if component_name == "root":

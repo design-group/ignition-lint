@@ -1,0 +1,91 @@
+{
+  "custom": {},
+  "params": {
+    "inputProp": false
+  },
+  "propConfig": {
+    "custom.expressionPolling": {
+      "access": "PRIVATE",
+      "binding": {
+        "config": {
+          "expression": "now()"
+        },
+        "type": "expr"
+      },
+      "persistent": false
+    },
+    "custom.expressionStructurePolling": {
+      "binding": {
+        "config": {
+          "struct": {
+            "badPolling": "now()"
+          },
+          "waitOnAll": true
+        },
+        "type": "expr-struct"
+      },
+      "persistent": false
+    },
+    "custom.transformPolling": {
+      "binding": {
+        "config": {
+          "path": "view.params.inputProp"
+        },
+        "transforms": [
+          {
+            "expression": "now()",
+            "type": "expression"
+          },
+          {
+            "expression": "now(5000)",
+            "type": "expression"
+          },
+          {
+            "expression": "now(11000)",
+            "type": "expression"
+          }
+        ],
+        "type": "property"
+      },
+      "persistent": false
+    },
+    "params.inputProp": {
+      "paramDirection": "input",
+      "persistent": true
+    }
+  },
+  "props": {},
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "BadPollingDateTimeInput"
+        },
+        "position": {
+          "basis": "32px"
+        },
+        "propConfig": {
+          "props.value": {
+            "binding": {
+              "config": {
+                "expression": "now(1000)"
+              },
+              "type": "expr"
+            }
+          }
+        },
+        "props": {
+          "formattedValue": "Apr 6, 2025 8:08 PM"
+        },
+        "type": "ia.input.date-time-input"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column"
+    },
+    "type": "ia.container.flex"
+  }
+}

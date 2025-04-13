@@ -7,17 +7,16 @@ from .common import LintingRule, StyleChecker
 class ParameterNameRule(LintingRule):
 	"""Rule to check parameter naming style consistency."""
 
-	def __init__(self, style: str, style_rgx: str, allow_acronyms: bool, areas: list):
-		if style_rgx not in [None, ""] and style not in [None, ""]:
-			raise ValueError(f"Cannot specify both (parameter_style: {style}, parameter_style_rgx: {style_rgx}). Choose one.")
-		if style_rgx is None and style is None:
-			raise ValueError("Parameter naming style not specified. Use either (parameter_style) or (parameter_style_rgx).")
-		if style == "Title Case":
+	def __init__(self, style_name: str, style_name_rgx: str, allow_acronyms: bool = False):
+		if style_name_rgx not in [None, ""] and style_name not in [None, ""]:
+			raise ValueError(f"Cannot specify both (style_name: {style_name}, style_name_rgx: {style_name_rgx}). Choose one.")
+		if style_name_rgx is None and style_name is None:
+			raise ValueError("Parameter naming style not specified. Use either (style_name) or (style_name_rgx).")
+		if style_name == "Title Case":
 			raise ValueError("Title Case is not a valid parameter naming style. Use a different style.")
 
-		self._style = style_rgx or style
+		self._style = style_name_rgx or style_name
 		self.style_checker = StyleChecker(self._style, allow_acronyms)
-		self.areas = areas
 		self.keys_to_skip = ["props", "position", "type", "meta", "propConfig", "scripts"]
 
 	@property
@@ -42,8 +41,7 @@ class ParameterNameRule(LintingRule):
 			errors[self.error_key].append(key_path)
 
 	def check(self, data, errors: dict, parent_key: str = "", recursive: bool = True):
-		if self.error_key not in errors:
-			errors[self.error_key] = []
+		errors.setdefault(self.error_key, [])
 
 		for key, value in data.items():
 			if self._should_skip_key(key):
