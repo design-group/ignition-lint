@@ -5,11 +5,11 @@ setup(
 	version="0.1.0",
 	packages=find_packages(where="src"),
 	package_dir={"": "src"},
-	install_requires=[],
+	install_requires=["pylint"],
 	entry_points={
 		"console_scripts": ["ignition-lint = ignition_lint.main:main",],
 	},
-	author="Eric Knorr",
+	author="Eric Knorr & Alex Spyksma",
 	description="A linter for Ignition JSON files",
 	license="MIT",
 	url="https://github.com/design-group/ignition-lint",

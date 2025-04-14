@@ -1,0 +1,12 @@
+{
+    "PylintScriptRule": {
+      "enabled": true,
+      "kwargs": {}
+    },
+    "PollingIntervalRule": {
+      "enabled": true,
+      "kwargs": {
+        "min_interval": 500
+      }
+    }
+  }

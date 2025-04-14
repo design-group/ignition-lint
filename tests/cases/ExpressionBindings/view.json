@@ -1,0 +1,134 @@
+{
+  "custom": {
+    "test": 4
+  },
+  "params": {
+    "inputProp": false
+  },
+  "propConfig": {
+    "custom.expressionPolling": {
+      "access": "PRIVATE",
+      "binding": {
+        "config": {
+          "expression": "now()"
+        },
+        "type": "expr"
+      },
+      "persistent": false
+    },
+    "custom.expressionStructurePolling": {
+      "binding": {
+        "config": {
+          "struct": {
+            "badPolling": "now()"
+          },
+          "waitOnAll": true
+        },
+        "type": "expr-struct"
+      },
+      "persistent": false
+    },
+    "custom.test": {
+      "onChange": {
+        "enabled": null,
+        "script": "\treturn previousValue.value * currentValue.value"
+      },
+      "persistent": true
+    },
+    "custom.transformPolling": {
+      "binding": {
+        "config": {
+          "path": "view.params.inputProp"
+        },
+        "transforms": [
+          {
+            "expression": "now()",
+            "type": "expression"
+          },
+          {
+            "expression": "now(5000)",
+            "type": "expression"
+          },
+          {
+            "expression": "now(11000)",
+            "type": "expression"
+          }
+        ],
+        "type": "property"
+      },
+      "persistent": false
+    },
+    "params.inputProp": {
+      "paramDirection": "input",
+      "persistent": true
+    }
+  },
+  "props": {},
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "BadPollingDateTimeInput"
+        },
+        "position": {
+          "basis": "32px"
+        },
+        "propConfig": {
+          "props.value": {
+            "binding": {
+              "config": {
+                "expression": "now()"
+              },
+              "type": "expr"
+            }
+          }
+        },
+        "props": {
+          "formattedValue": "Apr 13, 2025 10:59 PM"
+        },
+        "type": "ia.input.date-time-input"
+      },
+      {
+        "events": {
+          "component": {
+            "onActionPerformed": {
+              "config": {
+                "script": "\treturn event"
+              },
+              "scope": "G",
+              "type": "script"
+            }
+          }
+        },
+        "meta": {
+          "name": "Button"
+        },
+        "position": {
+          "basis": "34px"
+        },
+        "scripts": {
+          "customMethods": [
+            {
+              "name": "customBindingRefresh",
+              "params": [
+                "var10",
+                "var11"
+              ],
+              "script": "\t# implement your method here\n\treturn var10 * var11"
+            }
+          ],
+          "extensionFunctions": null,
+          "messageHandlers": []
+        },
+        "type": "ia.input.button"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column"
+    },
+    "type": "ia.container.flex"
+  }
+}
