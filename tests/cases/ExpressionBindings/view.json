@@ -1,5 +1,7 @@
 {
-  "custom": {},
+  "custom": {
+    "test": 4
+  },
   "params": {
     "inputProp": false
   },
@@ -25,6 +27,13 @@
         "type": "expr-struct"
       },
       "persistent": false
+    },
+    "custom.test": {
+      "onChange": {
+        "enabled": null,
+        "script": "\treturn previousValue.value * currentValue.value"
+      },
+      "persistent": true
     },
     "custom.transformPolling": {
       "binding": {
@@ -68,16 +77,50 @@
           "props.value": {
             "binding": {
               "config": {
-                "expression": "now(1000)"
+                "expression": "now()"
               },
               "type": "expr"
             }
           }
         },
         "props": {
-          "formattedValue": "Apr 6, 2025 8:08 PM"
+          "formattedValue": "Apr 13, 2025 10:59 PM"
         },
         "type": "ia.input.date-time-input"
+      },
+      {
+        "events": {
+          "component": {
+            "onActionPerformed": {
+              "config": {
+                "script": "\treturn event"
+              },
+              "scope": "G",
+              "type": "script"
+            }
+          }
+        },
+        "meta": {
+          "name": "Button"
+        },
+        "position": {
+          "basis": "34px"
+        },
+        "scripts": {
+          "customMethods": [
+            {
+              "name": "customBindingRefresh",
+              "params": [
+                "var10",
+                "var11"
+              ],
+              "script": "\t# implement your method here\n\treturn var10 * var11"
+            }
+          ],
+          "extensionFunctions": null,
+          "messageHandlers": []
+        },
+        "type": "ia.input.button"
       }
     ],
     "meta": {
