@@ -101,42 +101,62 @@ def write_json_file(file_path, data):
 
 def flatten_json(data, path="", results=None):
 	"""
-    Recursively searches a JSON-like dictionary for keys named "expression" and 
-    returns a dictionary of paths to expression values.
+    Recursively flattens a JSON-like dictionary into path-to-value pairs.
 
     Args:
-        data (dict): The JSON data to search.
+        data (dict): The JSON data to flatten.
         path (str): The current path being traversed (used internally).
         results (dict): The dictionary to store the results (used internally).
 
     Returns:
-        dict: A dictionary where keys are paths to "expression" keys and values 
-              are the corresponding expression values.  Returns an empty dict if no expressions found.
+        dict: A flattened dictionary where keys are paths and values are primitive values.
     """
 	if results is None:
 		results = OrderedDict()
 
+	# Handle component names for better path clarity
 	component_name = data.get('meta', {}).get('name')
 	if component_name:
-		path = f"{path}.{component_name}"
+		path = f"{path}.{component_name}" if path else component_name
 
-	for key, value in data.items():
-		current_path = f"{path}.{key}" if path else key
+	# Process each key-value pair
+	if isinstance(data, dict):
+		for key, value in data.items():
+			current_path = f"{path}.{key}" if path else key
 
-		if isinstance(value, dict):
-			flatten_json(value, current_path, results)
-		elif isinstance(value, list):
-			for index, item in enumerate(value):
-				if isinstance(item, dict):
-					flatten_json(item, f"{current_path}[{index}]", results)
-		else:
-			results[current_path] = value
+			if isinstance(value, dict):
+				flatten_json(value, current_path, results)
+			elif isinstance(value, list):
+				# Process each item in the list, regardless of type
+				for index, item in enumerate(value):
+					item_path = f"{current_path}[{index}]"
+
+					if isinstance(item, (dict, list)):
+						# Recursively flatten complex items
+						flatten_json(item, item_path, results)
+					else:
+						# Store primitive values directly
+						results[item_path] = item
+			else:
+				# Store primitive values directly
+				results[current_path] = value
+
+	# Handle lists directly (for when a list is passed to the function)
+	elif isinstance(data, list):
+		for index, item in enumerate(data):
+			item_path = f"{path}[{index}]" if path else f"[{index}]"
+
+			if isinstance(item, (dict, list)):
+				flatten_json(item, item_path, results)
+			else:
+				results[item_path] = item
+
 	return results
 
 
 if __name__ == "__main__":
 
-	file_path = "tests/cases/LineDashboard/view.json"
+	file_path = "tests/cases/ExpressionBindings/view.json"
 	json_data = read_json_file(file_path)
 	flat_json = flatten_json(json_data)
 	sorted_data = OrderedDict(sorted(flat_json.items()))

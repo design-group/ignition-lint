@@ -321,6 +321,47 @@
                   {
                     "children": [
                       {
+                        "events": {
+                          "dom": {
+                            "onClick": {
+                              "config": {
+                                "script": "\treturn 3"
+                              },
+                              "scope": "G",
+                              "type": "script"
+                            },
+                            "onContextMenu": {
+                              "config": {
+                                "script": "\treturn 4"
+                              },
+                              "scope": "G",
+                              "type": "script"
+                            },
+                            "onDoubleClick": {
+                              "config": {
+                                "script": "\treturn 5"
+                              },
+                              "scope": "G",
+                              "type": "script"
+                            }
+                          },
+                          "system": {
+                            "onShutdown": {
+                              "config": {
+                                "script": "\treturn 2"
+                              },
+                              "scope": "G",
+                              "type": "script"
+                            },
+                            "onStartup": {
+                              "config": {
+                                "script": "\treturn 1"
+                              },
+                              "scope": "G",
+                              "type": "script"
+                            }
+                          }
+                        },
                         "meta": {
                           "name": "Line Name"
                         },
@@ -1114,6 +1155,7 @@
       }
     ],
     "custom": {
+      "key": "value",
       "urlParams": {}
     },
     "meta": {
