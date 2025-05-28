@@ -5,7 +5,6 @@ import sys
 import argparse
 import os
 import glob
-import re
 from pathlib import Path
 
 from .common.flatten_json import read_json_file, flatten_json

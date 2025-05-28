@@ -335,11 +335,10 @@ expected-line-ending-format=
 ignore-long-lines=^\s*(# )?<?https?://\S+>?$
 
 # Number of spaces of indent required inside a hanging or continued line.
-indent-after-paren=4
+indent-after-paren=1
 
-# String used as indentation unit. This is usually "    " (4 spaces) or "\t" (1
-# tab).
-indent-string='    '
+# String used as indentation unit. This is usually "    " (4 spaces) or "\t" (1 tab).
+indent-string='\t'
 
 # Maximum number of characters on a single line.
 max-line-length=140
