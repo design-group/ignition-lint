@@ -4,6 +4,78 @@
 
 Ignition Lint is a Python framework designed to analyze and lint Ignition Perspective view.json files. It provides a structured way to parse view files, build an object model representation, and apply customizable linting rules to ensure code quality and consistency across your Ignition projects.
 
+## Getting Started with Poetry
+
+### Prerequisites
+- Python 3.8 or higher
+- Poetry >= 2.0 (install from [python-poetry.org](https://python-poetry.org/docs/#installation))
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/design-group/ignition-lint.git
+   cd ignition-lint
+   ```
+
+2. **Install dependencies with Poetry:**
+   ```bash
+   poetry install
+   ```
+
+3. **Activate the virtual environment:**
+   ```bash
+   poetry shell
+   ```
+
+4. **Verify installation:**
+   ```bash
+   poetry run python -m ignition_lint.main --help
+   ```
+
+### Development Setup
+
+For development work, install with development dependencies:
+
+```bash
+# Install all dependencies including dev tools
+poetry install --with dev
+
+# Run tests
+poetry run pytest
+
+# Run linting
+poetry run pylint ignition_lint/
+
+# Format code
+poetry run black ignition_lint/
+```
+
+### Running Without Activating Shell
+
+You can run commands directly through Poetry without activating the shell:
+
+```bash
+# Run linting on a view file
+poetry run python -m ignition_lint.main path/to/view.json
+
+# Run with custom configuration
+poetry run python -m ignition_lint.main --config my_rules.json --files "views/**/view.json"
+```
+
+### Building and Distribution
+
+```bash
+# Build the package
+poetry build
+
+# Install locally for testing
+poetry install
+
+# Export requirements.txt for CI/CD or Docker
+poetry export --output requirements.txt --without-hashes
+```
+
 ## Key Features
 
 - **Object Model Representation**: Converts flattened JSON structures into a hierarchical object model
@@ -452,14 +524,18 @@ Ensures that polling intervals in expressions meet minimum requirements:
 ### Basic Usage
 
 ```bash
-# Lint specific files
-python -m ignition_lint.main path/to/view.json
+# Using Poetry (recommended)
+poetry run python -m ignition_lint.main path/to/view.json
 
 # Lint multiple files with glob pattern
-python -m ignition_lint.main --files "**/view.json"
+poetry run python -m ignition_lint.main --files "**/view.json"
 
 # Use custom configuration
-python -m ignition_lint.main --config my_rules.json --files "views/**/view.json"
+poetry run python -m ignition_lint.main --config my_rules.json --files "views/**/view.json"
+
+# If you've activated the Poetry shell
+poetry shell
+python -m ignition_lint.main path/to/view.json
 ```
 
 ### Pre-commit Integration
@@ -506,3 +582,25 @@ When adding new features:
 3. Provide configuration options for new rules
 4. Document rule behavior and configuration
 5. Add appropriate error handling
+
+### Development Workflow
+
+```bash
+# Fork and clone the repository
+git clone https://github.com/yourusername/ignition-lint.git
+cd ignition-lint
+
+# Install development dependencies
+poetry install --with dev
+
+# Create a feature branch
+git checkout -b feature/my-new-feature
+
+# Make your changes and test
+poetry run pytest
+poetry run pylint ignition_lint/
+
+# Commit and push
+git commit -m "Add new feature"
+git push origin feature/my-new-feature
+```
