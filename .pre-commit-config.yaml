@@ -1,4 +1,3 @@
----
 repos:
   - repo: https://github.com/markdownlint/markdownlint
     rev: v0.12.0
@@ -22,5 +21,4 @@ repos:
         args:
           - "--rcfile=.pylintrc"
           - "--msg-template='{path}:\n  Line {line}: {msg_id}: {msg}'"
-        # files: \*.py$
         types: [python]

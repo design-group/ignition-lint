@@ -1,7 +1,7 @@
 - id: ignition-lint
   name: Ignition Lint
-  description: "Lints Ignition Perspectve JSON files for style consistency"
-  entry: ignition-lint 
+  description: "Lints Ignition Perspective JSON files for style consistency"
+  entry: poetry run ignition-lint
   language: python
   language_version: python3
   types: [json]
