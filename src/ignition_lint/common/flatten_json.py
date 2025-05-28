@@ -69,10 +69,10 @@ def read_json_file(file_path):
 			# preserved_content = preserve_unicode_escapes(content)
 			# return json.loads(preserved_content, object_pairs_hook=OrderedDict)
 	except FileNotFoundError:
-		LOGGER.error(f"File not found: {file_path}")
+		LOGGER.error("File %s not found. Confirm the file exists and is accessible.", file_path)
 		sys.exit(1)
 	except json.JSONDecodeError as e:
-		LOGGER.error(f"Invalid JSON in {file_path}: {e}")
+		LOGGER.error("Invalid JSON in %s: %s", file_path, e)
 		sys.exit(1)
 
 
@@ -97,7 +97,7 @@ def write_json_file(file_path, data):
 			# file.write(restored_content)
 			file.write(formatted_json)
 	except (OSError, IOError) as e:
-		LOGGER.error(f"Failed to write {file_path}: {e}")
+		LOGGER.error("Failed to write %s: %s", file_path, e)
 		sys.exit(1)
 
 
