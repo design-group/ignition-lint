@@ -1,46 +1,21 @@
 import re
 from .base import LintingRule
-from ..model.node_types import Binding, ExpressionBinding, PropertyBinding, TagBinding
+from ..model.node_types import NodeType
 
 
-class BindingLintingRule(LintingRule):
-	"""Base class for rules that lint bindings."""
+class BindingRule(LintingRule):
 
-	def __init__(self, binding_types=None):
-		super().__init__()
-		self.register_node_type(Binding)  # Register the base Binding type
-		self.binding_types = binding_types or []  # List of binding types to check
-
-		# Register specific binding types if provided
-		if "expression" in self.binding_types:
-			self.register_node_type(ExpressionBinding)
-		if "property" in self.binding_types:
-			self.register_node_type(PropertyBinding)
-		if "tag" in self.binding_types:
-			self.register_node_type(TagBinding)
-
-	def applies_to(self, node):
-		"""Check if this rule applies to the given node."""
-		if isinstance(node, Binding):
-			if not self.binding_types:  # If no specific types, apply to all bindings
-				return True
-
-			# Check if the node's binding type is in our list of types to check
-			if isinstance(node, ExpressionBinding) and "expression" in self.binding_types:
-				return True
-			if isinstance(node, PropertyBinding) and "property" in self.binding_types:
-				return True
-			if isinstance(node, TagBinding) and "tag" in self.binding_types:
-				return True
-
-		return False  # Not a binding node or not a binding type we care about
+	def __init__(self, node_types=None):
+		if node_types is None:
+			node_types = {NodeType.ALL_BINDINGS}
+		super().__init__(node_types)
 
 
-class PollingIntervalRule(BindingLintingRule):
+class PollingIntervalRule(BindingRule):
 	"""Rule to check polling intervals in expressions."""
 
 	def __init__(self, min_interval=10000):
-		super().__init__(binding_types=["expression", "property"])
+		super().__init__({NodeType.EXPRESSION_BINDING, NodeType.PROPERTY_BINDING, NodeType.TAG_BINDING})
 		self.min_interval = min_interval
 
 	@property

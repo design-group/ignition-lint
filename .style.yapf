@@ -1,6 +1,6 @@
 [style]
 based_on_style = google
-COLUMN_LIMIT = 140
+COLUMN_LIMIT = 120
 USE_TABS = True
 INDENT_WIDTH = 8
 CONTINUATION_INDENT_WIDTH = 4

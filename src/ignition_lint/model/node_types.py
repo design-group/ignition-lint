@@ -1,6 +1,6 @@
+from enum import Enum
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional, Union
-import re
+from typing import Dict, List, Any, Optional, Set, Type
 
 
 # Base classes for our object model
@@ -80,33 +80,33 @@ class TagBinding(Binding):
 class Script(ViewNode):
 	"""Represents a script in the view."""
 
-	def __init__(self, path: str, code: str, script_type: str = None):
-		super().__init__(path, code)
-		self.code = code
+	def __init__(self, path: str, script: str, script_type: str = None):
+		super().__init__(path, script)
+		self.script = script
 		self.script_type = script_type  # e.g., "transform", "customMethod", "messageHandler"
 
 	def accept(self, visitor):
 		return visitor.visit_script(self)
 
 
-class MessageHandler(Script):
+class MessageHandlerScript(Script):
 	"""Represents a message handler in the view."""
 
-	def __init__(self, path: str, code: str, message_type: str, scope: Dict = None):
-		super().__init__(path, code, "messageHandler")
+	def __init__(self, path: str, script: str, message_type: str, scope: Dict = None):
+		super().__init__(path, script, "messageHandler")
 		self.message_type = message_type
 		self.scope = scope or {}
 
-	def get_formatted_code(self):
+	def get_formatted_script(self):
 		"""Format the script with the proper function definition for pylint."""
 		# Message handlers typically receive a payload parameter
 		function_def = f"def onMessageReceived(self, payload):"
 
-		# Indent the code properly
-		indented_code = "\n".join(f"{line}" for line in self.code.split("\n"))
+		# Indent the script properly
+		indented_script = "\n".join(f"{line}" for line in self.script.split("\n"))
 
 		# Combine into a complete function
-		return f"{function_def}\n{indented_code}"
+		return f"{function_def}\n{indented_script}"
 
 	def accept(self, visitor):
 		return visitor.visit_message_handler(self)
@@ -115,28 +115,28 @@ class MessageHandler(Script):
 class CustomMethodScript(Script):
 	"""Represents a custom method in the view."""
 
-	def __init__(self, path: str, name: str, code: str, params=None):
-		super().__init__(path, code, "customMethod")
+	def __init__(self, path: str, name: str, script: str, params=None):
+		super().__init__(path, script, "customMethod")
 		self.name = name
 		self.params = params or []
 
-	def get_formatted_code(self):
+	def get_formatted_script(self):
 		"""Format the script with the proper function definition for pylint."""
 		# Create function signature with self and all params
 		param_list = ", ".join(["self"] + self.params)
 		function_def = f"def {self.name}({param_list}):"
 
-		# Indent the code properly
-		indented_code = "\n".join(f"{line}" for line in self.code.split("\n"))
+		# Indent the script properly
+		indented_script = "\n".join(f"{line}" for line in self.script.split("\n"))
 
 		# Handle empty function body case
-		if not indented_code.strip():
-			indented_code = "    pass"
+		if not indented_script.strip():
+			indented_script = "    pass"
 
 		# Combine into a complete function
-		full_code = f"{function_def}\n{indented_code}"
+		full_script = f"{function_def}\n{indented_script}"
 
-		return full_code
+		return full_script
 
 	def accept(self, visitor):
 		return visitor.visit_custom_method(self)
@@ -145,20 +145,20 @@ class CustomMethodScript(Script):
 class TransformScript(Script):
 	"""Represents a script transform in a binding."""
 
-	def __init__(self, path: str, code: str, binding_path: str = None):
-		super().__init__(path, code, "transform")
+	def __init__(self, path: str, script: str, binding_path: str = None):
+		super().__init__(path, script, "transform")
 		self.binding_path = binding_path
 
-	def get_formatted_code(self):
+	def get_formatted_script(self):
 		"""Format the script with the proper function definition for pylint."""
 		# Transforms typically receive a value parameter
 		function_def = "def transform(self, value):"
 
-		# Indent the code properly
-		indented_code = "\n".join(f"{line}" for line in self.code.split("\n"))
+		# Indent the script properly
+		indented_script = "\n".join(f"{line}" for line in self.script.split("\n"))
 
 		# Combine into a complete function
-		return f"{function_def}\n{indented_code}"
+		return f"{function_def}\n{indented_script}"
 
 	def accept(self, visitor):
 		return visitor.visit_script_transform(self)
@@ -180,25 +180,26 @@ class EventHandler(ViewNode):
 class EventHandlerScript(EventHandler):
 	"""Represents a script event handler in the view."""
 
-	def __init__(self, path: str, event_type: str, code: str, scope: str = None):
+	def __init__(self, path: str, event_type: str, script: str, scope: str = None):
 		super().__init__(path, event_type, "script")
-		self.code = code
+		self.script = script
+		self.script_type = "eventHandler"
 		self.scope = scope
 
-	def get_formatted_code(self):
+	def get_formatted_script(self):
 		"""Format the script with the proper function definition for pylint."""
 		# Create a sanitized function name from the event type
 		function_def = f"def {self.event_type}(self, event):"
 
-		# Indent the code properly
-		indented_code = "\n".join(f"{line}" for line in self.code.split("\n"))
+		# Indent the script properly
+		indented_script = "\n".join(f"{line}" for line in self.script.split("\n"))
 
 		# Handle empty function body case
-		if not indented_code.strip():
-			indented_code = "    pass"
+		if not indented_script.strip():
+			indented_script = "    pass"
 
 		# Combine into a complete function
-		return f"{function_def}\n{indented_code}"
+		return f"{function_def}\n{indented_script}"
 
 	def accept(self, visitor):
 		return visitor.visit_script_event_handler(self)
@@ -213,3 +214,32 @@ class Property(ViewNode):
 
 	def accept(self, visitor):
 		return visitor.visit_property(self)
+
+
+class NodeType(Enum):
+	"""Enum for node types and groups used in linting rules."""
+	# Individual node types
+	COMPONENT = {Component}
+	BINDING = {Binding}
+	EXPRESSION_BINDING = {ExpressionBinding}
+	PROPERTY_BINDING = {PropertyBinding}
+	TAG_BINDING = {TagBinding}
+	SCRIPT = {Script}
+	MESSAGE_HANDLER = {MessageHandlerScript}
+	SCRIPT_CUSTOM_METHOD = {CustomMethodScript}
+	SCRIPT_TRANSFORM = {TransformScript}
+	SCRIPT_EVENT_HANDLER = {EventHandlerScript}
+	EVENT_HANDLER = {EventHandler}
+	PROPERTY = {Property}
+
+	# Grouped node types
+	ALL_BINDINGS = {ExpressionBinding, PropertyBinding, TagBinding}
+	ALL_SCRIPTS = {Script, MessageHandlerScript, CustomMethodScript, TransformScript, EventHandlerScript}
+	ALL_EVENT_HANDLERS = {EventHandler, EventHandlerScript}
+
+	def __init__(self, node_classes: Set[Type['ViewNode']]):
+		self.node_classes = node_classes
+
+	def applies_to(self, node: 'ViewNode') -> bool:
+		"""Check if this node type applies to the given node."""
+		return isinstance(node, tuple(self.node_classes))

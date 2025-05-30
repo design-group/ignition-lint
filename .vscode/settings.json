@@ -1,0 +1,19 @@
+{
+    // Python settings  
+    "python.analysis.typeCheckingMode": "off",
+    "pylint.args": [
+        "--rcfile=.pylintrc"
+    ],
+    // yapf settings
+    "yapf.interpreter": [
+        "python3"
+    ],
+    "[python]": {
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.formatOnType": true,
+        "editor.wordBasedSuggestions": "off",
+        "editor.formatOnSaveMode": "file",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "eeyore.yapf"
+    }
+}

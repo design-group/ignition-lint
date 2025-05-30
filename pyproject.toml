@@ -9,8 +9,10 @@ homepage = "https://github.com/design-group/ignition-lint"
 packages = [{ include = "ignition_lint", from = "src" }]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = ">=3.9,<3.13"
 pylint = "*"
+ignition-api-stubs = "^8.1.48.post1"
+pre-commit = "^4.2.0"
 
 [tool.poetry.requires-plugins]
 poetry-plugin-export = ">=1.8"

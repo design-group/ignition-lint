@@ -117,7 +117,7 @@ The framework decompiles Ignition Perspective views into a structured object mod
 
 #### Script Nodes
 - **Script**: Base class for all script types
-- **MessageHandler**: Scripts that handle messages
+- **MessageHandlerScript**: Scripts that handle messages
 - **CustomMethodScript**: Custom component methods
 - **TransformScript**: Script transforms in bindings
 - **EventHandlerScript**: Event handler scripts
@@ -287,15 +287,15 @@ class MyScriptRule(LintingRule):
         # Available properties:
         method.path         # Path to the method
         method.name         # Method name: "refreshData"
-        method.code         # Raw script code
+        method.script         # Raw script code
         method.params       # List of parameter names
         
         # Special method:
-        formatted_code = method.get_formatted_code()
+        formatted_script = method.get_formatted_script()
         # Returns properly formatted Python with function definition
         
         # Example: Check for print statements
-        if 'print(' in method.code:
+        if 'print(' in method.script:
             self.errors.append(
                 f"{method.path}: Method '{method.name}' contains print statement"
             )
@@ -356,12 +356,12 @@ class ContextAwareRule(LintingRule):
         self.component_stack.append(component)
         self.current_component = component
     
-    def visit_script(self, script):
+    def visit_script(self, script_obj):
         # Use component context
         if self.current_component and self.current_component.type == "ia.display.table":
-            if "selectedRow" in script.code and "rowData" not in script.code:
+            if "selectedRow" in script_obj.script and "rowData" not in script_obj.script:
                 self.errors.append(
-                    f"{script.path}: Table script uses selectedRow without rowData check"
+                    f"{script_obj.path}: Table script uses selectedRow without rowData check"
                 )
 ```
 
@@ -478,32 +478,32 @@ class LifecycleAwareRule(LintingRule):
 - `binding_type`: Always "tag"
 - `config`: Full binding configuration
 
-### MessageHandler
+### MessageHandlerScript
 - `path`: Path to the handler
-- `code`: Script code
+- `script`: Script string
 - `message_type`: Type of message handled
 - `scope`: Scope configuration dict
-- `get_formatted_code()`: Returns formatted Python code
+- `get_formatted_script()`: Returns formatted Python code
 
 ### CustomMethodScript
 - `path`: Path to the method
 - `name`: Method name
-- `code`: Script code
+- `script`: Script string
 - `params`: List of parameter names
-- `get_formatted_code()`: Returns formatted Python code
+- `get_formatted_script()`: Returns formatted Python code
 
 ### TransformScript
 - `path`: Path to the transform
-- `code`: Script code
+- `script`: Script string
 - `binding_path`: Path to parent binding
-- `get_formatted_code()`: Returns formatted Python code
+- `get_formatted_script()`: Returns formatted Python code
 
 ### EventHandlerScript
 - `path`: Path to the handler
 - `event_type`: Event type (e.g., "onClick")
-- `code`: Script code
+- `script`: Script string
 - `scope`: Scope setting ("L", "P", "S")
-- `get_formatted_code()`: Returns formatted Python code
+- `get_formatted_script()`: Returns formatted Python code
 
 ## Built-in Rules
 

@@ -1,9 +1,8 @@
 # VSCode workspace
 *.code-workspace
 
-# .vscode directory
-.vscode
-
 # pycache
 src/__pycache__/
 src/*.egg-info
+
+debug/*
