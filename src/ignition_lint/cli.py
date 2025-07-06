@@ -1,5 +1,5 @@
 """
-Improved main function with better error handling, statistics, and flow control.
+Command-line interface for ignition-lint.
 """
 
 import json
@@ -9,9 +9,23 @@ import glob
 from pathlib import Path
 from typing import List, Dict, Any
 
-from .common.flatten_json import read_json_file, flatten_json
-from .linter import LintEngine
-from .rules import RULES_MAP
+# Handle both relative and absolute imports
+try:
+	# Try relative imports first (when run as module)
+	from .common.flatten_json import read_json_file, flatten_json
+	from .linter import LintEngine
+	from .rules import RULES_MAP
+except ImportError:
+	# Fall back to absolute imports (when run directly or from tests)
+	import os
+	current_dir = Path(__file__).parent
+	src_dir = current_dir.parent
+	if str(src_dir) not in sys.path:
+		sys.path.insert(0, str(src_dir))
+
+	from ignition_lint.common.flatten_json import read_json_file, flatten_json
+	from ignition_lint.linter import LintEngine
+	from ignition_lint.rules import RULES_MAP
 
 
 def load_config(config_path: str) -> dict:

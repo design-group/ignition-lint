@@ -1,0 +1,60 @@
+"""
+Unit tests for the PollingIntervalRule.
+Tests polling interval validation in expression bindings.
+"""
+
+import unittest
+from pathlib import Path
+
+from fixtures.base_test import BaseRuleTest
+from fixtures.test_helpers import get_test_config, load_test_view
+
+
+class TestPollingIntervalRule(BaseRuleTest):
+	"""Test polling interval validation."""
+
+	def setUp(self):
+		super().setUp()
+		self.rule_config = get_test_config("PollingIntervalRule", min_interval=10000)
+
+	def test_expression_bindings_validation(self):
+		"""Test polling interval validation in expression bindings."""
+		view_file = load_test_view(self.test_cases_dir, "ExpressionBindings")
+		errors = self.run_lint_on_file(view_file, self.rule_config)
+
+		# Check if there are any polling interval errors
+		polling_errors = errors.get("PollingIntervalRule", [])
+		# This test depends on the actual content of the ExpressionBindings view.json
+		# For now, we just verify the rule runs without crashing
+		self.assertIsInstance(polling_errors, list)
+
+	def test_different_min_intervals(self):
+		"""Test different minimum interval settings."""
+		test_intervals = [1000, 5000, 10000, 30000]
+
+		view_file = load_test_view(self.test_cases_dir, "ExpressionBindings")
+
+		for min_interval in test_intervals:
+			with self.subTest(min_interval=min_interval):
+				rule_config = get_test_config("PollingIntervalRule", min_interval=min_interval)
+
+				errors = self.run_lint_on_file(view_file, rule_config)
+				polling_errors = errors.get("PollingIntervalRule", [])
+				self.assertIsInstance(polling_errors, list)
+
+
+class TestPollingIntervalValidation(BaseRuleTest):
+	"""Test specific polling interval validation scenarios."""
+
+	def test_no_polling_expressions(self):
+		"""Test views without polling expressions."""
+		view_file = load_test_view(self.test_cases_dir, "PascalCase")
+		rule_config = get_test_config("PollingIntervalRule", min_interval=10000)
+
+		errors = self.run_lint_on_file(view_file, rule_config)
+		# Should have no polling errors since there are no polling expressions
+		self.assertEqual(errors.get("PollingIntervalRule", []), [])
+
+
+if __name__ == "__main__":
+	unittest.main()

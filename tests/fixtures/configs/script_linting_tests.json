@@ -1,0 +1,31 @@
+{
+  "test_suite_name": "PylintScriptRule Tests",
+  "description": "Test cases for script linting with pylint",
+  "test_cases": [
+    {
+      "name": "basic_script_check",
+      "description": "Basic script linting check",
+      "view_file": "PascalCase/view.json",
+      "rule_config": {
+        "PylintScriptRule": {
+          "enabled": true,
+          "kwargs": {}
+        }
+      },
+      "expectations": [
+        {
+          "rule_name": "PylintScriptRule",
+          "error_count": 0,
+          "should_pass": true
+        }
+      ],
+      "tags": [
+        "scripts",
+        "pylint",
+        "basic"
+      ],
+      "skip": false,
+      "skip_reason": ""
+    }
+  ]
+}

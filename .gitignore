@@ -2,7 +2,7 @@
 *.code-workspace
 
 # pycache
-src/__pycache__/
-src/*.egg-info
+**/__pycache__/
+**/*.egg-info
 
 debug/*
