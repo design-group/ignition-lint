@@ -1,19 +1,19 @@
-from .base import LintingRule, Visitor
-from .script_rules import ScriptLintingRule, PylintScriptRule
-from .binding_rules import BindingRule, PollingIntervalRule
+from .common import LintingRule, NodeVisitor, BindingRule
+from .lint_script import PylintScriptRule
+from .polling_interval import PollingIntervalRule
+from .component_name import ComponentNameRule
 
 # Map rule names to their classes for configuration
 RULES_MAP = {
 	"PylintScriptRule": PylintScriptRule,
 	"PollingIntervalRule": PollingIntervalRule,
-	"ScriptLintingRule": ScriptLintingRule,
 	"BindingRule": BindingRule,
+	"ComponentNameRule": ComponentNameRule,
 }
 
 __all__ = [
 	"LintingRule",
-	"Visitor",
-	"ScriptLintingRule",
+	"NodeVisitor",
 	"PylintScriptRule",
 	"BindingRule",
 	"PollingIntervalRule",

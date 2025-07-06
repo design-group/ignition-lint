@@ -1,14 +1,16 @@
-"""This script is used to lint Ignition view.json files for style inconsistencies in component and parameter names."""
+"""
+Improved main function with better error handling, statistics, and flow control.
+"""
 
 import json
 import sys
 import argparse
-import os
 import glob
 from pathlib import Path
+from typing import List, Dict, Any
 
 from .common.flatten_json import read_json_file, flatten_json
-from .linter import ViewLinter
+from .linter import LintEngine
 from .rules import RULES_MAP
 
 
@@ -26,7 +28,10 @@ def create_rules_from_config(config: dict) -> list:
 	"""Create rule instances from config dictionary."""
 	rules = []
 	for rule_name, rule_config in config.items():
-		if not rule_config.get('enabled', True):
+		if rule_name.startswith("_") or not isinstance(rule_config, dict):
+			continue
+
+		if not rule_config.get('enabled'):
 			continue
 
 		if rule_name not in RULES_MAP:
@@ -35,23 +40,54 @@ def create_rules_from_config(config: dict) -> list:
 
 		rule_class = RULES_MAP[rule_name]
 		kwargs = rule_config.get('kwargs', {})
-		rules.append(rule_class(**kwargs))
+		try:
+			rules.append(rule_class(**kwargs))
+		except Exception as e:
+			print(f"Error creating rule {rule_name}: {e}")
+			continue
 
 	return rules
 
 
-def lint_file(file_path: str, rules: list) -> dict:
-	"""Lint a single file with the given rules."""
-	# Read and flatten the JSON file
-	json_data = read_json_file(Path(file_path))
-	flattened_json = flatten_json(json_data)
+def get_view_file(file_path: Path) -> Dict[str, Any]:
+	"""Read and flatten a JSON file."""
+	try:
+		json_data = read_json_file(file_path)
+		return flatten_json(json_data)
+	except Exception as e:
+		print(f"Error reading or parsing file {file_path}: {e}")
+		return {}
 
-	# Create linter and lint the file
-	linter = ViewLinter(rules)
-	return linter.lint(flattened_json)
+
+def collect_files(args) -> List[Path]:
+	"""Collect files to process based on arguments."""
+	files_to_process = []
+
+	# If filenames are provided directly (e.g., from pre-commit), use them
+	if args.filenames:
+		for filename in args.filenames:
+			file_path = Path(filename)
+			if file_path.exists():
+				files_to_process.append(file_path)
+			else:
+				print(f"Warning: File {filename} does not exist")
+
+	# Otherwise, use glob patterns
+	elif args.files:
+		for file_pattern in args.files.split(","):
+			pattern = file_pattern.strip()
+			matching_files = glob.glob(pattern, recursive=True)
+
+			for file_path_str in matching_files:
+				file_path = Path(file_path_str)
+				# Only include view.json files specifically
+				if file_path.exists() and file_path.name == "view.json":
+					files_to_process.append(file_path)
+
+	return files_to_process
 
 
-def print_file_errors(file_path: str, errors: dict) -> int:
+def print_file_errors(file_path: Path, errors: Dict[str, List[str]]) -> int:
 	"""
     Print errors for a file and return the total number of errors.
     
@@ -68,15 +104,56 @@ def print_file_errors(file_path: str, errors: dict) -> int:
 	error_count = sum(len(error_list) for error_list in errors.values())
 
 	if error_count > 0:
-		print(f"\nFound {error_count} issues in {file_path}:")
+		print(f"\n❌ Found {error_count} issues in {file_path}:")
 
 		for rule_name, error_list in errors.items():
 			if error_list:
-				print(f"  {rule_name}:")
+				print(f"  📋 {rule_name}:")
 				for error in error_list:
-					print(f"    - {error}")
+					print(f"    • {error}")
 
 	return error_count
+
+
+def print_statistics(file_path: Path, stats: Dict[str, Any], verbose: bool = False):
+	"""Print model statistics for a file."""
+	if verbose:
+		print(f"\n📊 Model statistics for {file_path}:")
+		print(f"  Total nodes: {stats['total_nodes']}")
+
+		print("  Node types found:")
+		for node_type, count in stats['node_type_counts'].items():
+			print(f"    {node_type}: {count}")
+
+		if stats['components_by_type']:
+			print("  Components by type:")
+			for comp_type, count in stats['components_by_type'].items():
+				print(f"    {comp_type}: {count}")
+
+		if stats.get('rule_coverage'):
+			print("  Rule coverage:")
+			for rule_name, coverage in stats['rule_coverage'].items():
+				target_types = ', '.join(coverage['target_types'])
+				print(f"    {rule_name}: {coverage['applicable_node_count']} nodes ({target_types})")
+
+
+def print_rule_analysis(lint_engine: LintEngine, flattened_json: Dict[str, Any]):
+	"""Print detailed rule impact analysis."""
+	analysis = lint_engine.analyze_rule_impact(flattened_json)
+
+	print("\n🔍 Rule Impact Analysis:")
+	for rule_name, rule_data in analysis.items():
+		print(f"  📋 {rule_name}:")
+		print(f"    Targets: {', '.join(rule_data['target_types'])}")
+		print(f"    Will process: {rule_data['applicable_nodes']} nodes")
+
+		if rule_data['node_details']:
+			print("    Sample nodes:")
+			for detail in rule_data['node_details']:
+				print(f"      • {detail['path']}: {detail['summary']}")
+		elif rule_data['sample_paths']:
+			print(f"    Sample paths: {', '.join(rule_data['sample_paths'][:3])}")
+		print()
 
 
 def main():
@@ -93,54 +170,132 @@ def main():
 		help="Comma-separated list of files or glob patterns to lint",
 	)
 	parser.add_argument(
+		"--verbose",
+		"-v",
+		action="store_true",
+		help="Show detailed statistics and information",
+	)
+	parser.add_argument(
+		"--stats-only",
+		action="store_true",
+		help="Only show statistics, don't run linting rules",
+	)
+	parser.add_argument(
+		"--debug-nodes",
+		nargs="*",
+		help="Show detailed info for specific node types (e.g., --debug-nodes tag_binding expression_binding)",
+	)
+	parser.add_argument(
+		"--analyze-rules",
+		action="store_true",
+		help="Show detailed rule impact analysis",
+	)
+	parser.add_argument(
 		"filenames",
 		nargs="*",
 		help="Filenames to check (from pre-commit)",
 	)
 	args = parser.parse_args()
 
-	# Load config and create rules
-	config = load_config(args.config)
-	if not config:
-		sys.exit(1)
+	# Load config and create rules (unless we're only showing stats)
+	if not args.stats_only:
+		config = load_config(args.config)
+		if not config:
+			print("❌ No valid configuration found")
+			sys.exit(1)
+		print(f"🔧 Loaded configuration from {args.config}")
+		rules = create_rules_from_config(config)
+		if not rules:
+			print("❌ No valid rules configured")
+			sys.exit(1)
 
-	rules = create_rules_from_config(config)
+		# Create the linter
+		lint_engine = LintEngine(rules)
 
-	if not rules:
-		print("No valid rules configured")
-		sys.exit(1)
+		if args.verbose:
+			print(f"✅ Loaded {len(rules)} rules: {[rule.__class__.__name__ for rule in rules]}")
+	else:
+		# For stats-only mode, create minimal linter
+		lint_engine = LintEngine([])
 
-	# Process files
+	# Collect files to process
+	file_paths = collect_files(args)
+	if not file_paths:
+		print("❌ No files specified or found")
+		sys.exit(0)
+
+	if args.verbose:
+		print(f"📁 Processing {len(file_paths)} files")
+
+	# Process each file
 	total_errors = 0
-	files_linted = 0
+	files_with_errors = 0
+	processed_files = 0
 
-	if args.filenames:
-		for file_path in args.filenames:
-			if os.path.exists(file_path):
-				errors = lint_file(file_path, rules)
-				# Print errors and update count
-				file_errors = print_file_errors(file_path, errors)
-				total_errors += file_errors
-				files_linted += 1
-	elif args.files:
-		for file_pattern in args.files.split(","):
-			for file_path in glob.glob(file_pattern.strip(), recursive=True):
-				if os.path.exists(file_path) and os.path.basename(file_path) == "view.json":
-					errors = lint_file(file_path, rules)
-					# Print errors and update count
-					file_errors = print_file_errors(file_path, errors)
-					total_errors += file_errors
-					files_linted += 1
-	else:
-		print("No files specified or found")
-		sys.exit(0)
+	for file_path in file_paths:
+		if not file_path.exists():
+			print(f"⚠️  File {file_path} does not exist, skipping")
+			continue
 
-	if not total_errors:
-		print(f"No style inconsistencies found in {files_linted} files")
-		sys.exit(0)
+		# Read and flatten the JSON file
+		flattened_json = get_view_file(file_path)
+		if not flattened_json:
+			print(f"❌ Failed to read or parse {file_path}, skipping")
+			continue
+
+		processed_files += 1
+
+		# Get statistics
+		stats = lint_engine.get_model_statistics(flattened_json)
+		print_statistics(file_path, stats, args.verbose or args.stats_only)
+
+		# Show rule analysis if requested
+		if args.analyze_rules and not args.stats_only:
+			print_rule_analysis(lint_engine, flattened_json)
+
+		# Show debug node info if requested
+		if args.debug_nodes is not None:
+			debug_nodes = lint_engine.debug_nodes(flattened_json, args.debug_nodes or [])
+			if args.debug_nodes:
+				print(f"\n🔧 Debug info for node types: {', '.join(args.debug_nodes)}")
+			else:
+				print(f"\n🔧 Debug info for all nodes:")
+
+			for i, node_info in enumerate(debug_nodes[:10]):  # Limit to first 10
+				print(f"  {i+1}. {node_info['path']} ({node_info['node_type']})")
+				if 'summary' in node_info:
+					print(f"     {node_info['summary']}")
+
+			if len(debug_nodes) > 10:
+				print(f"     ... and {len(debug_nodes) - 10} more nodes")
+
+		# Run linting (unless stats-only mode)
+		if not args.stats_only:
+			errors = lint_engine.process(flattened_json)
+			file_errors = print_file_errors(file_path, errors)
+
+			total_errors += file_errors
+			if file_errors > 0:
+				files_with_errors += 1
+			else:
+				print(f"✅ No issues found in {file_path}")
+
+	# Print summary
+	print(f"\n📈 Summary:")
+	print(f"  Files processed: {processed_files}")
+
+	if not args.stats_only:
+		if total_errors == 0:
+			print(f"  ✅ No style inconsistencies found!")
+			sys.exit(0)
+		else:
+			print(f"  ❌ Total issues: {total_errors}")
+			print(f"  📁 Files with issues: {files_with_errors}")
+			print(f"  📁 Clean files: {processed_files - files_with_errors}")
+			sys.exit(1)
 	else:
-		print(f"Found {total_errors} style inconsistencies in {files_linted} files")
-		sys.exit(1)
+		print("  📊 Statistics analysis complete")
+		sys.exit(0)
 
 
 if __name__ == "__main__":

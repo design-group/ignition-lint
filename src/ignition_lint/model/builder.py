@@ -1,6 +1,11 @@
+"""
+This module defines the ViewModelBuilder class, which constructs a structured view model
+from a flattened JSON representation of an Ignition Perspective view. It includes methods to extract
+component types, bindings, event handlers, and other elements from the JSON data.
+"""
 import re
 from .node_types import *
-from typing import Dict, List, Any, Optional, Union
+from typing import Dict, List, Any
 
 
 class ViewModelBuilder:
@@ -88,15 +93,13 @@ class ViewModelBuilder:
 		}
 
 		# First, identify components by looking for meta.name entries
-		components = {}
 		for path, value in flattened_json.items():
 			if not path.endswith('.meta.name'):
 				continue
 			component_path = path.rsplit('.meta.name', 1)[0]
 			component_name = value
 			component_type = self._get_component_type(flattened_json, component_path)
-			components[component_path] = Component(component_path, component_name, component_type)
-			model['components'].append(components[component_path])
+			model['components'].append(Component(component_path, component_name, component_type))
 
 		# Process bindings
 		visited_paths = []
@@ -213,7 +216,9 @@ class ViewModelBuilder:
 					scope = flattened_json.get(scope_path, "L")  # Default to local scope
 
 					# Create a script event handler
-					handler = EventHandlerScript(event_path, event_type, script, scope)
+					handler = EventHandlerScript(
+						event_path, event_domain, event_type, script, scope
+					)
 					model['event_handlers'].append(handler)
 					model['scripts'].append(handler)
 
@@ -225,18 +230,18 @@ class ViewModelBuilder:
 
 				# Find the component this property belongs to
 				component_path = None
-				for comp_path in components:
-					if path.startswith(comp_path):
+				for comp_obj in model['components']:
+					if path.startswith(comp_obj.path):
 						# Take the longest matching path (most specific component)
-						if component_path is None or len(comp_path) > len(component_path):
-							component_path = comp_path
+						if component_path is None or len(comp_obj.path) > len(component_path):
+							component_path = comp_obj.path
 
 				if component_path:
 					property_name = path.replace(f"{component_path}.", "")
 					prop = Property(path, property_name, value)
 					model['properties'].append(prop)
 					# Add the property to the component
-					if component_path in components:
-						components[component_path].properties[property_name] = value
+					if component_path in model['components']:
+						model['components'][component_path].properties[property_name] = value
 
 		return model

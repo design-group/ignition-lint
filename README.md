@@ -175,11 +175,11 @@ scripts = model['scripts']
 Rules are applied using the visitor pattern, allowing each rule to process relevant nodes:
 
 ```python
-from ignition_lint.linter import ViewLinter
+from ignition_lint.linter import LintEngine
 from ignition_lint.rules import PylintScriptRule, PollingIntervalRule
 
 # Create linter with rules
-linter = ViewLinter()
+linter = LintEngine()
 linter.register_rule(PylintScriptRule())
 linter.register_rule(PollingIntervalRule(min_interval=10000))
 

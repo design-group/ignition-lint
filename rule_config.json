@@ -1,12 +1,24 @@
 {
-    "PylintScriptRule": {
-      "enabled": true,
-      "kwargs": {}
-    },
-    "PollingIntervalRule": {
-      "enabled": true,
-      "kwargs": {
-        "min_interval": 500
-      }
+  "_comment": "Example configuration for PascalCase naming with abbreviations",
+  "ComponentNameRule": {
+    "enabled": true,
+    "kwargs": {
+      "convention": "PascalCase",
+      "allow_numbers": true,
+      "min_length": 3,
+      "max_length": 50,
+      "forbidden_names": ["Button", "Label", "Panel", "Component"],
+      "auto_detect_abbreviations": true
+    }
+  },
+  "PylintScriptRule": {
+    "enabled": true,
+    "kwargs": {}
+  },
+  "PollingIntervalRule": {
+    "enabled": true,
+    "kwargs": {
+      "min_interval": 10000
     }
   }
+}
