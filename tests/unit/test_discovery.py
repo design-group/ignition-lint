@@ -126,9 +126,10 @@ class TestFrameworkIntegration(BaseRuleTest):
 	def test_multiple_rules_together(self):
 		"""Test running multiple rules together."""
 		rule_config = {
-			"ComponentNameRule": {
+			"NamePatternRule": {
 				"enabled": True,
 				"kwargs": {
+					"target_node_types": "component",
 					"convention": "PascalCase"
 				}
 			},

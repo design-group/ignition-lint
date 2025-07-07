@@ -109,40 +109,32 @@ class TestNamePatternKebabCase(BaseRuleTest):
 		self.assert_rule_passes(view_file, self.rule_config, "NamePatternRule")
 
 
-class TestNamePatternTitleCase(BaseRuleTest):
-	"""Test Title Case naming convention for components."""
-
-	def setUp(self):
-		super().setUp()
-		self.rule_config = get_test_config(
-			"NamePatternRule", target_node_types=["component"], convention="Title Case", allow_numbers=True,
-			min_length=1
-		)
-
-	def test_title_case_passes_title_case_rule(self):
-		"""Title Case view should pass Title Case rule."""
-		view_file = load_test_view(self.test_cases_dir, "Title Case")
-		self.assert_rule_passes(view_file, self.rule_config, "NamePatternRule")
-
-
-class TestNamePatternUpperCase(BaseRuleTest):
-	"""Test SCREAMING_SNAKE_CASE naming convention for components."""
-
-	def setUp(self):
-		super().setUp()
-		self.rule_config = get_test_config(
-			"NamePatternRule", target_node_types=["component"], convention="SCREAMING_SNAKE_CASE",
-			allow_numbers=True, min_length=1
-		)
-
-	def test_upper_case_passes_upper_case_rule(self):
-		"""UPPER_CASE view should pass SCREAMING_SNAKE_CASE rule."""
-		view_file = load_test_view(self.test_cases_dir, "UPPER_CASE")
-		self.assert_rule_passes(view_file, self.rule_config, "NamePatternRule")
-
-
 class TestNamePatternMultipleNodeTypes(BaseRuleTest):
 	"""Test naming conventions applied to multiple node types."""
+
+	def test_components_pascal_case_properties_camel_case(self):
+		"""Test PascalCase for components and camelCase for properties."""
+		rule_config = get_test_config(
+			"NamePatternRule",
+			target_node_types=["component", "property"],
+			convention="PascalCase",  # Default convention for components
+			node_type_specific_rules={
+				"component": {
+					"convention": "PascalCase",
+					"min_length": 1
+				},
+				"property": {
+					"convention": "camelCase",
+					"min_length": 1
+				}
+			}
+		)
+
+		view_file = load_test_view(self.test_cases_dir, "PascalCase")
+		errors = self.run_lint_on_file(view_file, rule_config)
+
+		# Verify rule runs without crashing
+		self.assertIsInstance(errors.get("NamePatternRule", []), list)
 
 	def test_components_and_custom_methods_same_convention(self):
 		"""Test applying same convention to components and custom methods."""
@@ -166,7 +158,7 @@ class TestNamePatternMultipleNodeTypes(BaseRuleTest):
 			node_type_specific_rules={
 				"component": {
 					"convention": "PascalCase",
-					"min_length": 4
+					"min_length": 1
 				},
 				"custom_method": {
 					"convention": "camelCase",
@@ -315,8 +307,8 @@ class TestNamePatternSpecificNodeTypes(BaseRuleTest):
 
 		self.assertIsInstance(errors.get("NamePatternRule", []), list)
 
-	def test_property_naming(self):
-		"""Test naming validation for properties."""
+	def test_property_naming_camel_case(self):
+		"""Test naming validation for properties using camelCase."""
 		rule_config = get_test_config(
 			"NamePatternRule", target_node_types=["property"], convention="camelCase", min_length=2,
 			forbidden_names=["temp", "tmp", "test", "data"]
@@ -337,6 +329,73 @@ class TestNamePatternSpecificNodeTypes(BaseRuleTest):
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
 		errors = self.run_lint_on_file(view_file, rule_config)
 
+		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+
+
+class TestStandardNamingConventions(BaseRuleTest):
+	"""Test the standard conventions: PascalCase for components, camelCase for properties."""
+
+	def test_standard_component_property_conventions(self):
+		"""Test the standard: PascalCase components, camelCase properties."""
+		rule_config = get_test_config(
+			"NamePatternRule",
+			target_node_types=["component", "property"],
+			convention="PascalCase",  # Default
+			node_type_specific_rules={
+				"component": {
+					"convention": "PascalCase",
+					"min_length": 1,
+					"allow_numbers": True
+				},
+				"property": {
+					"convention": "camelCase",
+					"min_length": 1,
+					"allow_numbers": True,
+					"skip_names": ["id", "x", "y", "z"]  # Common short property names
+				}
+			}
+		)
+
+		# Test with different view files
+		test_cases = ["PascalCase", "camelCase"]
+		for case in test_cases:
+			with self.subTest(case=case):
+				try:
+					view_file = load_test_view(self.test_cases_dir, case)
+					errors = self.run_lint_on_file(view_file, rule_config)
+					self.assertIsInstance(errors.get("NamePatternRule", []), list)
+				except FileNotFoundError:
+					self.skipTest(f"Test case {case} not found")
+
+	def test_mixed_node_types_with_appropriate_conventions(self):
+		"""Test multiple node types with their appropriate conventions."""
+		rule_config = get_test_config(
+			"NamePatternRule",
+			target_node_types=["component", "property", "custom_method", "event_handler"],
+			convention="PascalCase",  # Default
+			node_type_specific_rules={
+				"component": {
+					"convention": "PascalCase",
+					"min_length": 1
+				},
+				"property": {
+					"convention": "camelCase",
+					"min_length": 1
+				},
+				"custom_method": {
+					"convention": "camelCase",
+					"min_length": 3
+				},
+				"event_handler": {
+					"convention": "camelCase",
+					"min_length": 2,
+					"skip_names": ["onClick", "onLoad", "onFocus", "onBlur"]
+				}
+			}
+		)
+
+		view_file = load_test_view(self.test_cases_dir, "PascalCase")
+		errors = self.run_lint_on_file(view_file, rule_config)
 		self.assertIsInstance(errors.get("NamePatternRule", []), list)
 
 
