@@ -227,7 +227,6 @@ class ViewModelBuilder:
 			# Skip meta properties, bindings, scripts - we already processed those
 			processed_paths = ['.meta.', '.binding.', '.scripts.', '.events.']
 			if (not any(x in path for x in processed_paths) and not path.endswith('.type')):
-
 				# Find the component this property belongs to
 				component_path = None
 				for comp_obj in model['components']:
@@ -237,7 +236,9 @@ class ViewModelBuilder:
 							component_path = comp_obj.path
 
 				if component_path:
-					property_name = path.replace(f"{component_path}.", "")
+					# property_name = path.replace(f"{component_path}.", "")
+					property_name = path.split(".")[-1]
+
 					prop = Property(path, property_name, value)
 					model['properties'].append(prop)
 					# Add the property to the component

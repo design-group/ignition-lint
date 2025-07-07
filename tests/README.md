@@ -650,7 +650,7 @@ class TestRuleInteractions(BaseIntegrationTest):
             },
             "PollingIntervalRule": {
                 "enabled": True, 
-                "kwargs": {"min_interval": 5000}
+                "kwargs": {"minimum_interval": 5000}
             }
         }
         

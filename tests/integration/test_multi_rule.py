@@ -25,7 +25,7 @@ class TestMultipleRules(BaseIntegrationTest):
 			"PollingIntervalRule": {
 				"enabled": True,
 				"kwargs": {
-					"min_interval": 10000
+					"minimum_interval": 10000
 				}
 			}
 		}
@@ -52,7 +52,7 @@ class TestMultipleRules(BaseIntegrationTest):
 			"PollingIntervalRule": {
 				"enabled": True,
 				"kwargs": {
-					"min_interval": 5000
+					"minimum_interval": 5000
 				}
 			},
 			"PylintScriptRule": {
@@ -97,7 +97,7 @@ class TestMultipleRules(BaseIntegrationTest):
 			"PollingIntervalRule": {
 				"enabled": True,
 				"kwargs": {
-					"min_interval": 10000
+					"minimum_interval": 10000
 				}
 			}
 		}
@@ -129,7 +129,7 @@ class TestMultipleRules(BaseIntegrationTest):
 			"PollingIntervalRule": {
 				"enabled": True,
 				"kwargs": {
-					"min_interval": 1000
+					"minimum_interval": 1000
 				}  # Low threshold to avoid errors
 			}
 		}

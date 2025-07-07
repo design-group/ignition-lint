@@ -17,7 +17,6 @@ try:
 	from .rules import RULES_MAP
 except ImportError:
 	# Fall back to absolute imports (when run directly or from tests)
-	import os
 	current_dir = Path(__file__).parent
 	src_dir = current_dir.parent
 	if str(src_dir) not in sys.path:
@@ -39,13 +38,15 @@ def load_config(config_path: str) -> dict:
 
 
 def create_rules_from_config(config: dict) -> list:
-	"""Create rule instances from config dictionary."""
+	"""Create rule instances from config dictionary using self-processing rules."""
 	rules = []
 	for rule_name, rule_config in config.items():
+		# Skip private keys or invalid configurations
 		if rule_name.startswith("_") or not isinstance(rule_config, dict):
 			continue
 
-		if not rule_config.get('enabled'):
+		if not rule_config.get('enabled', True):
+			print(f"Skipping rule {rule_name} (config['enabled'] == False)")
 			continue
 
 		if rule_name not in RULES_MAP:
@@ -54,8 +55,9 @@ def create_rules_from_config(config: dict) -> list:
 
 		rule_class = RULES_MAP[rule_name]
 		kwargs = rule_config.get('kwargs', {})
+
 		try:
-			rules.append(rule_class(**kwargs))
+			rules.append(rule_class.create_from_config(kwargs))
 		except Exception as e:
 			print(f"Error creating rule {rule_name}: {e}")
 			continue

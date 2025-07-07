@@ -16,7 +16,7 @@ class TestBindingRules(BaseRuleTest):
 	def test_binding_rule_base_functionality(self):
 		"""Test the base BindingRule functionality."""
 		# Test with PollingIntervalRule which extends BindingRule
-		rule_config = get_test_config("PollingIntervalRule", min_interval=5000)
+		rule_config = get_test_config("PollingIntervalRule", minimum_interval=5000)
 
 		view_file = load_test_view(self.test_cases_dir, "ExpressionBindings")
 		errors = self.run_lint_on_file(view_file, rule_config)
@@ -27,7 +27,7 @@ class TestBindingRules(BaseRuleTest):
 	def test_multiple_binding_types(self):
 		"""Test rules that target multiple binding types."""
 		# Use PollingIntervalRule which targets expression, property, and tag bindings
-		rule_config = get_test_config("PollingIntervalRule", min_interval=1000)
+		rule_config = get_test_config("PollingIntervalRule", minimum_interval=1000)
 
 		test_cases = ["ExpressionBindings", "PascalCase"]
 

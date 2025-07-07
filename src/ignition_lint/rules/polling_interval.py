@@ -6,13 +6,13 @@ from ..model.node_types import NodeType
 class PollingIntervalRule(BindingRule):
 	"""Rule to check polling intervals in expressions."""
 
-	def __init__(self, min_interval=10000):
+	def __init__(self, minimum_interval=10000):
 		super().__init__({NodeType.EXPRESSION_BINDING, NodeType.PROPERTY_BINDING, NodeType.TAG_BINDING})
-		self.min_interval = min_interval
+		self.minimum_interval = minimum_interval
 
 	@property
 	def error_message(self) -> str:
-		return f"Polling interval below minimum of {self.min_interval}ms"
+		return f"Polling interval below minimum of {self.minimum_interval}ms"
 
 	def visit_expression_binding(self, node):
 		"""Check expression bindings for polling issues."""
@@ -40,7 +40,7 @@ class PollingIntervalRule(BindingRule):
 				return False
 			try:
 				interval = int(interval_str)
-				if interval > 0 and interval < self.min_interval:
+				if interval > 0 and interval < self.minimum_interval:
 					return False
 			except ValueError:
 				return False

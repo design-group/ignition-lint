@@ -181,7 +181,7 @@ from ignition_lint.rules import PylintScriptRule, PollingIntervalRule
 # Create linter with rules
 linter = LintEngine()
 linter.register_rule(PylintScriptRule())
-linter.register_rule(PollingIntervalRule(min_interval=10000))
+linter.register_rule(PollingIntervalRule(minimum_interval=10000))
 
 # Run linting
 errors = linter.lint(flattened_json)

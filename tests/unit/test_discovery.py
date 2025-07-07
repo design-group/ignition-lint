@@ -114,7 +114,7 @@ class TestFrameworkIntegration(BaseRuleTest):
 		"""Test creating lint engines with different rule configurations."""
 		configs = [
 			get_test_config("ComponentNameRule", convention="PascalCase"),
-			get_test_config("PollingIntervalRule", min_interval=5000),
+			get_test_config("PollingIntervalRule", minimum_interval=5000),
 		]
 
 		for config in configs:
@@ -135,7 +135,7 @@ class TestFrameworkIntegration(BaseRuleTest):
 			"PollingIntervalRule": {
 				"enabled": True,
 				"kwargs": {
-					"min_interval": 10000
+					"minimum_interval": 10000
 				}
 			}
 		}

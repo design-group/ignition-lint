@@ -3,7 +3,7 @@ This module contains common and base node types for rule implementation
 """
 
 from abc import ABC, abstractmethod
-from typing import Set, List, Dict
+from typing import Set, List, Dict, Any
 from ..model.node_types import ViewNode, NodeType, ScriptNode
 
 
@@ -44,7 +44,7 @@ class NodeVisitor(ABC):
 
 
 class LintingRule(NodeVisitor):
-	"""Base class for linting rules with simplified interface."""
+	"""Base class for linting rules with simplified interface and self-processing capability."""
 
 	def __init__(self, target_node_types: Set[NodeType] = None):
 		"""
@@ -56,6 +56,34 @@ class LintingRule(NodeVisitor):
         """
 		self.target_node_types = target_node_types or set()
 		self.errors = []
+
+	@classmethod
+	def preprocess_config(cls, config: Dict[str, Any]) -> Dict[str, Any]:
+		"""
+        Preprocess configuration before rule instantiation.
+        Override this method in subclasses that need special config handling.
+        
+        Args:
+            config: Raw configuration dictionary from JSON
+            
+        Returns:
+            Processed configuration dictionary ready for __init__
+        """
+		return config.copy()
+
+	@classmethod
+	def create_from_config(cls, config: Dict[str, Any]):
+		"""
+        Create a rule instance from configuration, applying any necessary preprocessing.
+        
+        Args:
+            config: Raw configuration dictionary from JSON
+            
+        Returns:
+            Rule instance
+        """
+		processed_config = cls.preprocess_config(config)
+		return cls(**processed_config)
 
 	def applies_to(self, node: ViewNode) -> bool:
 		"""Check if this rule applies to the given node."""

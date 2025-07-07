@@ -510,7 +510,7 @@ def create_sample_test_configs():
 				"PollingIntervalRule": {
 					"enabled": True,
 					"kwargs": {
-						"min_interval": 10000
+						"minimum_interval": 10000
 					}
 				}
 			},
