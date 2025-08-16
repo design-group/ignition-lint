@@ -1,6 +1,3 @@
-# VSCode workspace
-*.code-workspace
-
 # pycache
 **/__pycache__/
 **/*.egg-info

@@ -28,14 +28,14 @@ class BaseRuleTest(unittest.TestCase):
 
 	def create_lint_engine(self, rule_configs: Dict[str, Dict[str, Any]]) -> LintEngine:
 		"""
-        Create a lint engine with the specified rules.
-        
-        Args:
-            rule_configs: Dictionary mapping rule names to their configurations
-            
-        Returns:
-            Configured LintEngine instance
-        """
+		Create a lint engine with the specified rules.
+		
+		Args:
+			rule_configs: Dictionary mapping rule names to their configurations
+			
+		Returns:
+			Configured LintEngine instance
+		"""
 		rules = []
 		for rule_name, config in rule_configs.items():
 			if rule_name not in RULES_MAP:
@@ -53,15 +53,15 @@ class BaseRuleTest(unittest.TestCase):
 
 	def run_lint_on_file(self, view_file: Path, rule_configs: Dict[str, Dict[str, Any]]) -> Dict[str, List[str]]:
 		"""
-        Run linting on a view file with the given rule configuration.
-        
-        Args:
-            view_file: Path to the view.json file
-            rule_configs: Rule configurations
-            
-        Returns:
-            Dictionary of errors found by rule
-        """
+		Run linting on a view file with the given rule configuration.
+		
+		Args:
+			view_file: Path to the view.json file
+			rule_configs: Rule configurations
+			
+		Returns:
+			Dictionary of errors found by rule
+		"""
 		if not view_file.exists():
 			self.skipTest(f"View file not found: {view_file}")
 
@@ -117,15 +117,15 @@ class BaseIntegrationTest(unittest.TestCase):
 
 	def run_multiple_rules(self, view_file: Path, rule_configs: Dict[str, Dict[str, Any]]) -> Dict[str, List[str]]:
 		"""
-        Run multiple rules on a view file.
-        
-        Args:
-            view_file: Path to the view.json file
-            rule_configs: Dictionary of rule configurations
-            
-        Returns:
-            Dictionary of errors by rule name
-        """
+		Run multiple rules on a view file.
+		
+		Args:
+			view_file: Path to the view.json file
+			rule_configs: Dictionary of rule configurations
+			
+		Returns:
+			Dictionary of errors by rule name
+		"""
 		if not view_file.exists():
 			self.skipTest(f"View file not found: {view_file}")
 

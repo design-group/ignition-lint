@@ -249,18 +249,18 @@ def main():
 	parser = argparse.ArgumentParser(
 		description="Modular test runner for ignition-lint",
 		formatter_class=argparse.RawDescriptionHelpFormatter, epilog="""
-Examples:
-  python test_runner.py --run-unit                    # Run all unit tests
-  python test_runner.py --run-integration             # Run all integration tests
-  python test_runner.py --run-config                  # Run configuration-driven tests
-  python test_runner.py --run-all                     # Run all tests
-  python test_runner.py --list                        # List available tests
-  python test_runner.py --setup                       # Set up test environment
-  python test_runner.py --run-config --tags component_naming
-                                                       # Run tests with specific tags
-  python test_runner.py --test component_naming       # Run specific test by name
-  python test_runner.py --unit-pattern "test_component*" # Run unit tests matching pattern
-        """
+	Examples:
+		python test_runner.py --run-unit                    # Run all unit tests
+		python test_runner.py --run-integration             # Run all integration tests
+		python test_runner.py --run-config                  # Run configuration-driven tests
+		python test_runner.py --run-all                     # Run all tests
+		python test_runner.py --list                        # List available tests
+		python test_runner.py --setup                       # Set up test environment
+		python test_runner.py --run-config --tags component_naming
+															# Run tests with specific tags
+		python test_runner.py --test component_naming       # Run specific test by name
+		python test_runner.py --unit-pattern "test_component*" # Run unit tests matching pattern
+	"""
 	)
 
 	# Test execution options

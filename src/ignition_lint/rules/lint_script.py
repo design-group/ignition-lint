@@ -1,11 +1,13 @@
+import datetime
 import tempfile
 import os
 import re
 import shutil
+from typing import Dict, List
+
 from io import StringIO
 from pylint import lint
 from pylint.reporters.text import TextReporter
-from typing import Dict, List
 
 from .common import ScriptRule
 from ..model.node_types import ScriptNode
@@ -48,8 +50,11 @@ class PylintScriptRule(ScriptRule):
 
 		# Combine all scripts into one file with separator comments
 		combined_scripts = [
-			"# Stub for common globals",
+			"#pylint: disable=unused-argument,missing-docstring,invalid-name,redefined-outer-name",
+			"# Stub for common globals, and to simulate the Ignition environment",
 			"system = None  # Simulated Ignition system object",
+			"self = {} # Simulated self object for script context",
+			"event = {}  # Simulated event object",
 			"",
 		]
 
@@ -83,14 +88,17 @@ class PylintScriptRule(ScriptRule):
 		path_to_issues = {path: [] for path in scripts.keys()}
 
 		try:
-			with tempfile.NamedTemporaryFile(suffix=".py", delete=False) as temp_file:
+			timestamp = datetime.datetime.now().strftime("%H%M%S")
+
+			with tempfile.NamedTemporaryFile(
+				prefix=f"{timestamp}_", suffix=".py", delete=False
+			) as temp_file:
 				temp_file_path = temp_file.name
 				temp_file.write(combined_scripts_str.encode('utf-8'))
 
 			# Save a copy to the debug directory
 			if self.debug:
-				debug_file_path = os.path.join(debug_dir, os.path.basename(temp_file_path))
-				shutil.copy2(temp_file_path, debug_file_path)
+				_save_debug_file(temp_file_path, debug_dir)
 
 			# Configure pylint with text reporter
 			pylint_output = StringIO()
@@ -157,3 +165,27 @@ class PylintScriptRule(ScriptRule):
 					os.remove(temp_file_path)
 
 		return path_to_issues
+
+
+def _save_debug_file(temp_file_path: str, debug_dir: str):
+	"""Helper function to save temporary file to debug directory."""
+	debug_file_path = os.path.join(debug_dir, os.path.basename(temp_file_path))
+	shutil.copy2(temp_file_path, debug_file_path)
+
+	# Keep only the 5 most recent debug files
+	try:
+		file_prefix = os.path.basename(temp_file_path).split('_')[0]
+		# Get all .py files in the debug directory
+		debug_files = [f for f in os.listdir(debug_dir) if f.endswith('.py') and os.path.basename(f).split('_')[0] != file_prefix]
+
+		# Sort by modification time (newest first)
+		debug_files.sort(key=lambda f: os.path.getmtime(os.path.join(debug_dir, f)), reverse=True)
+
+		# Remove files beyond the 5 most recent
+		for file_to_remove in debug_files[5:]:
+			file_path = os.path.join(debug_dir, file_to_remove)
+			os.remove(file_path)
+
+	except OSError as e:
+		# Handle potential file system errors gracefully
+		print(f"Warning: Could not clean up old debug files: {e}")

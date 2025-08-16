@@ -3,7 +3,6 @@ Entry point for running ignition-lint as a module: python -m ignition_lint
 """
 
 import sys
-import os
 from pathlib import Path
 
 # Add the src directory to Python path

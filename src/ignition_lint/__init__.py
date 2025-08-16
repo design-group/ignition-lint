@@ -1,3 +1,3 @@
 """
-This package provides a framework for linting and testing Ignition Perspective view files.
+Init intentional blank line to ensure this file is recognized as a package.
 """

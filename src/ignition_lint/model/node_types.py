@@ -120,11 +120,13 @@ class ScriptNode(ViewNode):
 	def __init__(self, path: str, node_type: NodeType, script: str):
 		super().__init__(path, node_type)
 		self.script = script
+		self.function_def = "def undefined_function(self):"
 
-	@abstractmethod
 	def get_formatted_script(self) -> str:
 		"""Format the script with proper function definition."""
-		pass
+		if not self.script.strip():
+			self.script = "\tpass"
+		return f"{self.function_def}\n{self.script}"
 
 	def _get_serializable_attrs(self) -> Dict[str, Any]:
 		return {
@@ -140,12 +142,7 @@ class MessageHandlerScript(ScriptNode):
 		super().__init__(path, NodeType.MESSAGE_HANDLER, script)
 		self.message_type = message_type
 		self.scope = scope or {}
-
-	def get_formatted_script(self) -> str:
-		"""Format the script with proper function definition."""
-		function_def = "def onMessageReceived(self, payload):"
-		indented_script = "\n".join(f"    {line}" for line in self.script.split("\n"))
-		return f"{function_def}\n{indented_script}"
+		self.function_def = "def onMessageReceived(self, payload):"
 
 	def _get_serializable_attrs(self) -> Dict[str, Any]:
 		base_attrs = super()._get_serializable_attrs()
@@ -160,15 +157,7 @@ class CustomMethodScript(ScriptNode):
 		super().__init__(path, NodeType.CUSTOM_METHOD, script)
 		self.name = name
 		self.params = params or []
-
-	def get_formatted_script(self) -> str:
-		"""Format the script with proper function definition."""
-		param_list = ", ".join(["self"] + self.params)
-		function_def = f"def {self.name}({param_list}):"
-		indented_script = "\n".join(f"    {line}" for line in self.script.split("\n"))
-		if not indented_script.strip():
-			indented_script = "    pass"
-		return f"{function_def}\n{indented_script}"
+		self.function_def = f"def {self.name}({', '.join(['self'] + self.params)}):"
 
 	def _get_serializable_attrs(self) -> Dict[str, Any]:
 		base_attrs = super()._get_serializable_attrs()
@@ -182,12 +171,7 @@ class TransformScript(ScriptNode):
 	def __init__(self, path: str, script: str, binding_path: str = None):
 		super().__init__(path, NodeType.TRANSFORM, script)
 		self.binding_path = binding_path
-
-	def get_formatted_script(self) -> str:
-		"""Format the script with proper function definition."""
-		function_def = "def transform(self, value):"
-		indented_script = "\n".join(f"    {line}" for line in self.script.split("\n"))
-		return f"{function_def}\n{indented_script}"
+		self.function_def = "def transform(self, value):"
 
 	def _get_serializable_attrs(self) -> Dict[str, Any]:
 		base_attrs = super()._get_serializable_attrs()
@@ -203,14 +187,7 @@ class EventHandlerScript(ScriptNode):
 		self.event_domain = event_domain
 		self.event_type = event_type
 		self.scope = scope
-
-	def get_formatted_script(self) -> str:
-		"""Format the script with proper function definition."""
-		function_def = f"def {self.event_type}(self, event):"
-		indented_script = "\n".join(f"    {line}" for line in self.script.split("\n"))
-		if not indented_script.strip():
-			indented_script = "    pass"
-		return f"{function_def}\n{indented_script}"
+		self.function_def = f"def {self.event_type}(self, event):"
 
 	def _get_serializable_attrs(self) -> Dict[str, Any]:
 		base_attrs = super()._get_serializable_attrs()

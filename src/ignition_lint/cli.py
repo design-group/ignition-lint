@@ -105,15 +105,15 @@ def collect_files(args) -> List[Path]:
 
 def print_file_errors(file_path: Path, errors: Dict[str, List[str]]) -> int:
 	"""
-    Print errors for a file and return the total number of errors.
-    
-    Args:
-        file_path: Path to the file with errors
-        errors: Dictionary mapping rule names to lists of error messages
-    
-    Returns:
-        int: Total number of errors found
-    """
+	Print errors for a file and return the total number of errors.
+	
+	Args:
+		file_path: Path to the file with errors
+		errors: Dictionary mapping rule names to lists of error messages
+	
+	Returns:
+		int: Total number of errors found
+	"""
 	if not errors:
 		return 0
 

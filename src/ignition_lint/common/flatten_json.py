@@ -103,16 +103,16 @@ def write_json_file(file_path, data):
 
 def flatten_json(data, path="", results=None):
 	"""
-    Recursively flattens a JSON-like dictionary into path-to-value pairs.
+	Recursively flattens a JSON-like dictionary into path-to-value pairs.
 
-    Args:
-        data (dict): The JSON data to flatten.
-        path (str): The current path being traversed (used internally).
-        results (dict): The dictionary to store the results (used internally).
+	Args:
+		data (dict): The JSON data to flatten.
+		path (str): The current path being traversed (used internally).
+		results (dict): The dictionary to store the results (used internally).
 
-    Returns:
-        dict: A flattened dictionary where keys are paths and values are primitive values.
-    """
+	Returns:
+		dict: A flattened dictionary where keys are paths and values are primitive values.
+	"""
 	if results is None:
 		results = OrderedDict()
 

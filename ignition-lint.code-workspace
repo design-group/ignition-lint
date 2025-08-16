@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"name": "Root",
+			"path": "."
+		},
+		{
+			"name": "Source",
+			"path": "./src/ignition_lint"
+		},
+		{
+			"name": "Tests",
+			"path": "./tests"
+		}
+	],
+	"settings": {
+		"pylint.args": [
+			"--rcfile=${workspaceFolder:Root}/.pylintrc" // workspaces are treated as multi-root, so need to specify the root
+		],
+		"yapf.args": [
+			"--style=${workspaceFolder:Root}/.style.yapf" // workspaces are treated as multi-root, so need to specify the root
+		],
+		"yapf.ignore": [
+			"debug/*", // Ignore debug files
+			"**/*_temp.py", // Ignore temporary files
+			"**/pylint_*.py" // Ignore pylint generated files
+		],
+	}
+}
