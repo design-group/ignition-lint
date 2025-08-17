@@ -16,15 +16,22 @@ class LintEngine:
 	def __init__(self, rules: List[LintingRule]):
 		self.rules = rules
 		self.model_builder = ViewModelBuilder()
+		self.flattened_json = {}
+		self.view_model = {}
+
+	def _get_view_model(self) -> Dict[str, List[Any]]:
+		"""Return the structured view model."""
+		return self.model_builder.build_model(self.flattened_json)
 
 	def process(self, flattened_json: Dict[str, Any]) -> Dict[str, List[str]]:
 		"""Lint the given flattened JSON and return errors."""
 		# Build the object model
-		view_model = self.model_builder.build_model(flattened_json)
+		self.flattened_json = flattened_json
+		self.view_model = self._get_view_model()
 
 		# Collect all nodes in a flat list
 		all_nodes = []
-		for node_list in view_model.values():
+		for node_list in self.view_model.values():
 			all_nodes.extend(node_list)
 
 		errors = {}
@@ -42,11 +49,12 @@ class LintEngine:
 
 	def get_model_statistics(self, flattened_json: Dict[str, Any]) -> Dict[str, Any]:
 		"""Get statistics about the parsed model for debugging/analysis."""
-		view_model = self.model_builder.build_model(flattened_json)
+		self.flattened_json = flattened_json
+		self.view_model = self._get_view_model()
 
 		# Get all nodes for analysis
 		all_nodes = []
-		for node_list in view_model.values():
+		for node_list in self.view_model.values():
 			all_nodes.extend(node_list)
 
 		# Count by individual node types
@@ -71,7 +79,7 @@ class LintEngine:
 			'node_type_counts': node_type_counts,
 			'components_by_type': components_by_type,
 			'rule_coverage': rule_coverage,
-			'model_keys': list(view_model.keys()),
+			'model_keys': list(self.view_model.keys()),
 		}
 
 		return stats
@@ -97,10 +105,11 @@ class LintEngine:
 
 	def debug_nodes(self, flattened_json: Dict[str, Any], node_types: List[str] = None) -> List[Dict]:
 		"""Get detailed information about nodes for debugging."""
-		view_model = self.model_builder.build_model(flattened_json)
+		self.flattened_json = flattened_json
+		self.view_model = self._get_view_model()
 
 		all_nodes = []
-		for node_list in view_model.values():
+		for node_list in self.view_model.values():
 			all_nodes.extend(node_list)
 
 		# Filter by node types if specified
@@ -123,10 +132,11 @@ class LintEngine:
 
 	def analyze_rule_impact(self, flattened_json: Dict[str, Any]) -> Dict[str, Dict]:
 		"""Analyze which nodes each rule would target."""
-		view_model = self.model_builder.build_model(flattened_json)
+		self.flattened_json = flattened_json
+		self.view_model = self._get_view_model()
 
 		all_nodes = []
-		for node_list in view_model.values():
+		for node_list in self.view_model.values():
 			all_nodes.extend(node_list)
 
 		analysis = {}

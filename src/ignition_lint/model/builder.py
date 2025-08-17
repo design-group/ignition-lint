@@ -10,44 +10,59 @@ from typing import Dict, List, Any
 
 class ViewModelBuilder:
 	"""Builds a structured view model from flattened JSON."""
+	def __init__(self):
+		self.flattened_json = {}
+		self.model = {
+			'components': [],
+			'bindings': [],
+			'scripts': [],
+			'event_handlers': [],
+			'message_handlers': [],
+			'custom_methods': [],
+			'expression_bindings': [],
+			'property_bindings': [],
+			'tag_bindings': [],
+			'script_transforms': [],
+			'properties': []
+		}
+	
+	def _search_for_path_value(self, path: str, suffix: str = None, fallback: Any = None) -> Any:
+		"""Search for a value in the flattened JSON by path, optionally with a suffix."""
+		full_path = f"{path}.{suffix}" if suffix else path
+		return self.flattened_json.get(full_path, fallback)
 
-	def _get_component_type(self, data: Dict[str, Any], component_path: str) -> str:
+	def _get_component_type(self, component_path: str) -> str:
 		"""Get the type of a component."""
-		type_path = f"{component_path}.type"
-		return data.get(type_path, "unknown")
+		return self._search_for_path_value(component_path, "type", "unknown")
 
-	def _get_expression(self, data: Dict[str, Any], binding_path: str) -> str:
+	def _get_expression(self, binding_path: str) -> str:
 		"""Get the expression from an expression binding."""
-		expr_path = f"{binding_path}.binding.config.expression"
-		return data.get(expr_path, "")
+		return self._search_for_path_value(binding_path, "config.expression", "unknown")
 
-	def _get_property_path(self, data: Dict[str, Any], binding_path: str) -> str:
+	def _get_property_path(self, binding_path: str) -> str:
 		"""Get the target path from a property binding."""
-		path_path = f"{binding_path}.config.path"
-		return data.get(path_path, "")
+		return self._search_for_path_value(binding_path, "config.path", "unknown")
 
-	def _get_tag_path(self, data: Dict[str, Any], binding_path: str) -> str:
+	def _get_tag_path(self, binding_path: str) -> str:
 		"""Get the tag path from a tag binding."""
-		tag_path = f"{binding_path}.config.tagPath"
-		return data.get(tag_path, "")
+		return self._search_for_path_value(binding_path, "config.tagPath", "unknown")
 
-	def _get_script_transforms(self, data: Dict[str, Any], binding_path: str) -> List[tuple]:
+	def _get_script_transforms(self, binding_path: str) -> List[tuple]:
 		"""Get script transforms from a binding."""
 		transforms = []
 		transform_paths = []
 
 		# Find transform paths
-		for path in data:
-			if path.startswith(f"{binding_path}.transforms") and path.endswith('.type'):
-				if data[path] == 'script':
-					transform_base = path.rsplit('.type', 1)[0]
-					transform_paths.append(transform_base)
+		for path, value in self.flattened_json.items():
+			if path.startswith(f"{binding_path}.transforms") and path.endswith('.type') and value == 'script':
+				transform_base = path.rsplit('.type', 1)[0]
+				transform_paths.append(transform_base)
 
 		# Get transform script for each path
 		for transform_path in transform_paths:
 			script_path = f"{transform_path}.script"
-			if script_path in data:
-				transforms.append((transform_path, data[script_path]))
+			if script_path in self.flattened_json:
+				transforms.append((transform_path, self.flattened_json[script_path]))
 
 		return transforms
 
@@ -70,40 +85,20 @@ class ViewModelBuilder:
 				config[key] = value
 		return config
 
-	def build_model(self, flattened_json: Dict[str, Any]) -> Dict[str, List[ViewNode]]:
-		"""
-		Parse the flattened JSON and build a structured model.
-		
-		Returns:
-			Dict mapping node types to lists of those nodes
-		"""
-		# Initialize collections for each node type
-		model = {
-			'components': [],
-			'bindings': [],
-			'scripts': [],
-			'event_handlers': [],
-			'message_handlers': [],
-			'custom_methods': [],
-			'expression_bindings': [],
-			'property_bindings': [],
-			'tag_bindings': [],
-			'script_transforms': [],
-			'properties': []
-		}
-
+	def _collect_components(self):
 		# First, identify components by looking for meta.name entries
-		for path, value in flattened_json.items():
+		for path, value in self.flattened_json.items():
 			if not path.endswith('.meta.name'):
 				continue
 			component_path = path.rsplit('.meta.name', 1)[0]
 			component_name = value
-			component_type = self._get_component_type(flattened_json, component_path)
-			model['components'].append(Component(component_path, component_name, component_type))
-
-		# Process bindings
+			component_type = self._get_component_type(component_path)
+			self.model['components'].append(Component(component_path, component_name, component_type))
+	
+	def _collect_bindings(self):
+		"""Collect all bindings from the flattened JSON."""
 		visited_paths = []
-		for path, binding_type in flattened_json.items():
+		for path, binding_type in self.flattened_json.items():
 			if '.binding.type' not in path:
 				continue
 			binding_path = path.rsplit('.binding.type', 1)[0]
@@ -111,52 +106,53 @@ class ViewModelBuilder:
 				visited_paths.append(binding_path)
 
 				if binding_type == 'expr':
-					expression = self._get_expression(flattened_json, binding_path)
+					expression = self._get_expression(binding_path)
 					binding = ExpressionBinding(binding_path, expression)
-					model['expression_bindings'].append(binding)
-					model['bindings'].append(binding)
+					self.model['expression_bindings'].append(binding)
+					self.model['bindings'].append(binding)
 
 				elif binding_type == 'property':
-					target_path = self._get_property_path(flattened_json, binding_path)
+					target_path = self._get_property_path(binding_path)
 					binding = PropertyBinding(binding_path, target_path)
-					model['property_bindings'].append(binding)
-					model['bindings'].append(binding)
+					self.model['property_bindings'].append(binding)
+					self.model['bindings'].append(binding)
 
 				elif binding_type == 'tag':
-					tag_path = self._get_tag_path(flattened_json, binding_path)
+					tag_path = self._get_tag_path(binding_path)
 					binding = TagBinding(binding_path, tag_path)
-					model['tag_bindings'].append(binding)
-					model['bindings'].append(binding)
+					self.model['tag_bindings'].append(binding)
+					self.model['bindings'].append(binding)
 
 				# Look for script transforms in the binding
-				transforms = self._get_script_transforms(flattened_json, binding_path)
+				transforms = self._get_script_transforms(binding_path)
 				for transform_path, script in transforms:
 					transform = TransformScript(transform_path, script, binding_path)
-					model['script_transforms'].append(transform)
-					model['scripts'].append(transform)
+					self.model['script_transforms'].append(transform)
+					self.model['scripts'].append(transform)
 
-		# Process message handlers
-		for path, message_type in flattened_json.items():
+	def _collect_message_handlers(self):
+		"""Collect all message handlers from the flattened JSON."""
+		for path, message_type in self.flattened_json.items():
 			if '.scripts.messageHandlers' in path and path.endswith('.messageType'):
 				base_path = path.rsplit('.messageType', 1)[0]
-				script_path = f"{base_path}.script"
-				script_code = flattened_json.get(script_path, "")
+				script_code = self._search_for_path_value(base_path, "script", "")
 
 				# Get scope information
 				scope = {
-					'page': flattened_json.get(f"{base_path}.pageScope", False),
-					'session': flattened_json.get(f"{base_path}.sessionScope", False),
-					'view': flattened_json.get(f"{base_path}.viewScope", False)
+					'page': self._search_for_path_value(base_path, "pageScope", False),
+					'session': self._search_for_path_value(base_path, "sessionScope", False),
+					'view': self._search_for_path_value(base_path, "viewScope", False)
 				}
 
 				handler = MessageHandlerScript(base_path, script_code, message_type, scope)
-				model['message_handlers'].append(handler)
-				model['scripts'].append(handler)
-
-		# Process custom methods
+				self.model['message_handlers'].append(handler)
+				self.model['scripts'].append(handler)
+	
+	def _collect_custom_methods(self):
+		"""Collect all custom methods from the flattened JSON."""
 		custom_method_data = {}
 		# First, collect all the data for each custom method
-		for path, value in flattened_json.items():
+		for path, value in self.flattened_json.items():
 			if '.scripts.customMethods' not in path:
 				continue
 			# Extract the method index
@@ -194,11 +190,12 @@ class ViewModelBuilder:
 		# Now create CustomMethodScript objects from the collected data
 		for method_id, data in custom_method_data.items():
 			method = CustomMethodScript(data['path'], data['name'], data['script'], data['params'])
-			model['custom_methods'].append(method)
-			model['scripts'].append(method)
+			self.model['custom_methods'].append(method)
+			self.model['scripts'].append(method)
 
-		# Process event handlers
-		for path, script in flattened_json.items():
+	def _collect_event_handlers(self):
+		"""Collect all event handlers from the flattened JSON."""
+		for path, script in self.flattened_json.items():
 			# Look for event handler script configurations
 			if '.events.' in path and '.config.script' in path:
 				# Extract the event path components
@@ -211,38 +208,83 @@ class ViewModelBuilder:
 					event_domain = domain_type_match.group(1)  # e.g., 'dom', 'system'
 					event_type = domain_type_match.group(2)  # e.g., 'onClick', 'onStartup'
 
-					# Get the scope if available
-					scope_path = f"{event_path}.scope"
-					scope = flattened_json.get(scope_path, "L")  # Default to local scope
+					# Get the scope if available, otherwise default to local scope
+					scope = self._search_for_path_value(path, "scope", "L")
 
 					# Create a script event handler
 					handler = EventHandlerScript(
 						event_path, event_domain, event_type, script, scope
 					)
-					model['event_handlers'].append(handler)
-					model['scripts'].append(handler)
+					self.model['event_handlers'].append(handler)
+					self.model['scripts'].append(handler)
+	
+	def _collect_properties(self):
+		for path, value in self.flattened_json.items():
+			# Skip meta properties, bindings, scripts - we already processed those
+			processed_props = ['meta', 'binding', 'scripts', 'events']
+			if any(f".{prop}." in path for prop in processed_props) or path.endswith('.type'):
+				continue
+
+			# Find the component this property belongs to
+			component_path = None
+			for comp_obj in self.model['components']:
+				if path.startswith(comp_obj.path):
+					# Take the longest matching path (most specific component)
+					if component_path is None or len(comp_obj.path) > len(component_path):
+						component_path = comp_obj.path
+
+			if component_path:
+				property_name = path.split(".")[-1]
+
+				prop = Property(path, property_name, value)
+				self.model['properties'].append(prop)
+				# Add the property to the component
+				if component_path in self.model['components']:
+					self.model['components'][component_path].properties[property_name] = value
+	
+	def get_view_model(self) -> Dict[str, List[ViewNode]]:
+		"""Return the structured view model."""
+		return self.model
+
+	def build_model(self, flattened_json: Dict[str, Any]) -> Dict[str, List[ViewNode]]:
+		"""
+		Parse the flattened JSON and build a structured model.
+		
+		Returns:
+			Dict mapping node types to lists of those nodes
+		"""
+		self.flattened_json = flattened_json
+		# Initialize collections for each node type
+		model = {
+			'components': [],
+			'bindings': [],
+			'scripts': [],
+			'event_handlers': [],
+			'message_handlers': [],
+			'custom_methods': [],
+			'expression_bindings': [],
+			'property_bindings': [],
+			'tag_bindings': [],
+			'script_transforms': [],
+			'properties': []
+		}
+
+		# First, identify components
+		self._collect_components()
+		
+		# Process bindings
+		self._collect_bindings()
+
+		# Process message handlers
+		self._collect_message_handlers()
+		
+		# Process custom methods
+		self._collect_custom_methods()
+
+		# Process event handlers
+		self._collect_event_handlers()
 
 		# Process regular properties
-		for path, value in flattened_json.items():
-			# Skip meta properties, bindings, scripts - we already processed those
-			processed_paths = ['.meta.', '.binding.', '.scripts.', '.events.']
-			if (not any(x in path for x in processed_paths) and not path.endswith('.type')):
-				# Find the component this property belongs to
-				component_path = None
-				for comp_obj in model['components']:
-					if path.startswith(comp_obj.path):
-						# Take the longest matching path (most specific component)
-						if component_path is None or len(comp_obj.path) > len(component_path):
-							component_path = comp_obj.path
+		self._collect_properties()
 
-				if component_path:
-					# property_name = path.replace(f"{component_path}.", "")
-					property_name = path.split(".")[-1]
-
-					prop = Property(path, property_name, value)
-					model['properties'].append(prop)
-					# Add the property to the component
-					if component_path in model['components']:
-						model['components'][component_path].properties[property_name] = value
-
-		return model
+		return self.get_view_model()
