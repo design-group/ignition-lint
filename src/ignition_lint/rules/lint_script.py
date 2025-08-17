@@ -1,3 +1,8 @@
+"""
+This module defines a PylintScriptRule class that runs pylint on the scripts contained within a Perspective View.
+It collects all script nodes, combines them into a single temporary file, and runs pylint on that file.
+"""
+
 import datetime
 import tempfile
 import os

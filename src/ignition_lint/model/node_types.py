@@ -5,7 +5,7 @@ It also provides visitor support for processing nodes in a structured way.
 """
 
 from enum import Enum
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Dict, List, Any, Set
 
 
@@ -22,13 +22,8 @@ class NodeType(Enum):
 	PROPERTY = "property"
 
 	# Grouped node types
-	@classmethod
-	def ALL_BINDINGS(cls):
-		return {cls.EXPRESSION_BINDING, cls.PROPERTY_BINDING, cls.TAG_BINDING}
-
-	@classmethod
-	def ALL_SCRIPTS(cls):
-		return {cls.MESSAGE_HANDLER, cls.CUSTOM_METHOD, cls.TRANSFORM, cls.EVENT_HANDLER}
+	ALL_BINDINGS = {EXPRESSION_BINDING, PROPERTY_BINDING, TAG_BINDING}
+	ALL_SCRIPTS = {MESSAGE_HANDLER, CUSTOM_METHOD, TRANSFORM, EVENT_HANDLER}
 
 
 class ViewNode(ABC):
@@ -227,7 +222,7 @@ class NodeUtils:
 	@staticmethod
 	def get_binding_nodes(nodes: List[ViewNode]) -> List[ViewNode]:
 		"""Get all binding nodes."""
-		return NodeUtils.filter_by_types(nodes, NodeType.ALL_BINDINGS())
+		return NodeUtils.filter_by_types(nodes, NodeType.ALL_BINDINGS)
 
 	@staticmethod
 	def group_by_type(nodes: List[ViewNode]) -> Dict[NodeType, List[ViewNode]]:
