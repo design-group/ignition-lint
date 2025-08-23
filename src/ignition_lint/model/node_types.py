@@ -21,9 +21,10 @@ class NodeType(Enum):
 	EVENT_HANDLER = "event_handler"
 	PROPERTY = "property"
 
-	# Grouped node types
-	ALL_BINDINGS = {EXPRESSION_BINDING, PROPERTY_BINDING, TAG_BINDING}
-	ALL_SCRIPTS = {MESSAGE_HANDLER, CUSTOM_METHOD, TRANSFORM, EVENT_HANDLER}
+
+# Grouped node types - defined outside the enum to avoid enum member confusion
+ALL_BINDINGS = {NodeType.EXPRESSION_BINDING, NodeType.PROPERTY_BINDING, NodeType.TAG_BINDING}
+ALL_SCRIPTS = {NodeType.MESSAGE_HANDLER, NodeType.CUSTOM_METHOD, NodeType.TRANSFORM, NodeType.EVENT_HANDLER}
 
 
 class ViewNode(ABC):
@@ -222,7 +223,7 @@ class NodeUtils:
 	@staticmethod
 	def get_binding_nodes(nodes: List[ViewNode]) -> List[ViewNode]:
 		"""Get all binding nodes."""
-		return NodeUtils.filter_by_types(nodes, NodeType.ALL_BINDINGS)
+		return NodeUtils.filter_by_types(nodes, ALL_BINDINGS)
 
 	@staticmethod
 	def group_by_type(nodes: List[ViewNode]) -> Dict[NodeType, List[ViewNode]]:

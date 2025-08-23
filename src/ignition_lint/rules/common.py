@@ -4,7 +4,7 @@ This module contains common and base node types for rule implementation
 
 from abc import ABC, abstractmethod
 from typing import Set, List, Dict, Any
-from ..model.node_types import ViewNode, NodeType, ScriptNode
+from ..model.node_types import ViewNode, NodeType, ScriptNode, ALL_BINDINGS, ALL_SCRIPTS
 
 
 class NodeVisitor(ABC):
@@ -121,7 +121,7 @@ class BindingRule(LintingRule):
 
 	def __init__(self, target_node_types: Set[NodeType] = None):
 		if target_node_types is None:
-			target_node_types = NodeType.ALL_BINDINGS
+			target_node_types = ALL_BINDINGS
 		super().__init__(target_node_types)
 
 
@@ -130,7 +130,7 @@ class ScriptRule(LintingRule):
 
 	def __init__(self, target_node_types: Set[NodeType] = None):
 		if target_node_types is None:
-			target_node_types = NodeType.ALL_SCRIPTS()
+			target_node_types = ALL_SCRIPTS
 		super().__init__(target_node_types)
 		self.collected_scripts = {}
 

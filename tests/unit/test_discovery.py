@@ -113,7 +113,7 @@ class TestFrameworkIntegration(BaseRuleTest):
 	def test_rule_engine_creation(self):
 		"""Test creating lint engines with different rule configurations."""
 		configs = [
-			get_test_config("ComponentNameRule", convention="PascalCase"),
+			get_test_config("NamePatternRule", convention="PascalCase"),
 			get_test_config("PollingIntervalRule", minimum_interval=5000),
 		]
 

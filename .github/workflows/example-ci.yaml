@@ -35,5 +35,10 @@ jobs:
       - name: Run pre-commit
         run: poetry run pre-commit run --all-files
 
-      - name: Run ignition-lint directly
-        run: poetry run ignition-lint --version  # Optional: Test the CLI
+      - name: Test ignition-lint CLI
+        run: |
+          poetry run ignition-lint --help
+          # Test with a sample file if available
+          if [ -f "tests/cases/PreferredStyle/view.json" ]; then
+            poetry run ignition-lint tests/cases/PreferredStyle/view.json
+          fi
