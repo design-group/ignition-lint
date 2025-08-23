@@ -183,7 +183,7 @@ class MyRule(LintingRule):
 
 ```bash
 # Create and test a rule
-poetry install --with dev
+poetry install
 poetry shell
 
 # Run your rule

@@ -42,7 +42,7 @@ jobs:
             poetry-${{ runner.os }}-${{ matrix.python-version }}-
 
       - name: Install dependencies
-        run: poetry install --with dev
+        run: poetry install
 
       - name: Run linting with pylint
         run: poetry run pylint ignition_lint/

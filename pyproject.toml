@@ -14,6 +14,9 @@ pylint = "*"
 ignition-api-stubs = "^8.1.48.post1"
 pre-commit = "^4.2.0"
 
+[tool.poetry.group.dev.dependencies]
+# Development and testing dependencies
+
 [tool.poetry.requires-plugins]
 poetry-plugin-export = ">=1.8"
 

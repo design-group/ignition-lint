@@ -29,7 +29,7 @@ First, ensure you have the development environment ready:
 cd /path/to/ignition-lint
 
 # Install dependencies
-poetry install --with dev
+poetry install
 
 # Activate the virtual environment
 poetry shell

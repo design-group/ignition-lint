@@ -9,8 +9,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Install dependencies with Poetry
 poetry install
 
-# Install with dev dependencies for development work
-poetry install --with dev
+# Note: --with dev is available for future dev-specific dependencies
+# poetry install --with dev
 
 # Activate virtual environment
 poetry shell
