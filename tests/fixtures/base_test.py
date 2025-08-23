@@ -140,7 +140,8 @@ class BaseIntegrationTest(unittest.TestCase):
 			kwargs = config.get('kwargs', {})
 
 			try:
-				rules.append(rule_class(**kwargs))
+				# Use create_from_config to enable preprocessing
+				rules.append(rule_class.create_from_config(kwargs))
 			except Exception as e:
 				self.fail(f"Failed to create rule {rule_name}: {e}")
 

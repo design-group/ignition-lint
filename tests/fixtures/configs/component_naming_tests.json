@@ -1,5 +1,5 @@
 {
-  "test_suite_name": "ComponentNameRule Tests",
+  "test_suite_name": "NamePatternRule Tests",
   "description": "Test cases for component naming conventions",
   "test_cases": [
     {
@@ -7,7 +7,7 @@
       "description": "PascalCase view should pass PascalCase rule",
       "view_file": "PascalCase/view.json",
       "rule_config": {
-        "ComponentNameRule": {
+        "NamePatternRule": {
           "enabled": true,
           "kwargs": {
             "convention": "PascalCase",
@@ -18,7 +18,7 @@
       },
       "expectations": [
         {
-          "rule_name": "ComponentNameRule",
+          "rule_name": "NamePatternRule",
           "error_count": 0,
           "should_pass": true
         }
@@ -34,7 +34,7 @@
       "description": "camelCase view should fail PascalCase rule",
       "view_file": "camelCase/view.json",
       "rule_config": {
-        "ComponentNameRule": {
+        "NamePatternRule": {
           "enabled": true,
           "kwargs": {
             "convention": "PascalCase",
@@ -45,7 +45,7 @@
       },
       "expectations": [
         {
-          "rule_name": "ComponentNameRule",
+          "rule_name": "NamePatternRule",
           "error_count": 1,
           "should_pass": false,
           "error_patterns": [
@@ -64,7 +64,7 @@
       "description": "camelCase view should pass camelCase rule",
       "view_file": "camelCase/view.json",
       "rule_config": {
-        "ComponentNameRule": {
+        "NamePatternRule": {
           "enabled": true,
           "kwargs": {
             "convention": "camelCase",
@@ -75,7 +75,7 @@
       },
       "expectations": [
         {
-          "rule_name": "ComponentNameRule",
+          "rule_name": "NamePatternRule",
           "error_count": 0,
           "should_pass": true
         }
@@ -91,7 +91,7 @@
       "description": "snake_case view should pass snake_case rule",
       "view_file": "snake_case/view.json",
       "rule_config": {
-        "ComponentNameRule": {
+        "NamePatternRule": {
           "enabled": true,
           "kwargs": {
             "convention": "snake_case",
@@ -102,7 +102,7 @@
       },
       "expectations": [
         {
-          "rule_name": "ComponentNameRule",
+          "rule_name": "NamePatternRule",
           "error_count": 0,
           "should_pass": true
         }
@@ -118,7 +118,7 @@
       "description": "inconsistentCase view should fail any naming rule",
       "view_file": "inconsistentCase/view.json",
       "rule_config": {
-        "ComponentNameRule": {
+        "NamePatternRule": {
           "enabled": true,
           "kwargs": {
             "convention": "PascalCase",
@@ -129,8 +129,8 @@
       },
       "expectations": [
         {
-          "rule_name": "ComponentNameRule",
-          "error_count": 1,
+          "rule_name": "NamePatternRule",
+          "error_count": 3,
           "should_pass": false
         }
       ],
