@@ -41,6 +41,25 @@ python test_runner.py --setup
 python -m unittest discover tests
 ```
 
+### Local GitHub Actions Testing
+```bash
+# Test all workflows before committing (prevents CI failures)
+./test-actions.sh
+
+# Test specific workflow
+./test-actions.sh ci               # Run CI pipeline locally
+./test-actions.sh unittest         # Run unit tests in CI environment  
+
+# List available workflows
+./test-actions.sh list
+
+# Validate local testing setup
+./validate-local-actions.sh
+
+# Test with specific event (push, pull_request, etc.)
+./test-actions.sh unittest pull_request
+```
+
 ### Linting and Code Quality
 ```bash
 # Run pylint on source code
