@@ -124,21 +124,36 @@ src/ignition_lint/
 - **EventHandlerScript**: Event handler scripts
 
 ### Rule Development Pattern
-Rules extend `LintingRule` and use the visitor pattern:
+Rules extend `LintingRule` and use the visitor pattern with automatic registration:
 
 ```python
 from .common import LintingRule
+from .registry import register_rule
 from ..model.node_types import NodeType
 
+@register_rule
 class MyRule(LintingRule):
     def __init__(self, **kwargs):
         super().__init__({NodeType.COMPONENT})
+    
+    @property
+    def error_message(self) -> str:
+        return "Description of what this rule checks"
     
     def visit_component(self, component):
         # Rule logic here
         if some_condition:
             self.errors.append(f"{component.path}: Error message")
 ```
+
+### Dynamic Rule Registration System
+The framework now includes a comprehensive rule registration system that enables developers to create custom rules without modifying core framework files:
+
+- **Automatic Discovery**: Rules are automatically discovered and registered when placed in `src/ignition_lint/rules/`
+- **@register_rule Decorator**: Simple decorator-based registration for new rules
+- **Configuration Preprocessing**: Rules can preprocess their configuration for type conversion and validation
+- **Rule Validation**: Comprehensive validation ensures rules meet framework requirements
+- **API Access**: Programmatic access to registered rules via registry API
 
 ## Test-Driven Development
 
@@ -215,9 +230,18 @@ class MyCustomRule(LintingRule):
 ```
 
 ### Developer Resources
-- **Comprehensive Guide**: `docs/developer-guide-rule-creation.md`
-- **Example Rules**: `src/ignition_lint/rules/example_rule.py`
-- **Rule Registry API**: Automatic discovery, validation, and registration
+
+📚 **[Complete Documentation Index](docs/README.md)** - Organized guide to all documentation
+
+**Quick Access:**
+- **New Developer?** → [Tutorial: Creating Your First Rule](docs/tutorial-creating-your-first-rule.md) 
+- **Need Reference?** → [Developer Guide](docs/developer-guide-rule-creation.md)
+- **API Questions?** → [API Reference](docs/api-reference-rule-registration.md)
+- **Having Issues?** → [Troubleshooting Guide](docs/troubleshooting-rule-development.md)
+
+**Additional Resources:**
+- **Example Rules**: `src/ignition_lint/rules/example_rule.py` - Working examples
+- **Rule Registry API**: Automatic discovery, validation, and registration system
 - **Testing Framework**: Built-in test utilities for rule validation
 
 Rules process specific node types and can access full view context through the flattened JSON representation.

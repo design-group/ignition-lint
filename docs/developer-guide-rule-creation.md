@@ -1,6 +1,10 @@
 # Developer Guide: Creating Custom Linting Rules
 
+> 📚 **Navigation:** [Documentation Index](README.md) | [Tutorial](tutorial-creating-your-first-rule.md) | [API Reference](api-reference-rule-registration.md) | [Troubleshooting](troubleshooting-rule-development.md)
+
 This guide shows developers how to create and register custom linting rules for ignition-lint using the extensible rule registration system.
+
+> 💡 **First time creating rules?** Start with the [hands-on tutorial](tutorial-creating-your-first-rule.md) for step-by-step guidance.
 
 ## Quick Start
 
@@ -126,8 +130,8 @@ from ..model.node_types import ViewNode, NodeType
 class ComponentNameLengthRule(LintingRule):
     """Ensures component names meet minimum length requirements."""
     
-    def __init__(self, min_length: int = 3, max_length: int = 50):
-        super().__init__({NodeType.COMPONENT})
+    def __init__(self, min_length: int = 3, max_length: int = 50, target_node_types: Set[NodeType] = None):
+        super().__init__(target_node_types or {NodeType.COMPONENT})
         self.min_length = min_length
         self.max_length = max_length
     
@@ -237,11 +241,10 @@ class AdvancedNamingRule(LintingRule):
 
 ```json
 {
-  "ComponentNameLengthRule": {
+  "ExampleNameLengthRule": {
     "enabled": true,
     "kwargs": {
-      "min_length": 5,
-      "max_length": 30
+      "min_length": 5
     }
   }
 }
@@ -409,6 +412,8 @@ def post_process(self):
 
 ## Rule Registry API
 
+> 📖 **Complete API Reference:** See [API Reference: Rule Registration System](api-reference-rule-registration.md) for full documentation of all classes and methods.
+
 ### Programmatic Access
 
 ```python
@@ -430,6 +435,8 @@ if registry.is_registered("MyRule"):
     rule_class = registry.get_rule("MyRule")
 ```
 
+For complete API documentation including all parameters, return types, and advanced usage, see the [API Reference](api-reference-rule-registration.md).
+
 ### Dynamic Rule Loading
 
 The system automatically discovers rules in the `rules` package, but you can also trigger discovery manually:
@@ -444,6 +451,8 @@ print(f"Discovered {len(discovered)} rules")
 
 ## Troubleshooting
 
+> 🐛 **Need detailed help?** See the comprehensive [Troubleshooting Guide](troubleshooting-rule-development.md) for solutions to common issues.
+
 ### Rule Not Found
 
 If your rule isn't being discovered:
@@ -452,6 +461,8 @@ If your rule isn't being discovered:
 2. **Check inheritance**: Must inherit from `LintingRule`
 3. **Check abstract methods**: Must implement `error_message` property
 4. **Check imports**: Verify all imports are correct
+
+**→ More solutions:** [Troubleshooting Guide: Rule Registration Issues](troubleshooting-rule-development.md#rule-registration-issues)
 
 ### Validation Errors
 
