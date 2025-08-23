@@ -186,10 +186,38 @@ Rules are configured via JSON files (default: `rule_config.json`):
 
 ## Adding New Rules
 
-1. Create rule class in `src/ignition_lint/rules/`
-2. Register in `src/ignition_lint/rules/__init__.py` RULES_MAP
-3. Write unit tests in `tests/unit/test_[rule_name].py`
-4. Add configuration tests in `tests/configs/`
-5. Update documentation
+The framework supports **extensible rule registration** - developers can add new rules without modifying core files:
+
+### Quick Rule Creation
+1. Create rule file in `src/ignition_lint/rules/my_rule.py`
+2. Use the `@register_rule` decorator or inherit from `LintingRule`
+3. Rules are automatically discovered and registered
+4. Add to configuration JSON and use immediately
+
+### Example
+```python
+from .common import LintingRule
+from .registry import register_rule
+from ..model.node_types import NodeType
+
+@register_rule
+class MyCustomRule(LintingRule):
+    def __init__(self):
+        super().__init__({NodeType.COMPONENT})
+    
+    @property
+    def error_message(self) -> str:
+        return "Custom rule description"
+    
+    def visit_component(self, component):
+        # Rule logic here
+        pass
+```
+
+### Developer Resources
+- **Comprehensive Guide**: `docs/developer-guide-rule-creation.md`
+- **Example Rules**: `src/ignition_lint/rules/example_rule.py`
+- **Rule Registry API**: Automatic discovery, validation, and registration
+- **Testing Framework**: Built-in test utilities for rule validation
 
 Rules process specific node types and can access full view context through the flattened JSON representation.
