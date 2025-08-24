@@ -22,6 +22,7 @@ from .node_types import (
 
 class ViewModelBuilder:
 	"""Builds a structured view model from flattened JSON."""
+
 	def __init__(self):
 		self.flattened_json = {}
 		self.model = {
@@ -66,7 +67,8 @@ class ViewModelBuilder:
 
 		# Find transform paths
 		for path, value in self.flattened_json.items():
-			if path.startswith(f"{binding_path}.transforms") and path.endswith('.type') and value == 'script':
+			if path.startswith(f"{binding_path}.transforms"
+						) and path.endswith('.type') and value == 'script':
 				transform_base = path.rsplit('.type', 1)[0]
 				transform_paths.append(transform_base)
 
@@ -114,20 +116,20 @@ class ViewModelBuilder:
 		# Check for explicit persistence configuration
 		config_path = f"propConfig.{property_path}.persistent"
 		persistent_value = self.flattened_json.get(config_path)
-		
+
 		if persistent_value is not None:
 			# Explicit configuration found
 			return persistent_value
-		
+
 		# No explicit configuration - check if there's any propConfig for this property
 		config_prefix = f"propConfig.{property_path}."
 		has_any_config = any(path.startswith(config_prefix) for path in self.flattened_json.keys())
-		
+
 		if has_any_config:
 			# Property has configuration but no explicit persistent setting
 			# Default to True (persistent) unless proven otherwise
 			return True
-		
+
 		# No configuration at all - default to persistent
 		return True
 

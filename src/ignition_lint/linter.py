@@ -29,7 +29,7 @@ class LintEngine:
 		self.flattened_json = {}
 		self.view_model = {}
 		self.debug_output_dir = debug_output_dir
-		
+
 		# Create debug output directory if specified
 		if self.debug_output_dir:
 			Path(self.debug_output_dir).mkdir(parents=True, exist_ok=True)
@@ -69,11 +69,7 @@ class LintEngine:
 			if rule.errors:
 				errors[rule.error_key] = rule.errors
 
-		return LintResults(
-			warnings=warnings,
-			errors=errors,
-			has_errors=bool(errors)
-		)
+		return LintResults(warnings=warnings, errors=errors, has_errors=bool(errors))
 
 	def get_model_statistics(self, flattened_json: Dict[str, Any]) -> Dict[str, Any]:
 		"""Get statistics about the parsed model for debugging/analysis."""
@@ -218,38 +214,38 @@ class LintEngine:
 		try:
 			# Get a safe filename from the source path
 			source_name = Path(source_file_path).stem
-			
+
 			# Save flattened JSON
 			flattened_file = Path(self.debug_output_dir) / f"{source_name}_flattened.json"
 			with open(flattened_file, 'w', encoding='utf-8') as f:
 				json.dump(self.flattened_json, f, indent=2, sort_keys=True)
-			
+
 			# Serialize the view model
 			serialized_model = self._serialize_view_model()
-			
+
 			# Save serialized model
-			model_file = Path(self.debug_output_dir) / f"{source_name}_model.json"  
+			model_file = Path(self.debug_output_dir) / f"{source_name}_model.json"
 			with open(model_file, 'w', encoding='utf-8') as f:
 				json.dump(serialized_model, f, indent=2, sort_keys=True)
-				
+
 			# Save model statistics
 			stats = self.get_model_statistics(self.flattened_json)
 			stats_file = Path(self.debug_output_dir) / f"{source_name}_stats.json"
 			with open(stats_file, 'w', encoding='utf-8') as f:
 				json.dump(stats, f, indent=2, sort_keys=True)
-			
+
 			print(f"✅ Debug files saved:")
 			print(f"   - Flattened JSON: {flattened_file}")
 			print(f"   - Model state: {model_file}")
 			print(f"   - Statistics: {stats_file}")
-			
+
 		except Exception as e:
 			print(f"⚠️  Warning: Could not save debug files: {e}")
 
 	def _serialize_view_model(self) -> Dict[str, Any]:
 		"""Serialize the view model to a JSON-compatible format."""
 		serialized = {}
-		
+
 		for model_key, nodes in self.view_model.items():
 			if nodes:  # Only include non-empty node lists
 				serialized[model_key] = {
@@ -258,7 +254,7 @@ class LintEngine:
 				}
 			else:
 				serialized[model_key] = {'count': 0, 'nodes': []}
-		
+
 		return serialized
 
 	def enable_debug_output(self, debug_output_dir: str):

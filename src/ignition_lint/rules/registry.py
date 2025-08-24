@@ -107,9 +107,10 @@ class RuleRegistry:
 				# Find rule classes in the module
 				for name, obj in inspect.getmembers(module, inspect.isclass):
 					# Check if it's a rule class (inherits from LintingRule, not LintingRule itself)
-					if (issubclass(obj, LintingRule) and
-						obj is not LintingRule and
-						obj.__module__ == module_name):
+					if (
+						issubclass(obj, LintingRule) and obj is not LintingRule and
+						obj.__module__ == module_name
+					):
 
 						try:
 							rule_name = self.register_rule(obj)

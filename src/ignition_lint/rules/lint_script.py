@@ -108,9 +108,7 @@ class PylintScriptRule(ScriptRule):
 	def _create_temp_file(self, content: str) -> str:
 		"""Create temporary file with script content."""
 		timestamp = datetime.datetime.now().strftime("%H%M%S")
-		with tempfile.NamedTemporaryFile(
-			prefix=f"{timestamp}_", suffix=".py", delete=False
-		) as temp_file:
+		with tempfile.NamedTemporaryFile(prefix=f"{timestamp}_", suffix=".py", delete=False) as temp_file:
 			temp_file.write(content.encode('utf-8'))
 			return temp_file.name
 
@@ -137,8 +135,9 @@ class PylintScriptRule(ScriptRule):
 
 		return output
 
-	def _parse_pylint_output(self, output: str, line_map: Dict[int, str],
-							 path_to_issues: Dict[str, List[str]], debug_dir: str) -> None:
+	def _parse_pylint_output(
+		self, output: str, line_map: Dict[int, str], path_to_issues: Dict[str, List[str]], debug_dir: str
+	) -> None:
 		"""Parse pylint output and map issues back to original scripts."""
 		pattern = r'.*:(\d+):\d+: .+: (.+)'
 		for line in output.splitlines():
@@ -175,16 +174,14 @@ class PylintScriptRule(ScriptRule):
 		with open(os.path.join(debug_dir, "pylint_error.txt"), 'a', encoding='utf-8') as f:
 			f.write(f"Error parsing line: {line}\nException: {str(error)}\n\n")
 
-	def _handle_pylint_error(self, error_msg: str, debug_dir: str,
-							 path_to_issues: Dict[str, List[str]]) -> None:
+	def _handle_pylint_error(self, error_msg: str, debug_dir: str, path_to_issues: Dict[str, List[str]]) -> None:
 		"""Handle and log pylint execution errors."""
 		with open(os.path.join(debug_dir, "pylint_error.txt"), 'w', encoding='utf-8') as f:
 			f.write(error_msg)
 		for path in path_to_issues:
 			path_to_issues[path].append(error_msg)
 
-	def _cleanup_temp_file(self, temp_file_path: str, debug_dir: str,
-						 path_to_issues: Dict[str, List[str]]) -> None:
+	def _cleanup_temp_file(self, temp_file_path: str, debug_dir: str, path_to_issues: Dict[str, List[str]]) -> None:
 		"""Clean up temporary file, keeping it for debug if there were issues."""
 		if temp_file_path and os.path.exists(temp_file_path):
 			if any(issues for issues in path_to_issues.values()):
@@ -203,7 +200,10 @@ def _save_debug_file(temp_file_path: str, debug_dir: str):
 	try:
 		file_prefix = os.path.basename(temp_file_path).split('_')[0]
 		# Get all .py files in the debug directory
-		debug_files = [f for f in os.listdir(debug_dir) if f.endswith('.py') and os.path.basename(f).split('_')[0] != file_prefix]
+		debug_files = [
+			f for f in os.listdir(debug_dir)
+			if f.endswith('.py') and os.path.basename(f).split('_')[0] != file_prefix
+		]
 
 		# Sort by modification time (newest first)
 		debug_files.sort(key=lambda f: os.path.getmtime(os.path.join(debug_dir, f)), reverse=True)

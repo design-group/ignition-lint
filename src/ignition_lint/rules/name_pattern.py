@@ -165,10 +165,9 @@ class NamePatternRule(LintingRule):
 		else:
 			# Create config from individual parameters (backward compatibility)
 			self.config = NamePatternConfig(
-				allow_numbers=kwargs.get('allow_numbers', True),
-				min_length=kwargs.get('min_length', 1),
-				max_length=kwargs.get('max_length', None),
-				forbidden_names=kwargs.get('forbidden_names', None),
+				allow_numbers=kwargs.get('allow_numbers', True), min_length=kwargs.get('min_length', 1),
+				max_length=kwargs.get('max_length',
+							None), forbidden_names=kwargs.get('forbidden_names', None),
 				skip_names=kwargs.get('skip_names', None),
 				allowed_abbreviations=kwargs.get('allowed_abbreviations', None),
 				auto_detect_abbreviations=kwargs.get('auto_detect_abbreviations', True)

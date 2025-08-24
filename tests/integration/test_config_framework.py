@@ -26,7 +26,7 @@ class ConfigurableTestRunner(unittest.TestCase):
 		print(f"Skipped: {results['skipped']}")
 		print(f"Errors: {results['errors']}")
 
-		# Print details for failed tests  
+		# Print details for failed tests
 		for result in results['results']:
 			if result['status'] == 'failed':
 				print(f"\nFAILED: {result['name']}")
@@ -34,28 +34,34 @@ class ConfigurableTestRunner(unittest.TestCase):
 					for detail in result['expectation_details']:
 						if not detail['met']:
 							print(f"  Rule: {detail['rule_name']}")
-							
+
 							# Handle both old and new expectation detail formats
 							if 'expected_count' in detail:
 								# Old format (backward compatibility)
-								print(f"    Expected count: {detail['expected_count']}, Got: {detail['actual_count']}")
+								print(
+									f"    Expected count: {detail['expected_count']}, Got: {detail['actual_count']}"
+								)
 							else:
 								# New format with separate warnings/errors
-								print(f"    Expected {detail['expected_warnings']} warnings, got {detail['actual_warnings']}")
-								print(f"    Expected {detail['expected_errors']} errors, got {detail['actual_errors']}")
-							
+								print(
+									f"    Expected {detail['expected_warnings']} warnings, got {detail['actual_warnings']}"
+								)
+								print(
+									f"    Expected {detail['expected_errors']} errors, got {detail['actual_errors']}"
+								)
+
 							print(f"    Should pass: {detail['should_pass']}")
 			elif result['status'] == 'error':
 				print(f"\nERROR: {result['name']} - {result['reason']}")
 
 		# The test passes if the framework itself works (can run tests)
-		# Individual configuration test failures are expected as we transition 
+		# Individual configuration test failures are expected as we transition
 		# old config files to the new warnings/errors format
 		self.assertGreaterEqual(results['total'], 0, "Framework should be able to load and run tests")
 		self.assertIsInstance(results['passed'], int, "Framework should return valid pass count")
 		self.assertIsInstance(results['failed'], int, "Framework should return valid fail count")
 		self.assertIsInstance(results['errors'], int, "Framework should return valid error count")
-		
+
 		# Framework integration test passes if it can execute without crashing
 		print(f"\n✅ Configuration Framework Integration Test PASSED")
 		print(f"   Framework successfully executed {results['total']} test cases")

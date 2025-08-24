@@ -128,15 +128,21 @@ def run_config_tests(tags=None):
 							if 'pattern_matches' in detail and detail['pattern_matches']:
 								for pm in detail['pattern_matches']:
 									if not pm['found']:
-										print(f"    Missing pattern: '{pm['pattern']}'")
+										print(
+											f"    Missing pattern: '{pm['pattern']}'"
+										)
 							elif 'error_pattern_matches' in detail or 'warning_pattern_matches' in detail:
 								# New format with separate error and warning patterns
 								for pm in detail.get('error_pattern_matches', []):
 									if not pm['found']:
-										print(f"    Missing error pattern: '{pm['pattern']}'")
+										print(
+											f"    Missing error pattern: '{pm['pattern']}'"
+										)
 								for pm in detail.get('warning_pattern_matches', []):
 									if not pm['found']:
-										print(f"    Missing warning pattern: '{pm['pattern']}'")
+										print(
+											f"    Missing warning pattern: '{pm['pattern']}'"
+										)
 
 	return results['failed'] == 0 and results['errors'] == 0
 

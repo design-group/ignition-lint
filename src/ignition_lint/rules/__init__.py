@@ -17,10 +17,12 @@ from .name_pattern import NamePatternRule
 # Auto-discover and register all rules in this package
 _discovered_rules = discover_rules()
 
+
 # Create RULES_MAP for backward compatibility
 def get_rules_map():
 	"""Get the current rules map for backward compatibility."""
 	return get_all_rules()
+
 
 # Dynamic RULES_MAP that stays up-to-date
 RULES_MAP = get_rules_map()
@@ -28,7 +30,7 @@ RULES_MAP = get_rules_map()
 __all__ = [
 	"LintingRule",
 	"NodeVisitor",
-	"BindingRule", 
+	"BindingRule",
 	"PylintScriptRule",
 	"PollingIntervalRule",
 	"NamePatternRule",

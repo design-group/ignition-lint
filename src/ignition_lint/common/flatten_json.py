@@ -119,11 +119,13 @@ def _process_dict_item(key, value, path, results):
 	else:
 		results[current_path] = value
 
+
 def _process_list_items(items, base_path, results):
 	"""Process all items in a list."""
 	for index, item in enumerate(items):
 		item_path = f"{base_path}[{index}]"
 		_process_single_item(item, item_path, results)
+
 
 def _process_single_item(item, item_path, results):
 	"""Process a single item, whether primitive or complex."""
@@ -131,6 +133,7 @@ def _process_single_item(item, item_path, results):
 		flatten_json(item, item_path, results)
 	else:
 		results[item_path] = item
+
 
 def flatten_json(data, path="", results=None):
 	"""

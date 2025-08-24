@@ -116,7 +116,7 @@ def print_file_results(file_path: Path, lint_results) -> int:
 	"""
 	warning_count = sum(len(warning_list) for warning_list in lint_results.warnings.values())
 	error_count = sum(len(error_list) for error_list in lint_results.errors.values())
-	
+
 	# Print warnings first
 	if warning_count > 0:
 		print(f"\n⚠️  Found {warning_count} warnings in {file_path}:")
@@ -125,7 +125,7 @@ def print_file_results(file_path: Path, lint_results) -> int:
 				print(f"  📋 {rule_name} (warning):")
 				for warning in warning_list:
 					print(f"    • {warning}")
-	
+
 	# Print errors
 	if error_count > 0:
 		print(f"\n❌ Found {error_count} errors in {file_path}:")
@@ -220,7 +220,7 @@ def setup_linter(args) -> LintEngine:
 	# Inform about debug output
 	if args.debug_output:
 		print(f"🔍 Debug output will be saved to: {args.debug_output}")
-		
+
 	return lint_engine
 
 

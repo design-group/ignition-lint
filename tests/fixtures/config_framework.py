@@ -182,7 +182,7 @@ class ConfigurableTestFramework:
 			lint_engine = LintEngine(rules)
 			flattened_json = flatten_file(view_file_path)
 			lint_results = lint_engine.process(flattened_json)
-			
+
 			# Combine warnings and errors for backward compatibility
 			actual_errors = {}
 			actual_errors.update(lint_results.warnings)
@@ -195,7 +195,7 @@ class ConfigurableTestFramework:
 			for expectation in test_case.expectations:
 				rule_warnings = lint_results.warnings.get(expectation.rule_name, [])
 				rule_errors = lint_results.errors.get(expectation.rule_name, [])
-				
+
 				actual_warning_count = len(rule_warnings)
 				actual_error_count = len(rule_errors)
 
@@ -229,9 +229,13 @@ class ConfigurableTestFramework:
 				# Overall expectation check
 				expectation_met = warning_count_match and error_count_match and pass_match
 				if expectation.error_patterns:
-					expectation_met = expectation_met and all(pm['found'] for pm in error_pattern_matches)
+					expectation_met = expectation_met and all(
+						pm['found'] for pm in error_pattern_matches
+					)
 				if expectation.warning_patterns:
-					expectation_met = expectation_met and all(pm['found'] for pm in warning_pattern_matches)
+					expectation_met = expectation_met and all(
+						pm['found'] for pm in warning_pattern_matches
+					)
 
 				expectations_met = expectations_met and expectation_met
 

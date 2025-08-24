@@ -54,7 +54,7 @@ class ExampleMixedSeverityRule(LintingRule):
 				f"indicates potentially unsafe or debug functionality"
 			)
 
-		# WARNING: Style issue - very short names hurt readability  
+		# WARNING: Style issue - very short names hurt readability
 		if len(component.name) < 3 and not component.name.lower() in ['ok', 'no', 'go', 'id']:
 			self.warnings.append(
 				f"{component.path}: Component name '{component.name}' "
@@ -62,10 +62,8 @@ class ExampleMixedSeverityRule(LintingRule):
 			)
 
 		# ERROR: Functional issue - conflicting indicators
-		conflicting_patterns = [
-			('debug', 'prod'), ('test', 'live'), ('dev', 'production'),
-			('mock', 'real'), ('sample', 'actual')
-		]
+		conflicting_patterns = [('debug', 'prod'), ('test', 'live'), ('dev', 'production'), ('mock', 'real'),
+					('sample', 'actual')]
 		name_lower = component.name.lower()
 		for pattern1, pattern2 in conflicting_patterns:
 			if pattern1 in name_lower and pattern2 in name_lower:
@@ -77,9 +75,11 @@ class ExampleMixedSeverityRule(LintingRule):
 
 		# WARNING: Style recommendation - missing component type suffix
 		common_types = ['button', 'label', 'input', 'panel', 'container', 'table', 'chart']
-		if (len(component.name) > 5 and 
+		if (
+			len(component.name) > 5 and
 			not any(comp_type in component.name.lower() for comp_type in common_types) and
-			not component.name.lower().endswith(('btn', 'lbl', 'txt', 'img', 'icon'))):
+			not component.name.lower().endswith(('btn', 'lbl', 'txt', 'img', 'icon'))
+		):
 			self.warnings.append(
 				f"{component.path}: Component name '{component.name}' "
 				f"might benefit from a descriptive suffix (e.g., Button, Label, Panel)"
