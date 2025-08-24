@@ -24,7 +24,7 @@ class NamePatternRule(LintingRule):
 		if 'target_node_types' in processed_config:
 			target_types = processed_config['target_node_types']
 			converted_types = set()
-			
+
 			if isinstance(target_types, str):
 				# Handle single string
 				try:
@@ -42,7 +42,7 @@ class NamePatternRule(LintingRule):
 						print(
 							f"Warning: Unknown node type '{nt_str}'. Available types: {[nt.value for nt in NodeType]}"
 						)
-			
+
 			if converted_types:  # Only set if we successfully converted something
 				processed_config['target_node_types'] = converted_types
 
@@ -201,7 +201,7 @@ class NamePatternRule(LintingRule):
 
 	def _process_node_specific_rules(self):
 		"""Process node-specific rules to ensure they have proper patterns."""
-		for node_type, rules in self.node_type_specific_rules.items():
+		for _, rules in self.node_type_specific_rules.items():
 			# If the rule has a convention but no pattern, generate the pattern
 			if 'convention' in rules and 'pattern' not in rules:
 				convention = rules['convention']
@@ -363,21 +363,22 @@ class NamePatternRule(LintingRule):
 			return None
 
 		if convention == 'PascalCase':
-			return self._to_pascal_case(name)
-		if convention == 'camelCase':
-			return self._to_camel_case(name)
-		if convention == 'snake_case':
-			return self._to_snake_case(name)
-		if convention == 'kebab-case':
-			return self._to_kebab_case(name)
-		if convention == 'SCREAMING_SNAKE_CASE':
-			return self._to_snake_case(name).upper()
-		if convention == 'Title Case':
-			return self._to_title_case(name)
-		if convention == 'lower case':
-			return self._to_lower_case(name)
-
-		return None
+			suggested_name = self._to_pascal_case(name)
+		elif convention == 'camelCase':
+			suggested_name = self._to_camel_case(name)
+		elif convention == 'snake_case':
+			suggested_name = self._to_snake_case(name)
+		elif convention == 'kebab-case':
+			suggested_name = self._to_kebab_case(name)
+		elif convention == 'SCREAMING_SNAKE_CASE':
+			suggested_name = self._to_snake_case(name).upper()
+		elif convention == 'Title Case':
+			suggested_name = self._to_title_case(name)
+		elif convention == 'lower case':
+			suggested_name = self._to_lower_case(name)
+		else:
+			suggested_name = 'No suggestion available'
+		return suggested_name
 
 	def _adjust_abbreviation_for_camel_case(self, name: str, abbrev: str) -> str:
 		"""Adjust abbreviations in camelCase/PascalCase names."""

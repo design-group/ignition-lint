@@ -65,8 +65,11 @@ python -m unittest discover tests
 # Run pylint on source code (uses .pylintrc configuration)
 poetry run pylint ignition_lint/
 
-# Format code with black
-poetry run black ignition_lint/
+# Format code with yapf (uses .style.yapf configuration)
+poetry run yapf -ir ignition_lint/
+
+# Check formatting without modifying files
+poetry run yapf -dr ignition_lint/
 ```
 
 ### Running the Tool
@@ -245,3 +248,169 @@ class MyCustomRule(LintingRule):
 - **Testing Framework**: Built-in test utilities for rule validation
 
 Rules process specific node types and can access full view context through the flattened JSON representation.
+
+## Python Style Guide
+
+This project follows a customized version of Python's PEP 8 style guide with specific formatting rules enforced by yapf and pylint.
+
+### Code Formatting
+
+**Indentation:**
+- Use **tabs instead of spaces** for indentation
+- Tab width: 8 characters (configured in `.style.yapf`)
+- Continuation lines: 4 spaces for alignment
+
+**Line Length:**
+- Maximum line length: **120 characters** (vs PEP 8's 79)
+- Configured in both `.style.yapf` and `.pylintrc`
+
+**Example:**
+```python
+# ✅ Correct - tabs for indentation
+def process_component(self, component: ViewNode):
+	"""Process a component node."""
+	if component.name.startswith('temp'):
+		self.errors.append(
+			f"{component.path}: Component name '{component.name}' "
+			f"should not use temporary naming"
+		)
+```
+
+### Naming Conventions
+
+Following PEP 8 and enforced by `.pylintrc`:
+
+- **Functions and variables:** `snake_case`
+- **Classes:** `PascalCase`
+- **Constants:** `UPPER_CASE`
+- **Private/internal:** `_leading_underscore`
+
+```python
+# ✅ Correct naming
+class ComponentNameRule(LintingRule):
+	MAX_NAME_LENGTH = 50
+	
+	def __init__(self):
+		self.error_count = 0
+		self._processed_components = []
+```
+
+### Docstrings and Comments
+
+- Use triple quotes for docstrings
+- Follow Google-style docstrings (configured in `.style.yapf`)
+- Minimum docstring length: 10 characters (`.pylintrc`)
+
+```python
+def validate_component_name(self, name: str) -> bool:
+	"""
+	Validate that a component name follows naming conventions.
+	
+	Args:
+		name: The component name to validate
+		
+	Returns:
+		True if valid, False otherwise
+	"""
+	return len(name) >= 3 and name.isalnum()
+```
+
+### Import Organization
+
+```python
+# Standard library imports
+import json
+import sys
+from pathlib import Path
+from typing import List, Dict, Any
+
+# Third-party imports
+import requests
+
+# Local application imports
+from .common import LintingRule
+from .registry import register_rule
+from ..model.node_types import ViewNode, NodeType
+```
+
+### Error Handling
+
+- Use specific exceptions instead of generic `Exception`
+- Follow the patterns established in `cli.py`:
+
+```python
+# ✅ Correct - specific exceptions
+try:
+	rule_instance = rule_class.create_from_config(kwargs)
+except (TypeError, ValueError, AttributeError) as e:
+	print(f"Error creating rule {rule_name}: {e}")
+
+# ✅ Correct - file operations
+try:
+	json_data = read_json_file(file_path)
+except (FileNotFoundError, json.JSONDecodeError, PermissionError, OSError) as e:
+	print(f"Error reading file {file_path}: {e}")
+```
+
+### Type Hints
+
+- Use type hints for function parameters and return values
+- Import types from `typing` module when needed
+
+```python
+from typing import List, Dict, Optional, Set, Any
+
+def create_rules_from_config(config: Dict[str, Any]) -> List[LintingRule]:
+	"""Create rule instances from configuration."""
+	rules: List[LintingRule] = []
+	# Implementation here
+	return rules
+```
+
+### YAPF Configuration Summary
+
+Based on `.style.yapf`, the project uses:
+
+- **Base style:** Google Python Style Guide
+- **Column limit:** 120 characters
+- **Indentation:** Tabs with 8-character width
+- **Continuation indent:** 4 spaces
+- **Bracket handling:** Coalesce and dedent closing brackets
+- **Argument splitting:** When comma-terminated
+
+### Formatting Commands
+
+```bash
+# Format all code with yapf
+poetry run yapf -ir src/ tests/
+
+# Check formatting without changes
+poetry run yapf -dr src/ tests/
+
+# Format specific file
+poetry run yapf -i src/ignition_lint/cli.py
+```
+
+### Pre-commit Hooks
+
+The project uses pre-commit hooks for code quality:
+
+```bash
+# Install pre-commit hooks
+poetry run pre-commit install
+
+# Run hooks manually
+poetry run pre-commit run --all-files
+```
+
+### Style Validation
+
+```bash
+# Check pylint compliance
+poetry run pylint ignition_lint/
+
+# Check yapf formatting
+poetry run yapf -dr ignition_lint/
+```
+
+This style guide ensures consistent, readable code across the project while maintaining compatibility with the existing codebase and automated formatting tools.

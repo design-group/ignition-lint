@@ -1,3 +1,6 @@
+"""
+This module contains the core data models for representing Ignition view components and their properties.
+"""
 from .builder import ViewModelBuilder
 from .node_types import (
 	ViewNode,

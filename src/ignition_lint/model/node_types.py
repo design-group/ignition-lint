@@ -47,9 +47,8 @@ class ViewNode(ABC):
 		visit_method = getattr(visitor, method_name, None)
 		if visit_method:
 			return visit_method(self)
-		else:
-			# Fallback to generic visit method
-			return visitor.visit_generic(self)
+		# Fallback to generic visit method
+		return visitor.visit_generic(self)
 
 	def serialize(self):
 		"""Serialize node data for debugging/inspection."""

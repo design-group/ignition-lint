@@ -58,7 +58,7 @@ def create_rules_from_config(config: dict) -> list:
 
 		try:
 			rules.append(rule_class.create_from_config(kwargs))
-		except Exception as e:
+		except (TypeError, ValueError, AttributeError) as e:
 			print(f"Error creating rule {rule_name}: {e}")
 			continue
 
@@ -70,7 +70,7 @@ def get_view_file(file_path: Path) -> Dict[str, Any]:
 	try:
 		json_data = read_json_file(file_path)
 		return flatten_json(json_data)
-	except Exception as e:
+	except (FileNotFoundError, json.JSONDecodeError, PermissionError, OSError) as e:
 		print(f"Error reading or parsing file {file_path}: {e}")
 		return {}
 
@@ -275,7 +275,7 @@ def main():
 			if args.debug_nodes:
 				print(f"\n🔧 Debug info for node types: {', '.join(args.debug_nodes)}")
 			else:
-				print(f"\n🔧 Debug info for all nodes:")
+				print("\n🔧 Debug info for all nodes:")
 
 			for i, node_info in enumerate(debug_nodes[:10]):  # Limit to first 10
 				print(f"  {i+1}. {node_info['path']} ({node_info['node_type']})")
@@ -297,12 +297,12 @@ def main():
 				print(f"✅ No issues found in {file_path}")
 
 	# Print summary
-	print(f"\n📈 Summary:")
+	print("\n📈 Summary:")
 	print(f"  Files processed: {processed_files}")
 
 	if not args.stats_only:
 		if total_errors == 0:
-			print(f"  ✅ No style inconsistencies found!")
+			print("  ✅ No style inconsistencies found!")
 			sys.exit(0)
 		else:
 			print(f"  ❌ Total issues: {total_errors}")

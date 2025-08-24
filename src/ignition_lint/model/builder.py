@@ -4,8 +4,20 @@ from a flattened JSON representation of an Ignition Perspective view. It include
 component types, bindings, event handlers, and other elements from the JSON data.
 """
 import re
-from .node_types import *
 from typing import Dict, List, Any
+
+from .node_types import (
+	ViewNode,
+	Component,
+	ExpressionBinding,
+	PropertyBinding,
+	TagBinding,
+	MessageHandlerScript,
+	CustomMethodScript,
+	TransformScript,
+	EventHandlerScript,
+	Property,
+)
 
 
 class ViewModelBuilder:
@@ -25,7 +37,7 @@ class ViewModelBuilder:
 			'script_transforms': [],
 			'properties': []
 		}
-	
+
 	def _search_for_path_value(self, path: str, suffix: str = None, fallback: Any = None) -> Any:
 		"""Search for a value in the flattened JSON by path, optionally with a suffix."""
 		full_path = f"{path}.{suffix}" if suffix else path
@@ -94,7 +106,7 @@ class ViewModelBuilder:
 			component_name = value
 			component_type = self._get_component_type(component_path)
 			self.model['components'].append(Component(component_path, component_name, component_type))
-	
+
 	def _collect_bindings(self):
 		"""Collect all bindings from the flattened JSON."""
 		visited_paths = []
@@ -147,7 +159,7 @@ class ViewModelBuilder:
 				handler = MessageHandlerScript(base_path, script_code, message_type, scope)
 				self.model['message_handlers'].append(handler)
 				self.model['scripts'].append(handler)
-	
+
 	def _collect_custom_methods(self):
 		"""Collect all custom methods from the flattened JSON."""
 		custom_method_data = {}
@@ -217,7 +229,7 @@ class ViewModelBuilder:
 					)
 					self.model['event_handlers'].append(handler)
 					self.model['scripts'].append(handler)
-	
+
 	def _collect_properties(self):
 		for path, value in self.flattened_json.items():
 			# Skip meta properties, bindings, scripts - we already processed those
@@ -241,7 +253,7 @@ class ViewModelBuilder:
 				# Add the property to the component
 				if component_path in self.model['components']:
 					self.model['components'][component_path].properties[property_name] = value
-	
+
 	def get_view_model(self) -> Dict[str, List[ViewNode]]:
 		"""Return the structured view model."""
 		return self.model
@@ -249,35 +261,21 @@ class ViewModelBuilder:
 	def build_model(self, flattened_json: Dict[str, Any]) -> Dict[str, List[ViewNode]]:
 		"""
 		Parse the flattened JSON and build a structured model.
-		
+
 		Returns:
 			Dict mapping node types to lists of those nodes
 		"""
 		self.flattened_json = flattened_json
-		# Initialize collections for each node type
-		model = {
-			'components': [],
-			'bindings': [],
-			'scripts': [],
-			'event_handlers': [],
-			'message_handlers': [],
-			'custom_methods': [],
-			'expression_bindings': [],
-			'property_bindings': [],
-			'tag_bindings': [],
-			'script_transforms': [],
-			'properties': []
-		}
 
 		# First, identify components
 		self._collect_components()
-		
+
 		# Process bindings
 		self._collect_bindings()
 
 		# Process message handlers
 		self._collect_message_handlers()
-		
+
 		# Process custom methods
 		self._collect_custom_methods()
 

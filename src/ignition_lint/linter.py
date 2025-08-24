@@ -173,15 +173,14 @@ class LintEngine:
 		"""Get a brief summary of what a node represents."""
 		if node.node_type == NodeType.COMPONENT:
 			return f"Component '{node.name}' of type '{getattr(node, 'type', 'unknown')}'"
-		elif node.node_type == NodeType.EXPRESSION_BINDING:
+		if node.node_type == NodeType.EXPRESSION_BINDING:
 			expr_preview = node.expression[:50] + '...' if len(node.expression) > 50 else node.expression
 			return f"Expression: {expr_preview}"
-		elif node.node_type == NodeType.TAG_BINDING:
+		if node.node_type == NodeType.TAG_BINDING:
 			return f"Tag path: {getattr(node, 'tag_path', 'unknown')}"
-		elif node.node_type == NodeType.PROPERTY_BINDING:
+		if node.node_type == NodeType.PROPERTY_BINDING:
 			return f"Property path: {getattr(node, 'target_path', 'unknown')}"
-		elif hasattr(node, 'script'):
+		if hasattr(node, 'script'):
 			script_preview = node.script[:30] + '...' if len(node.script) > 30 else node.script
 			return f"Script: {script_preview}"
-		else:
-			return f"{node.node_type.value} node"
+		return f"{node.node_type.value} node"

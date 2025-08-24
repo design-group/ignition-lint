@@ -1,3 +1,11 @@
+"""
+Linting rules package for ignition-lint.
+
+This module provides the rule system infrastructure and built-in rules
+for linting Ignition Perspective view files. It includes the dynamic rule
+registration system and auto-discovery of custom rules.
+"""
+
 from .common import LintingRule, NodeVisitor, BindingRule
 from .registry import register_rule, get_registry, get_all_rules, discover_rules
 

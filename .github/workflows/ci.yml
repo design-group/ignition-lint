@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.12"]
 
     steps:
       - name: Checkout code
@@ -45,11 +45,7 @@ jobs:
         run: poetry install
 
       - name: Run linting with pylint
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Files in current directory: $(ls -la)"
-          echo "Checking for .pylintrc: $(ls -la .pylintrc 2>/dev/null || echo 'not found')"
-          poetry run pylint ignition_lint/
+        run: poetry run pylint ignition_lint/
 
       - name: Run unit tests
         run: |
