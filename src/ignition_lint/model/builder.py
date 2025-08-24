@@ -225,7 +225,7 @@ class ViewModelBuilder:
 
 					# Create a script event handler
 					handler = EventHandlerScript(
-						event_path, event_domain, event_type, script, scope
+						event_path, event_domain, event_type, script, scope=scope
 					)
 					self.model['event_handlers'].append(handler)
 					self.model['scripts'].append(handler)

@@ -177,7 +177,7 @@ class TransformScript(ScriptNode):
 class EventHandlerScript(ScriptNode):
 	"""Represents an event handler script."""
 
-	def __init__(self, path: str, event_domain: str, event_type: str, script: str, scope: str = None):
+	def __init__(self, path: str, event_domain: str, event_type: str, script: str, *, scope: str = None):
 		super().__init__(path, NodeType.EVENT_HANDLER, script)
 		self.event_domain = event_domain
 		self.event_type = event_type
