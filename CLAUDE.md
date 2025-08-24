@@ -62,7 +62,7 @@ python -m unittest discover tests
 
 ### Linting and Code Quality
 ```bash
-# Run pylint on source code
+# Run pylint on source code (uses .pylintrc configuration)
 poetry run pylint ignition_lint/
 
 # Format code with black
