@@ -21,7 +21,7 @@ class TestExampleMixedSeverityRule(BaseRuleTest):
 			{
 				"name": "x",
 				"type": "label"
-			},  # WARNING: very short name  
+			},  # WARNING: very short name
 			{
 				"name": "MyComponent",
 				"type": "container"
@@ -162,7 +162,7 @@ class TestExampleMixedSeverityRule(BaseRuleTest):
 			{
 				"name": "id",
 				"type": "label"
-			},  # Should not warn - common short name  
+			},  # Should not warn - common short name
 			{
 				"name": "go",
 				"type": "button"

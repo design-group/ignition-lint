@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
+# pylint: disable=import-error,wrong-import-position
 """
 Modular test runner script for ignition-lint.
 This script provides a simple command-line interface for running organized tests.
 """
 
 import argparse
+import json
 import os
 import sys
 import unittest
@@ -16,9 +18,36 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 from fixtures.config_framework import ConfigurableTestFramework, create_sample_test_configs
 
 
+def _print_expectation_detail(detail):
+	"""Print details for a failed expectation."""
+	print(f"  Rule {detail['rule_name']}:")
+	# Handle both old and new format
+	if 'expected_count' in detail:
+		print(f"    Expected {detail['expected_count']} errors, got {detail['actual_count']}")
+	else:
+		print(f"    Expected {detail['expected_warnings']} warnings, got {detail['actual_warnings']}")
+		print(f"    Expected {detail['expected_errors']} errors, got {detail['actual_errors']}")
+	# Handle pattern matches for both old and new format
+	if 'pattern_matches' in detail and detail['pattern_matches']:
+		for pm in detail['pattern_matches']:
+			if not pm['found']:
+				print(f"    Missing pattern: '{pm['pattern']}'")
+	elif 'error_pattern_matches' in detail or 'warning_pattern_matches' in detail:
+		# New format with separate error and warning patterns
+		for pm in detail.get('error_pattern_matches', []):
+			if not pm['found']:
+				print(f"    Missing error pattern: '{pm['pattern']}'")
+		for pm in detail.get('warning_pattern_matches', []):
+			if not pm['found']:
+				print(f"    Missing warning pattern: '{pm['pattern']}'")
+
+
 def discover_and_run_unit_tests(test_pattern=None, verbosity=2):
 	"""Discover and run unit tests from the unit/ directory."""
 	test_dir = Path(__file__).parent / "unit"
+	print("=" * 60)
+	print("RUNNING UNIT TESTS")
+	print("=" * 60)
 
 	if not test_dir.exists():
 		print(f"Unit tests directory not found: {test_dir}")
@@ -41,6 +70,10 @@ def discover_and_run_unit_tests(test_pattern=None, verbosity=2):
 def discover_and_run_integration_tests(test_pattern=None, verbosity=2):
 	"""Discover and run integration tests from the integration/ directory."""
 	test_dir = Path(__file__).parent / "integration"
+
+	print("\n" + "=" * 60)
+	print("RUNNING INTEGRATION TESTS")
+	print("=" * 60)
 
 	if not test_dir.exists():
 		print(f"Integration tests directory not found: {test_dir}")
@@ -83,17 +116,21 @@ def run_specific_test_file(test_file, verbosity=2):
 		runner = unittest.TextTestRunner(verbosity=verbosity)
 		result = runner.run(suite)
 		return result.wasSuccessful()
-	except Exception as e:
+	except (ImportError, AttributeError, TypeError) as e:
 		print(f"Error loading test module {module_name}: {e}")
 		return False
 
 
 def run_config_tests(tags=None):
 	"""Run configuration-driven tests."""
+	print("\n" + "=" * 60)
+	print("RUNNING CONFIGURATION-DRIVEN TESTS")
+	print("=" * 60)
+
 	framework = ConfigurableTestFramework()
 	results = framework.run_all_tests(tags=tags)
 
-	print(f"\nConfiguration Test Results:")
+	print("\nConfiguration Test Results:")
 	print(f"Total: {results['total']}")
 	print(f"Passed: {results['passed']}")
 	print(f"Failed: {results['failed']}")
@@ -101,48 +138,25 @@ def run_config_tests(tags=None):
 	print(f"Errors: {results['errors']}")
 
 	# Print detailed results for failures
-	if results['failed'] > 0 or results['errors'] > 0:
-		print(f"\nDetailed Results:")
-		for result in results['results']:
-			if result['status'] in ['failed', 'error']:
-				print(f"\n{result['status'].upper()}: {result['name']}")
-				if result['reason']:
-					print(f"  Reason: {result['reason']}")
-				if 'expectation_details' in result:
-					for detail in result['expectation_details']:
-						if not detail['met']:
-							print(f"  Rule {detail['rule_name']}:")
-							# Handle both old and new format
-							if 'expected_count' in detail:
-								print(
-									f"    Expected {detail['expected_count']} errors, got {detail['actual_count']}"
-								)
-							else:
-								print(
-									f"    Expected {detail['expected_warnings']} warnings, got {detail['actual_warnings']}"
-								)
-								print(
-									f"    Expected {detail['expected_errors']} errors, got {detail['actual_errors']}"
-								)
-							# Handle pattern matches for both old and new format
-							if 'pattern_matches' in detail and detail['pattern_matches']:
-								for pm in detail['pattern_matches']:
-									if not pm['found']:
-										print(
-											f"    Missing pattern: '{pm['pattern']}'"
-										)
-							elif 'error_pattern_matches' in detail or 'warning_pattern_matches' in detail:
-								# New format with separate error and warning patterns
-								for pm in detail.get('error_pattern_matches', []):
-									if not pm['found']:
-										print(
-											f"    Missing error pattern: '{pm['pattern']}'"
-										)
-								for pm in detail.get('warning_pattern_matches', []):
-									if not pm['found']:
-										print(
-											f"    Missing warning pattern: '{pm['pattern']}'"
-										)
+	if not results['failed'] and not results['errors']:
+		print("All configuration tests passed!")
+		return True
+
+	print("\nDetailed Results:")
+	for result in results['results']:
+		if result['status'] not in ['failed', 'error']:
+			continue
+
+		print(f"\n{result['status'].upper()}: {result['name']}")
+		if result['reason']:
+			print(f"  Reason: {result['reason']}")
+
+		if 'expectation_details' not in result:
+			continue
+
+		for detail in result['expectation_details']:
+			if not detail['met']:
+				_print_expectation_detail(detail)
 
 	return results['failed'] == 0 and results['errors'] == 0
 
@@ -177,8 +191,7 @@ def list_available_tests():
 		by_tags = {}
 		for tc in test_cases:
 			for tag in tc.tags:
-				if tag not in by_tags:
-					by_tags[tag] = []
+				by_tags.setdefault(tag, [])
 				by_tags[tag].append(tc.name)
 
 		for tag, cases in by_tags.items():
@@ -232,7 +245,7 @@ def setup_test_environment():
 	# Create sample configurations
 	try:
 		create_sample_test_configs()
-	except Exception as e:
+	except (OSError, PermissionError, json.JSONDecodeError) as e:
 		print(f"Warning: Could not create sample configs: {e}")
 
 	print("\nTest environment setup complete!")
@@ -313,10 +326,7 @@ def main():
 	args = parser.parse_args()
 
 	# Set verbosity level
-	if args.quiet:
-		verbosity = 0
-	else:
-		verbosity = min(args.verbose, 2)
+	verbosity = 0 if args.quiet else min(args.verbose, 2)
 
 	# Handle setup first
 	if args.setup:
@@ -352,33 +362,23 @@ def main():
 
 	# Run unit tests
 	if run_unit:
-		print("=" * 60)
-		print("RUNNING UNIT TESTS")
-		print("=" * 60)
 		success = discover_and_run_unit_tests(args.unit_pattern, verbosity) and success
 
 	# Run integration tests
 	if run_integration:
-		print("\n" + "=" * 60)
-		print("RUNNING INTEGRATION TESTS")
-		print("=" * 60)
 		success = discover_and_run_integration_tests(args.integration_pattern, verbosity) and success
 
 	# Run configuration tests
 	if run_config:
-		print("\n" + "=" * 60)
-		print("RUNNING CONFIGURATION-DRIVEN TESTS")
-		print("=" * 60)
 		success = run_config_tests(tags=args.tags) and success
 
 	# Final result
 	print("\n" + "=" * 60)
-	if success:
-		print("ALL TESTS PASSED ✅")
-		return 0
-	else:
+	if not success:
 		print("SOME TESTS FAILED ❌")
 		return 1
+	print("ALL TESTS PASSED ✅")
+	return 0
 
 
 if __name__ == "__main__":

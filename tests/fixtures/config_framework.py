@@ -9,7 +9,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Union
+from typing import Dict, List, Any
 from dataclasses import dataclass
 
 # Add the src directory to the PYTHONPATH
@@ -94,7 +94,7 @@ class ConfigurableTestFramework:
 
 		for config_file in self.config_dir.glob("*.json"):
 			try:
-				with open(config_file, 'r') as f:
+				with open(config_file, 'r', encoding='utf-8') as f:
 					config_data = json.load(f)
 
 				# Parse test cases from configuration
@@ -378,7 +378,7 @@ class ConfigurableTestFramework:
 		output_path = self.config_dir / output_file
 		output_path.parent.mkdir(parents=True, exist_ok=True)
 
-		with open(output_path, 'w') as f:
+		with open(output_path, 'w', encoding='utf-8') as f:
 			json.dump(template, f, indent=2)
 
 		print(f"Generated template configuration: {output_path}")
@@ -595,7 +595,7 @@ def create_sample_test_configs():
 
 	for filename, config in configs:
 		config_path = framework.config_dir / filename
-		with open(config_path, 'w') as f:
+		with open(config_path, 'w', encoding='utf-8') as f:
 			json.dump(config, f, indent=2)
 		print(f"Created configuration file: {config_path}")
 
@@ -620,7 +620,7 @@ if __name__ == "__main__":
 		framework = ConfigurableTestFramework()
 		results = framework.run_all_tests(tags=args.tags)
 
-		print(f"\nTest Results Summary:")
+		print("\nTest Results Summary:")
 		print(f"Total: {results['total']}")
 		print(f"Passed: {results['passed']}")
 		print(f"Failed: {results['failed']}")
@@ -628,7 +628,7 @@ if __name__ == "__main__":
 		print(f"Errors: {results['errors']}")
 
 		if results['failed'] > 0 or results['errors'] > 0:
-			print(f"\nDetailed Results:")
+			print("\nDetailed Results:")
 			for result in results['results']:
 				if result['status'] in ['failed', 'error']:
 					print(f"\n{result['status'].upper()}: {result['name']}")

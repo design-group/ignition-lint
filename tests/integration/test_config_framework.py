@@ -19,7 +19,7 @@ class ConfigurableTestRunner(unittest.TestCase):
 		results = self.framework.run_all_tests()
 
 		# Print detailed results for debugging
-		print(f"\nConfiguration Framework Test Results:")
+		print("\nConfiguration Framework Test Results:")
 		print(f"Total: {results['total']}")
 		print(f"Passed: {results['passed']}")
 		print(f"Failed: {results['failed']}")
@@ -63,7 +63,7 @@ class ConfigurableTestRunner(unittest.TestCase):
 		self.assertIsInstance(results['errors'], int, "Framework should return valid error count")
 
 		# Framework integration test passes if it can execute without crashing
-		print(f"\n✅ Configuration Framework Integration Test PASSED")
+		print("\n✅ Configuration Framework Integration Test PASSED")
 		print(f"   Framework successfully executed {results['total']} test cases")
 
 

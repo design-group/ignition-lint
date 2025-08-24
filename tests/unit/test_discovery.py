@@ -77,7 +77,7 @@ class TestDiscoveryFunctionality(BaseRuleTest):
 			self.assertTrue(temp_file.name.endswith('.json'))
 
 			# Should be able to read it back
-			with open(temp_file, 'r') as f:
+			with open(temp_file, 'r', encoding='utf-8') as f:
 				loaded_content = f.read()
 
 			self.assertEqual(view_content, loaded_content)

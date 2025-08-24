@@ -5,7 +5,7 @@ Helper functions and utilities for ignition-lint tests.
 import json
 import tempfile
 from pathlib import Path
-from typing import Dict, Any, List, Union
+from typing import Dict, Any, List
 
 
 def create_mock_view(components: List[Dict[str, Any]], custom_properties: Dict[str, Any] = None) -> str:

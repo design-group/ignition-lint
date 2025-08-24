@@ -16,7 +16,7 @@ from fixtures.base_test import BaseIntegrationTest
 class TestCLIIntegration(BaseIntegrationTest):
 	"""Test CLI tool integration."""
 
-	def setUp(self):
+	def setUp(self):  # pylint: disable=invalid-name
 		super().setUp()
 		# Try different possible CLI paths
 		possible_paths = [

@@ -12,7 +12,7 @@ from fixtures.test_helpers import get_test_config, load_test_view
 class TestPollingIntervalRule(BaseRuleTest):
 	"""Test polling interval validation."""
 
-	def setUp(self):
+	def setUp(self):  # pylint: disable=invalid-name
 		super().setUp()
 		self.rule_config = get_test_config("PollingIntervalRule", minimum_interval=10000)
 

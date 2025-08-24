@@ -50,7 +50,7 @@ def create_lint_engine() -> LintEngine:
 			# Test that we can create the rule (same as test)
 			rule_class.create_from_config({})
 			rule_classes.append(rule_class)
-		except Exception as e:
+		except (TypeError, ValueError, AttributeError) as e:
 			print(f"Warning: Could not create rule {rule_name}: {e}")
 
 	# Create fresh rules (same as test)
@@ -132,7 +132,7 @@ These files help developers understand:
 		print(f"✅ Generated debug files for {case_dir.name}")
 		return True
 
-	except Exception as e:
+	except (OSError, PermissionError, TypeError, ValueError, json.JSONDecodeError) as e:
 		print(f"❌ Failed to generate debug files for {case_dir.name}: {e}")
 		return False
 

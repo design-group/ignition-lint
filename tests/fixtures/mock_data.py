@@ -2,7 +2,7 @@
 Mock data generators for testing ignition-lint rules.
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 
 def create_pascal_case_component(name: str, component_type: str = "ia.display.label") -> Dict[str, Any]:
