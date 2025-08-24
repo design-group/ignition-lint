@@ -3,8 +3,11 @@ This module contains common and base node types for rule implementation
 """
 
 from abc import ABC, abstractmethod
-from typing import Set, List, Dict, Any
+from typing import Set, List, Dict, Any, Literal
 from ..model.node_types import ViewNode, NodeType, ScriptNode, ALL_BINDINGS, ALL_SCRIPTS
+
+# Type definition for severity levels
+Severity = Literal["warning", "error"]
 
 
 class NodeVisitor(ABC):
@@ -55,6 +58,7 @@ class LintingRule(NodeVisitor):
 		"""
 		self.target_node_types = target_node_types or set()
 		self.errors = []
+		self.warnings = []
 
 	@classmethod
 	def preprocess_config(cls, config: Dict[str, Any]) -> Dict[str, Any]:
@@ -91,6 +95,7 @@ class LintingRule(NodeVisitor):
 	def process_nodes(self, nodes: List[ViewNode]):
 		"""Process a list of nodes, applying the rule to applicable ones."""
 		self.errors = []  # Reset errors
+		self.warnings = []  # Reset warnings
 
 		# Filter nodes that this rule applies to
 		applicable_nodes = [node for node in nodes if self.applies_to(node)]

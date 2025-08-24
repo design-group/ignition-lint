@@ -40,6 +40,7 @@ class PylintScriptRule(ScriptRule):
 		# Add issues to our errors list
 		for path, issues in path_to_issues.items():
 			for issue in issues:
+				# Pylint issues (syntax errors, undefined variables, etc.) are errors
 				self.errors.append(f"{path}: {issue}")
 
 	def _run_pylint_batch(self, scripts: Dict[str, ScriptNode]) -> Dict[str, List[str]]:

@@ -4,10 +4,17 @@ It provides functionality to apply linting rules, collect errors, and analyze th
 It also includes methods for debugging nodes and analyzing rule impact on the view model.
 """
 
-from typing import Dict, List, Any
+from typing import Dict, List, Any, NamedTuple
 from .rules.common import LintingRule
 from .model.builder import ViewModelBuilder
 from .model.node_types import NodeType, NodeUtils
+
+
+class LintResults(NamedTuple):
+	"""Results from linting process."""
+	warnings: Dict[str, List[str]]
+	errors: Dict[str, List[str]]
+	has_errors: bool
 
 
 class LintEngine:
@@ -23,8 +30,8 @@ class LintEngine:
 		"""Return the structured view model."""
 		return self.model_builder.build_model(self.flattened_json)
 
-	def process(self, flattened_json: Dict[str, Any]) -> Dict[str, List[str]]:
-		"""Lint the given flattened JSON and return errors."""
+	def process(self, flattened_json: Dict[str, Any]) -> LintResults:
+		"""Lint the given flattened JSON and return warnings and errors."""
 		# Build the object model
 		self.flattened_json = flattened_json
 		self.view_model = self._get_view_model()
@@ -34,6 +41,7 @@ class LintEngine:
 		for node_list in self.view_model.values():
 			all_nodes.extend(node_list)
 
+		warnings = {}
 		errors = {}
 
 		# Apply each rule to the nodes
@@ -41,11 +49,19 @@ class LintEngine:
 			# Let the rule process all nodes it's interested in
 			rule.process_nodes(all_nodes)
 
-			# Collect any errors from this rule
+			# Collect warnings from this rule
+			if rule.warnings:
+				warnings[rule.error_key] = rule.warnings
+
+			# Collect errors from this rule
 			if rule.errors:
 				errors[rule.error_key] = rule.errors
 
-		return errors
+		return LintResults(
+			warnings=warnings,
+			errors=errors,
+			has_errors=bool(errors)
+		)
 
 	def get_model_statistics(self, flattened_json: Dict[str, Any]) -> Dict[str, Any]:
 		"""Get statistics about the parsed model for debugging/analysis."""

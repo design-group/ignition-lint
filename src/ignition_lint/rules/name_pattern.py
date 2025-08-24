@@ -42,7 +42,7 @@ class NamePatternRule(LintingRule):
 		"""
 		Preprocess configuration to convert string node types to NodeType enums.
 		"""
-		processed_config = config.copy()
+		processed_config = super().preprocess_config(config)
 
 		# Convert target_node_types from strings to NodeType enums
 		if 'target_node_types' in processed_config:
@@ -364,7 +364,8 @@ class NamePatternRule(LintingRule):
 		if name:
 			validation_errors = self._validate_name(node, name)
 			for error in validation_errors:
-				self.errors.append(f"{node.path}: {error}")
+				# Naming convention violations are warnings, not errors
+				self.warnings.append(f"{node.path}: {error}")
 
 	# Specific visit methods that delegate to the generic method
 	def visit_component(self, node: ViewNode):

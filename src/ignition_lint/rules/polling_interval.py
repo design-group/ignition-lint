@@ -25,6 +25,7 @@ class PollingIntervalRule(BindingRule):
 		"""Check expression bindings for polling issues."""
 		if 'now' in node.expression:
 			if not self._is_valid_polling(node.expression):
+				# Performance issues are errors, not warnings
 				self.errors.append(f"{node.path}: '{node.expression}'")
 
 	def _is_valid_polling(self, expression):

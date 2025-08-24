@@ -7,11 +7,21 @@ Ignition Lint is a Python framework designed to analyze and lint Ignition Perspe
 ## Getting Started with Poetry
 
 ### Prerequisites
-- Python 3.8 or higher
+- Python 3.9 or higher
 - Poetry >= 2.0 (install from [python-poetry.org](https://python-poetry.org/docs/#installation))
 
-### Installation
+### Installation Methods
 
+#### Option 1: Install from PyPI (Recommended for Users)
+```bash
+# Install the package
+pip install ignition-lint
+
+# Verify installation
+ignition-lint --help
+```
+
+#### Option 2: Development Setup with Poetry
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/design-group/ignition-lint.git
@@ -30,7 +40,7 @@ Ignition Lint is a Python framework designed to analyze and lint Ignition Perspe
 
 4. **Verify installation:**
    ```bash
-   poetry run python -m ignition_lint.main --help
+   poetry run python -m ignition_lint --help
    ```
 
 ### Development Setup
@@ -42,13 +52,14 @@ For development work, install with development dependencies:
 poetry install --with dev
 
 # Run tests
-poetry run pytest
+cd tests
+poetry run python test_runner.py --run-all
 
 # Run linting
 poetry run pylint ignition_lint/
 
 # Format code
-poetry run black ignition_lint/
+poetry run yapf -ir ignition_lint/
 ```
 
 ### Running Without Activating Shell
@@ -57,10 +68,13 @@ You can run commands directly through Poetry without activating the shell:
 
 ```bash
 # Run linting on a view file
-poetry run python -m ignition_lint.main path/to/view.json
+poetry run python -m ignition_lint path/to/view.json
 
 # Run with custom configuration
-poetry run python -m ignition_lint.main --config my_rules.json --files "views/**/view.json"
+poetry run python -m ignition_lint --config my_rules.json --files "views/**/view.json"
+
+# Using the CLI entry point
+poetry run ignition-lint path/to/view.json
 ```
 
 ### Building and Distribution
@@ -519,28 +533,43 @@ Ensures that polling intervals in expressions meet minimum requirements:
 - Validates interval values
 - Default minimum: 10,000ms
 
-## CLI Usage
+## Usage Methods
 
-### Basic Usage
+This package can be utilized in several ways to fit different development workflows:
 
+### 1. Command Line Interface (CLI)
+
+#### Using the Installed Package
 ```bash
-# Using Poetry (recommended)
-poetry run python -m ignition_lint.main path/to/view.json
+# After pip install ignition-lint
+ignition-lint path/to/view.json
 
 # Lint multiple files with glob pattern
-poetry run python -m ignition_lint.main --files "**/view.json"
+ignition-lint --files "**/view.json"
 
 # Use custom configuration
-poetry run python -m ignition_lint.main --config my_rules.json --files "views/**/view.json"
+ignition-lint --config my_rules.json --files "views/**/view.json"
+
+# Show help
+ignition-lint --help
+```
+
+#### Using Poetry (Development)
+```bash
+# Using the CLI entry point
+poetry run ignition-lint path/to/view.json
+
+# Using the module directly
+poetry run python -m ignition_lint path/to/view.json
 
 # If you've activated the Poetry shell
 poetry shell
-python -m ignition_lint.main path/to/view.json
+ignition-lint path/to/view.json
 ```
 
-### Pre-commit Integration
+### 2. Pre-commit Hook Integration
 
-Add to `.pre-commit-config.yaml`:
+Add to your `.pre-commit-config.yaml`:
 
 ```yaml
 repos:
@@ -549,11 +578,160 @@ repos:
     hooks:
       - id: ignition-lint
         args: [
-          "--component-style", "PascalCase",
-          "--parameter-style", "camelCase",
-          "--allow-acronyms",
+          "--config", "rule_config.json",
+          "--files", "**/*.json"
         ]
         files: view\.json$
+```
+
+Install and run:
+```bash
+# Install pre-commit hooks
+pre-commit install
+
+# Run on all files
+pre-commit run --all-files
+
+# Run on staged files only
+pre-commit run
+```
+
+### 3. GitHub Actions Workflow
+
+Create `.github/workflows/ignition-lint.yml`:
+
+```yaml
+name: Ignition Lint
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ignition-lint
+        run: pip install ignition-lint
+
+      - name: Run ignition-lint
+        run: |
+          # Lint all view.json files in the repository
+          find . -name "view.json" -type f | while read file; do
+            echo "Linting $file"
+            ignition-lint "$file"
+          done
+```
+
+### 4. Development Mode with Poetry
+
+For contributors and package developers:
+
+```bash
+# Clone and set up development environment
+git clone https://github.com/design-group/ignition-lint.git
+cd ignition-lint
+
+# Install with Poetry
+poetry install
+
+# Test the package locally
+poetry run ignition-lint tests/cases/PreferredStyle/view.json
+
+# Run the full test suite
+cd tests
+poetry run python test_runner.py --run-all
+
+# Test GitHub Actions workflows locally
+./test-actions.sh
+
+# Format and lint code before committing
+poetry run yapf -ir src/ tests/
+poetry run pylint src/ignition_lint/
+```
+
+## Configuration System
+
+### Rule Configuration
+
+Rules are configured via JSON files (default: `rule_config.json`):
+
+```json
+{
+  "NamePatternRule": {
+    "enabled": true,
+    "kwargs": {
+      "convention": "PascalCase",
+      "target_node_types": ["component"]
+    }
+  },
+  "PollingIntervalRule": {
+    "enabled": true,
+    "kwargs": {
+      "minimum_interval": 10000
+    }
+  }
+}
+```
+
+### Severity Levels
+
+Severity levels are determined by rule developers based on what each rule checks. Users cannot configure severity levels.
+
+- **Warnings**: Style and preference issues that don't prevent functionality
+- **Errors**: Critical issues that can cause functional problems or break systems
+
+#### Built-in Rule Severities
+
+| Rule | Severity | Reason |
+|------|----------|---------|
+| `NamePatternRule` | Warning | Naming conventions are style preferences |
+| `PollingIntervalRule` | Error | Performance issues can cause system problems |
+| `PylintScriptRule` | Error | Syntax errors, undefined variables break functionality |
+
+#### Output Examples
+
+**Warnings (exit code 0):**
+```
+⚠️  Found 3 warnings in view.json:
+  📋 NamePatternRule (warning):
+    • component: Name doesn't follow PascalCase convention
+
+✅ No errors found (warnings only)
+```
+
+**Errors (exit code 1):**
+```
+❌ Found 2 errors in view.json:
+  📋 PollingIntervalRule (error):
+    • binding: Polling interval 5000ms below minimum 10000ms
+
+📈 Summary:
+  ❌ Total issues: 2
+```
+
+### Developer Guidelines for Rule Severity
+
+When creating custom rules, set the severity based on the impact:
+
+```python
+class MyCustomRule(LintingRule):
+    # Use "warning" for style/preference issues
+    severity = "warning"
+    
+    # Use "error" for functional/performance issues  
+    # severity = "error"
 ```
 
 ## Best Practices

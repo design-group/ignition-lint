@@ -13,7 +13,7 @@ from typing import List, Dict, Any
 try:
 	# Try relative imports first (when run as module)
 	from .common.flatten_json import read_json_file, flatten_json
-	from .linter import LintEngine
+	from .linter import LintEngine, LintResults
 	from .rules import RULES_MAP
 except ImportError:
 	# Fall back to absolute imports (when run directly or from tests)
@@ -23,7 +23,7 @@ except ImportError:
 		sys.path.insert(0, str(src_dir))
 
 	from ignition_lint.common.flatten_json import read_json_file, flatten_json
-	from ignition_lint.linter import LintEngine
+	from ignition_lint.linter import LintEngine, LintResults
 	from ignition_lint.rules import RULES_MAP
 
 
@@ -103,28 +103,35 @@ def collect_files(args) -> List[Path]:
 	return files_to_process
 
 
-def print_file_errors(file_path: Path, errors: Dict[str, List[str]]) -> int:
+def print_file_results(file_path: Path, lint_results) -> int:
 	"""
-	Print errors for a file and return the total number of errors.
+	Print warnings and errors for a file and return the total number of errors.
 	
 	Args:
-		file_path: Path to the file with errors
-		errors: Dictionary mapping rule names to lists of error messages
+		file_path: Path to the file with results
+		lint_results: LintResults object containing warnings and errors
 	
 	Returns:
-		int: Total number of errors found
+		int: Total number of errors found (warnings don't count)
 	"""
-	if not errors:
-		return 0
-
-	error_count = sum(len(error_list) for error_list in errors.values())
-
+	warning_count = sum(len(warning_list) for warning_list in lint_results.warnings.values())
+	error_count = sum(len(error_list) for error_list in lint_results.errors.values())
+	
+	# Print warnings first
+	if warning_count > 0:
+		print(f"\n⚠️  Found {warning_count} warnings in {file_path}:")
+		for rule_name, warning_list in lint_results.warnings.items():
+			if warning_list:
+				print(f"  📋 {rule_name} (warning):")
+				for warning in warning_list:
+					print(f"    • {warning}")
+	
+	# Print errors
 	if error_count > 0:
-		print(f"\n❌ Found {error_count} issues in {file_path}:")
-
-		for rule_name, error_list in errors.items():
+		print(f"\n❌ Found {error_count} errors in {file_path}:")
+		for rule_name, error_list in lint_results.errors.items():
 			if error_list:
-				print(f"  📋 {rule_name}:")
+				print(f"  📋 {rule_name} (error):")
 				for error in error_list:
 					print(f"    • {error}")
 
@@ -237,11 +244,13 @@ def process_single_file(file_path: Path, lint_engine: LintEngine, args) -> int:
 
 	# Run linting (unless stats-only mode)
 	if not args.stats_only:
-		errors = lint_engine.process(flattened_json)
-		file_errors = print_file_errors(file_path, errors)
+		lint_results = lint_engine.process(flattened_json)
+		file_errors = print_file_results(file_path, lint_results)
 
-		if file_errors == 0:
+		if file_errors == 0 and not lint_results.warnings:
 			print(f"✅ No issues found in {file_path}")
+		elif file_errors == 0 and lint_results.warnings:
+			print(f"✅ No errors found in {file_path} (warnings only)")
 
 		return file_errors
 

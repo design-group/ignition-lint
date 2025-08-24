@@ -1,5 +1,5 @@
 {
-  "_comment": "config with rules enabled by default",
+  "_comment": "Configuration with rules enabled by default. Severity levels are defined by rule developers - users don't configure severity.",
   "PylintScriptRule": {
     "enabled": true,
     "kwargs": {}
@@ -28,5 +28,14 @@
         }
       }
     }
+  },
+  "_info": {
+    "_description": "Rule severity levels are defined by rule developers:",
+    "rule_severities": {
+      "NamePatternRule": "warning - naming conventions are style preferences",
+      "PollingIntervalRule": "error - performance issues that can cause system problems",
+      "PylintScriptRule": "error - syntax errors, undefined variables, etc."
+    },
+    "note": "Users cannot configure severity levels - they are determined by what each rule checks."
   }
 }
