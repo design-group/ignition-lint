@@ -3,8 +3,32 @@ Fixed NamePatternRule that properly handles node-specific pattern configurations
 """
 import re
 from typing import Dict, Optional, Set, Callable, Any
+from dataclasses import dataclass
 from .common import LintingRule
 from ..model.node_types import ViewNode, NodeType
+
+
+@dataclass
+class NamePatternConfig:
+	"""Configuration for name pattern validation."""
+	# Validation constraints
+	allow_numbers: bool = True
+	min_length: int = 1
+	max_length: Optional[int] = None
+	forbidden_names: Optional[Set[str]] = None
+	skip_names: Optional[Set[str]] = None
+	# Abbreviation handling
+	allowed_abbreviations: Optional[Set[str]] = None
+	auto_detect_abbreviations: bool = True
+
+	def __post_init__(self):
+		"""Convert lists to sets if needed."""
+		if self.forbidden_names is not None and not isinstance(self.forbidden_names, set):
+			self.forbidden_names = set(self.forbidden_names)
+		if self.skip_names is not None and not isinstance(self.skip_names, set):
+			self.skip_names = set(self.skip_names)
+		if self.allowed_abbreviations is not None and not isinstance(self.allowed_abbreviations, set):
+			self.allowed_abbreviations = set(self.allowed_abbreviations)
 
 
 class NamePatternRule(LintingRule):
@@ -111,38 +135,48 @@ class NamePatternRule(LintingRule):
 
 	def __init__(
 		self,
-		target_node_types: Set[NodeType] = None,
 		convention: Optional[str] = None,
+		*,
+		target_node_types: Set[NodeType] = None,
 		custom_pattern: Optional[str] = None,
-		allow_numbers: bool = True,
-		min_length: int = 1,
-		max_length: Optional[int] = None,
-		forbidden_names: Optional[list] = None,
-		allowed_abbreviations: Optional[list] = None,
-		auto_detect_abbreviations: bool = True,
+		config: Optional[NamePatternConfig] = None,
 		name_extractors: Optional[Dict[NodeType, Callable[[ViewNode], str]]] = None,
 		node_type_specific_rules: Optional[Dict[NodeType, Dict]] = None,
-		skip_names: Optional[Set[str]] = None,
+		**kwargs  # Backward compatibility for old parameter names
 	):
 		"""
 		Initialize the naming rule.
+		
+		Args:
+			target_node_types: Node types this rule should apply to
+			convention: Naming convention (PascalCase, camelCase, etc.)
+			custom_pattern: Custom regex pattern (overrides convention)
+			config: Configuration for validation and abbreviation handling
+			name_extractors: Custom name extraction functions for node types
+			node_type_specific_rules: Per-node-type rule overrides
 		"""
 		super().__init__(target_node_types or {NodeType.COMPONENT})
 
 		self.convention = convention
 		self.custom_pattern = custom_pattern
-		self.allow_numbers = allow_numbers
-		self.min_length = min_length
-		self.max_length = max_length
-		self.forbidden_names = set(forbidden_names or [])
-		self.allowed_abbreviations = set(allowed_abbreviations or [])
-		self.auto_detect_abbreviations = auto_detect_abbreviations
-		self.skip_names = skip_names or {'root'}
+		# Handle configuration - use provided config or create from kwargs/defaults
+		if config is not None:
+			self.config = config
+		else:
+			# Create config from individual parameters (backward compatibility)
+			self.config = NamePatternConfig(
+				allow_numbers=kwargs.get('allow_numbers', True),
+				min_length=kwargs.get('min_length', 1),
+				max_length=kwargs.get('max_length', None),
+				forbidden_names=kwargs.get('forbidden_names', None),
+				skip_names=kwargs.get('skip_names', None),
+				allowed_abbreviations=kwargs.get('allowed_abbreviations', None),
+				auto_detect_abbreviations=kwargs.get('auto_detect_abbreviations', True)
+			)
+		# Store configurations - use properties for backward compatibility access
 
-		# Node type specific configurations
+		# Advanced configurations
 		self.node_type_specific_rules = node_type_specific_rules or {}
-
-		# Name extractors for different node types
 		self.name_extractors = name_extractors or self._get_default_name_extractors()
 
 		# Common abbreviations
@@ -166,6 +200,35 @@ class NamePatternRule(LintingRule):
 
 		# Process node-specific rules to ensure they have patterns
 		self._process_node_specific_rules()
+
+	# Properties for backward compatibility
+	@property
+	def allow_numbers(self) -> bool:
+		return self.config.allow_numbers
+
+	@property
+	def min_length(self) -> int:
+		return self.config.min_length
+
+	@property
+	def max_length(self) -> Optional[int]:
+		return self.config.max_length
+
+	@property
+	def forbidden_names(self) -> Set[str]:
+		return self.config.forbidden_names or set()
+
+	@property
+	def skip_names(self) -> Set[str]:
+		return self.config.skip_names or {'root'}
+
+	@property
+	def allowed_abbreviations(self) -> Set[str]:
+		return self.config.allowed_abbreviations or set()
+
+	@property
+	def auto_detect_abbreviations(self) -> bool:
+		return self.config.auto_detect_abbreviations
 
 	def _get_default_name_extractors(self) -> Dict[NodeType, Callable[[ViewNode], str]]:
 		"""Get default name extractors for different node types."""
