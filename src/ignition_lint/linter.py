@@ -242,7 +242,7 @@ class LintEngine:
 			print(f"   - Model state: {model_file}")
 			print(f"   - Statistics: {stats_file}")
 
-		except Exception as e:
+		except (OSError, PermissionError, TypeError, ValueError) as e:
 			print(f"⚠️  Warning: Could not save debug files: {e}")
 
 	def serialize_view_model(self) -> Dict[str, Any]:

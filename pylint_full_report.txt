@@ -1,0 +1,293 @@
+************* Module ignition_lint.linter
+src/ignition_lint/linter.py:245:9: W0718: Catching too general exception Exception (broad-exception-caught)
+************* Module ignition_lint.rules.unused_custom_properties
+src/ignition_lint/rules/unused_custom_properties.py:223:19: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
+************* Module tests.conftest
+tests/conftest.py:11:0: E0401: Unable to import 'pytest' (import-error)
+tests/conftest.py:16:0: C0413: Import "from ignition_lint.linter import LintEngine" should be placed at the top of the module (wrong-import-position)
+tests/conftest.py:17:0: C0413: Import "from ignition_lint.rules import RULES_MAP" should be placed at the top of the module (wrong-import-position)
+tests/conftest.py:18:0: C0413: Import "from ignition_lint.common.flatten_json import flatten_file" should be placed at the top of the module (wrong-import-position)
+tests/conftest.py:34:22: W0621: Redefining name 'test_cases_dir' from outer scope (line 22) (redefined-outer-name)
+tests/conftest.py:58:11: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/conftest.py:81:11: W0718: Catching too general exception Exception (broad-exception-caught)
+************* Module tests.test_runner
+tests/test_runner.py:16:0: E0401: Unable to import 'fixtures.config_framework' (import-error)
+tests/test_runner.py:16:0: C0413: Import "from fixtures.config_framework import ConfigurableTestFramework, create_sample_test_configs" should be placed at the top of the module (wrong-import-position)
+tests/test_runner.py:86:8: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/test_runner.py:96:7: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+tests/test_runner.py:105:8: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+tests/test_runner.py:104:1: R1702: Too many nested blocks (9/5) (too-many-nested-blocks)
+tests/test_runner.py:104:1: R1702: Too many nested blocks (9/5) (too-many-nested-blocks)
+tests/test_runner.py:91:0: R0912: Too many branches (17/12) (too-many-branches)
+tests/test_runner.py:104:1: R1702: Too many nested blocks (9/5) (too-many-nested-blocks)
+tests/test_runner.py:150:0: R0912: Too many branches (15/12) (too-many-branches)
+tests/test_runner.py:235:8: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/test_runner.py:376:1: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+tests/test_runner.py:269:0: R0911: Too many return statements (7/6) (too-many-return-statements)
+tests/test_runner.py:269:0: R0915: Too many statements (55/50) (too-many-statements)
+************* Module tests.unit.test_binding_rules
+tests/unit/test_binding_rules.py:8:0: E0401: Unable to import 'fixtures.base_test' (import-error)
+tests/unit/test_binding_rules.py:9:0: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+************* Module tests.unit.test_polling_interval
+tests/unit/test_polling_interval.py:8:0: E0401: Unable to import 'fixtures.base_test' (import-error)
+tests/unit/test_polling_interval.py:9:0: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/unit/test_polling_interval.py:15:1: C0103: Method name "setUp" doesn't conform to snake_case naming style (invalid-name)
+tests/unit/test_polling_interval.py:45:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+************* Module tests.unit.test_flatten_json
+tests/unit/test_flatten_json.py:20:0: C0413: Import "from ignition_lint.common.flatten_json import flatten_json, flatten_file, read_json_file, write_json_file, format_json, preserve_unicode_escapes, restore_unicode_escapes" should be placed at the top of the module (wrong-import-position)
+************* Module tests.unit.test_component_naming
+tests/unit/test_component_naming.py:8:0: E0401: Unable to import 'fixtures.base_test' (import-error)
+tests/unit/test_component_naming.py:9:0: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/unit/test_component_naming.py:17:2: W0201: Attribute 'rule_config' defined outside __init__ (attribute-defined-outside-init)
+tests/unit/test_component_naming.py:48:2: W0201: Attribute 'rule_config' defined outside __init__ (attribute-defined-outside-init)
+tests/unit/test_component_naming.py:74:2: W0201: Attribute 'rule_config' defined outside __init__ (attribute-defined-outside-init)
+tests/unit/test_component_naming.py:100:2: W0201: Attribute 'rule_config' defined outside __init__ (attribute-defined-outside-init)
+************* Module tests.unit.test_discovery
+tests/unit/test_discovery.py:9:0: E0401: Unable to import 'fixtures.base_test' (import-error)
+tests/unit/test_discovery.py:10:0: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/unit/test_discovery.py:80:8: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+************* Module tests.unit.test_example_mixed_severity
+tests/unit/test_example_mixed_severity.py:24:33: C0303: Trailing whitespace (trailing-whitespace)
+tests/unit/test_example_mixed_severity.py:165:44: C0303: Trailing whitespace (trailing-whitespace)
+tests/unit/test_example_mixed_severity.py:6:0: E0401: Unable to import 'fixtures.base_test' (import-error)
+tests/unit/test_example_mixed_severity.py:7:0: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/unit/test_example_mixed_severity.py:31:2: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/unit/test_example_mixed_severity.py:31:2: C0415: Import outside toplevel (fixtures.test_helpers.create_temp_view_file) (import-outside-toplevel)
+tests/unit/test_example_mixed_severity.py:55:2: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/unit/test_example_mixed_severity.py:55:2: C0415: Import outside toplevel (fixtures.test_helpers.create_temp_view_file) (import-outside-toplevel)
+tests/unit/test_example_mixed_severity.py:87:2: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/unit/test_example_mixed_severity.py:87:2: C0415: Import outside toplevel (fixtures.test_helpers.create_temp_view_file) (import-outside-toplevel)
+tests/unit/test_example_mixed_severity.py:115:2: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/unit/test_example_mixed_severity.py:115:2: C0415: Import outside toplevel (fixtures.test_helpers.create_temp_view_file) (import-outside-toplevel)
+tests/unit/test_example_mixed_severity.py:127:2: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/unit/test_example_mixed_severity.py:127:2: C0415: Import outside toplevel (fixtures.test_helpers.create_temp_view_file) (import-outside-toplevel)
+tests/unit/test_example_mixed_severity.py:143:2: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/unit/test_example_mixed_severity.py:143:2: C0415: Import outside toplevel (fixtures.test_helpers.create_temp_view_file) (import-outside-toplevel)
+tests/unit/test_example_mixed_severity.py:172:2: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/unit/test_example_mixed_severity.py:172:2: C0415: Import outside toplevel (fixtures.test_helpers.create_temp_view_file) (import-outside-toplevel)
+************* Module tests.unit.test_unused_custom_properties
+tests/unit/test_unused_custom_properties.py:18:0: E0401: Unable to import 'fixtures.base_test' (import-error)
+tests/unit/test_unused_custom_properties.py:19:0: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+************* Module tests.unit.test_warnings_vs_errors
+tests/unit/test_warnings_vs_errors.py:5:0: E0401: Unable to import 'fixtures.base_test' (import-error)
+tests/unit/test_warnings_vs_errors.py:6:0: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+************* Module tests.unit.test_script_linting
+tests/unit/test_script_linting.py:9:0: E0401: Unable to import 'fixtures.base_test' (import-error)
+tests/unit/test_script_linting.py:10:0: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/unit/test_script_linting.py:16:1: C0103: Method name "setUp" doesn't conform to snake_case naming style (invalid-name)
+tests/unit/test_script_linting.py:7:0: W0611: Unused Path imported from pathlib (unused-import)
+************* Module tests.unit.test_golden_files
+tests/unit/test_golden_files.py:23:0: C0413: Import "from ignition_lint.common.flatten_json import read_json_file, flatten_json" should be placed at the top of the module (wrong-import-position)
+tests/unit/test_golden_files.py:24:0: C0413: Import "from ignition_lint.linter import LintEngine" should be placed at the top of the module (wrong-import-position)
+tests/unit/test_golden_files.py:25:0: C0413: Import "from ignition_lint.rules import RULES_MAP" should be placed at the top of the module (wrong-import-position)
+tests/unit/test_golden_files.py:41:10: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/unit/test_golden_files.py:205:1: R0914: Too many local variables (18/15) (too-many-locals)
+************* Module tests.integration.test_multi_rule
+tests/integration/test_multi_rule.py:9:0: E0401: Unable to import 'fixtures.base_test' (import-error)
+tests/integration/test_multi_rule.py:10:0: E0401: Unable to import 'fixtures.test_helpers' (import-error)
+tests/integration/test_multi_rule.py:202:9: W0612: Unused variable 'rule_name' (unused-variable)
+tests/integration/test_multi_rule.py:7:0: W0611: Unused Path imported from pathlib (unused-import)
+tests/integration/test_multi_rule.py:10:0: W0611: Unused get_test_config imported from fixtures.test_helpers (unused-import)
+************* Module tests.integration.test_cli_integration
+tests/integration/test_cli_integration.py:13:0: E0401: Unable to import 'fixtures.base_test' (import-error)
+tests/integration/test_cli_integration.py:19:1: C0116: Missing function or method docstring (missing-function-docstring)
+tests/integration/test_cli_integration.py:19:1: C0103: Method name "setUp" doesn't conform to snake_case naming style (invalid-name)
+tests/integration/test_cli_integration.py:39:13: W1510: 'subprocess.run' used without explicitly defining the value for 'check'. (subprocess-run-check)
+tests/integration/test_cli_integration.py:47:14: W1510: 'subprocess.run' used without explicitly defining the value for 'check'. (subprocess-run-check)
+tests/integration/test_cli_integration.py:69:9: W1510: 'subprocess.run' used without explicitly defining the value for 'check'. (subprocess-run-check)
+tests/integration/test_cli_integration.py:92:9: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/integration/test_cli_integration.py:131:9: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/integration/test_cli_integration.py:137:3: W0702: No exception type(s) specified (bare-except)
+tests/integration/test_cli_integration.py:173:9: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/integration/test_cli_integration.py:189:9: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/integration/test_cli_integration.py:193:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+************* Module tests.integration.test_config_framework
+tests/integration/test_config_framework.py:7:0: E0401: Unable to import 'fixtures.config_framework' (import-error)
+tests/integration/test_config_framework.py:22:8: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+tests/integration/test_config_framework.py:30:2: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
+tests/integration/test_config_framework.py:66:8: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+************* Module tests.fixtures.base_test
+tests/fixtures/base_test.py:14:0: C0413: Import "from ignition_lint.linter import LintEngine" should be placed at the top of the module (wrong-import-position)
+tests/fixtures/base_test.py:15:0: C0413: Import "from ignition_lint.rules import RULES_MAP" should be placed at the top of the module (wrong-import-position)
+tests/fixtures/base_test.py:16:0: C0413: Import "from ignition_lint.common.flatten_json import flatten_file" should be placed at the top of the module (wrong-import-position)
+tests/fixtures/base_test.py:50:10: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/fixtures/base_test.py:135:1: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+tests/fixtures/base_test.py:156:1: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+tests/fixtures/base_test.py:190:1: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+tests/fixtures/base_test.py:245:10: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/fixtures/base_test.py:286:10: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/fixtures/base_test.py:9:0: W0611: Unused Optional imported from typing (unused-import)
+************* Module tests.fixtures.config_framework
+tests/fixtures/config_framework.py:18:0: C0413: Import "from ignition_lint.linter import LintEngine" should be placed at the top of the module (wrong-import-position)
+tests/fixtures/config_framework.py:19:0: C0413: Import "from ignition_lint.rules import RULES_MAP" should be placed at the top of the module (wrong-import-position)
+tests/fixtures/config_framework.py:20:0: C0413: Import "from ignition_lint.common.flatten_json import flatten_file" should be placed at the top of the module (wrong-import-position)
+tests/fixtures/config_framework.py:124:10: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/fixtures/config_framework.py:97:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+tests/fixtures/config_framework.py:129:1: R0914: Too many local variables (28/15) (too-many-locals)
+tests/fixtures/config_framework.py:266:9: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/fixtures/config_framework.py:177:11: W0718: Catching too general exception Exception (broad-exception-caught)
+tests/fixtures/config_framework.py:129:1: R0912: Too many branches (15/12) (too-many-branches)
+tests/fixtures/config_framework.py:291:2: W0621: Redefining name 'results' from outer scope (line 621) (redefined-outer-name)
+tests/fixtures/config_framework.py:298:3: W0621: Redefining name 'result' from outer scope (line 632) (redefined-outer-name)
+tests/fixtures/config_framework.py:381:7: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+tests/fixtures/config_framework.py:411:9: W0621: Redefining name 'detail' from outer scope (line 638) (redefined-outer-name)
+tests/fixtures/config_framework.py:428:1: W0621: Redefining name 'framework' from outer scope (line 617) (redefined-outer-name)
+tests/fixtures/config_framework.py:598:7: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+tests/fixtures/config_framework.py:623:8: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+tests/fixtures/config_framework.py:631:9: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+tests/fixtures/config_framework.py:12:0: W0611: Unused Optional imported from typing (unused-import)
+tests/fixtures/config_framework.py:12:0: W0611: Unused Union imported from typing (unused-import)
+************* Module tests.fixtures.mock_data
+tests/fixtures/mock_data.py:5:0: W0611: Unused List imported from typing (unused-import)
+************* Module tests.fixtures.test_helpers
+tests/fixtures/test_helpers.py:81:0: C0301: Line too long (174/140) (line-too-long)
+tests/fixtures/test_helpers.py:87:0: C0301: Line too long (201/140) (line-too-long)
+tests/fixtures/test_helpers.py:8:0: W0611: Unused Union imported from typing (unused-import)
+************* Module scripts.generate_debug_files
+scripts/generate_debug_files.py:53:9: W0718: Catching too general exception Exception (broad-exception-caught)
+scripts/generate_debug_files.py:135:8: W0718: Catching too general exception Exception (broad-exception-caught)
+scripts/generate_debug_files.py:1:0: R0801: Similar lines in 2 files
+==tests.integration.test_multi_rule:[218:236]
+==tests.unit.test_component_naming:[375:393]
+				"component": {
+					"convention": "PascalCase",
+					"min_length": 1
+				},
+				"property": {
+					"convention": "camelCase",
+					"min_length": 1
+				},
+				"custom_method": {
+					"convention": "camelCase",
+					"min_length": 3
+				},
+				"event_handler": {
+					"convention": "camelCase",
+					"min_length": 2,
+					"skip_names": ["onClick", "onLoad", "onFocus", "onBlur"]
+				}
+			} (duplicate-code)
+scripts/generate_debug_files.py:1:0: R0801: Similar lines in 2 files
+==tests.fixtures.config_framework:[623:640]
+==tests.test_runner:[96:115]
+	print(f"Total: {results['total']}")
+	print(f"Passed: {results['passed']}")
+	print(f"Failed: {results['failed']}")
+	print(f"Skipped: {results['skipped']}")
+	print(f"Errors: {results['errors']}")
+
+	# Print detailed results for failures
+	if results['failed'] > 0 or results['errors'] > 0:
+		print(f"\nDetailed Results:")
+		for result in results['results']:
+			if result['status'] in ['failed', 'error']:
+				print(f"\n{result['status'].upper()}: {result['name']}")
+				if result['reason']:
+					print(f"  Reason: {result['reason']}")
+				if 'expectation_details' in result:
+					for detail in result['expectation_details']:
+						if not detail['met']:
+							print(f"  Rule {detail['rule_name']}:")
+							# Handle both old and new format (duplicate-code)
+scripts/generate_debug_files.py:1:0: R0801: Similar lines in 2 files
+==tests.integration.test_multi_rule:[168:180]
+==tests.unit.test_component_naming:[343:355]
+						"component": {
+							"convention": "PascalCase",
+							"min_length": 1,
+							"allow_numbers": True
+						},
+						"property": {
+							"convention": "camelCase",
+							"min_length": 1,
+							"allow_numbers": True,
+							"skip_names": ["id", "x", "y", "z"]
+						}
+					} (duplicate-code)
+scripts/generate_debug_files.py:1:0: R0801: Similar lines in 2 files
+==tests.integration.test_multi_rule:[22:34]
+==tests.unit.test_discovery:[130:142]
+					"convention": "PascalCase"
+				}
+			},
+			"PollingIntervalRule": {
+				"enabled": True,
+				"kwargs": {
+					"minimum_interval": 10000
+				}
+			}
+		}
+
+		view_file = load_test_view(self.test_cases_dir, "PascalCase") (duplicate-code)
+scripts/generate_debug_files.py:1:0: R0801: Similar lines in 2 files
+==tests.integration.test_config_framework:[42:52]
+==tests.test_runner:[118:127]
+								)
+							else:
+								# New format with separate warnings/errors
+								print(
+									f"    Expected {detail['expected_warnings']} warnings, got {detail['actual_warnings']}"
+								)
+								print(
+									f"    Expected {detail['expected_errors']} errors, got {detail['actual_errors']}"
+								)
+ (duplicate-code)
+scripts/generate_debug_files.py:1:0: R0801: Similar lines in 2 files
+==tests.integration.test_multi_rule:[218:225]
+==tests.unit.test_component_naming:[120:127]
+				"component": {
+					"convention": "PascalCase",
+					"min_length": 1
+				},
+				"property": {
+					"convention": "camelCase",
+					"min_length": 1 (duplicate-code)
+scripts/generate_debug_files.py:1:0: R0801: Similar lines in 2 files
+==tests.integration.test_multi_rule:[65:71]
+==tests.unit.test_script_linting:[30:36]
+		test_cases = ["PascalCase", "camelCase", "ExpressionBindings"]
+
+		for case in test_cases:
+			with self.subTest(case=case):
+				try:
+					view_file = load_test_view(self.test_cases_dir, case) (duplicate-code)
+scripts/generate_debug_files.py:1:0: R0801: Similar lines in 2 files
+==tests.integration.test_multi_rule:[190:195]
+==tests.unit.test_component_naming:[358:363]
+		test_cases = ["PascalCase", "camelCase"]
+		for case in test_cases:
+			with self.subTest(case=case):
+				try:
+					view_file = load_test_view(self.test_cases_dir, case) (duplicate-code)
+scripts/generate_debug_files.py:1:0: R0801: Similar lines in 2 files
+==tests.unit.test_binding_rules:[32:38]
+==tests.unit.test_component_naming:[359:364]
+		for case in test_cases:
+			with self.subTest(case=case):
+				try:
+					view_file = load_test_view(self.test_cases_dir, case)
+					errors = self.run_lint_on_file(view_file, rule_config) (duplicate-code)
+scripts/generate_debug_files.py:1:0: R0801: Similar lines in 2 files
+==tests.integration.test_config_framework:[22:29]
+==tests.test_runner:[96:103]
+	print(f"Total: {results['total']}")
+	print(f"Passed: {results['passed']}")
+	print(f"Failed: {results['failed']}")
+	print(f"Skipped: {results['skipped']}")
+	print(f"Errors: {results['errors']}")
+
+	# Print detailed results for failures (duplicate-code)
+scripts/generate_debug_files.py:1:0: R0801: Similar lines in 2 files
+==ignition_lint.cli:[53:60]
+==tests.fixtures.config_framework:[169:176]
+					continue
+
+				rule_class = RULES_MAP[rule_name]
+				kwargs = rule_config.get('kwargs', {})
+
+				try:
+					rules.append(rule_class.create_from_config(kwargs)) (duplicate-code)
+
+------------------------------------------------------------------
+Your code has been rated at 9.24/10 (previous run: 9.24/10, +0.00)
+

@@ -150,19 +150,53 @@ scripts/test-actions.sh unittest pull_request
 ### Linting and Code Quality
 **Directory**: Repository root (`.`)
 
-```bash
-# Verify you're in the repository root (should show .pylintrc)
-ls .pylintrc
+**⚠️ CRITICAL: This project is working toward ZERO linting errors.**
 
-# Run pylint on source code (uses .pylintrc configuration)
-poetry run pylint ignition_lint/
+**Current Status**: ~139 pylint errors exist and are being systematically resolved.
+
+**Before any code changes, check current baseline:**
+```bash
+# Check current linting status 
+poetry run pylint src/ tests/ scripts/
+
+# Current baseline: ~9.24/10 rating with 139 errors
+# Goal: 10.00/10 rating with 0 errors
+```
+
+**After making any code changes:**
+```bash
+# Run full linting check (MUST pass with 0 errors)  
+poetry run pylint src/ tests/ scripts/
 
 # Format code with yapf (uses .style.yapf configuration)
-poetry run yapf -ir ignition_lint/
+poetry run yapf -ir src/ tests/ scripts/
 
 # Check formatting without modifying files
-poetry run yapf -dr ignition_lint/
+poetry run yapf -dr src/ tests/ scripts/
 ```
+
+**Linting Rules and Standards:**
+- **Zero tolerance for errors**: All code must pass pylint with 0 errors
+- **Import organization**: Standard library → Third-party → Local imports  
+- **Exception handling**: Use specific exceptions, not bare `except:` or `Exception`
+- **File operations**: Always specify encoding: `open(file, 'r', encoding='utf-8')`
+- **F-strings**: Only use f-strings when interpolating variables
+- **Code complexity**: Follow pylint limits for branches, statements, arguments
+- **Debug code**: Place debug scripts in `scripts/debug/` (ignored by pylint)
+
+**Linting Error Resolution Strategy:**
+1. **DO NOT INTRODUCE NEW ERRORS** - any new code must pass pylint cleanly
+2. **Fix errors incrementally** - when touching existing code, fix related pylint errors
+3. **Prioritize critical errors** - focus on E (errors) before W (warnings) before R (refactor)
+4. **Never disable pylint checks** without explicit justification in code comments
+5. **Never commit debug/temporary files** to the main codebase
+
+**Error Categories to Address (in order of priority):**
+- **E0401**: Import errors (dependencies missing from pyproject.toml)
+- **W0718**: Broad exception catching (use specific exceptions)  
+- **C0413/C0415**: Import positioning (organize imports properly)
+- **W0611**: Unused imports (remove unused imports)
+- **R0801**: Duplicate code (refactor common patterns)
 
 ### Running the Tool
 **Directory**: Repository root (`.`)

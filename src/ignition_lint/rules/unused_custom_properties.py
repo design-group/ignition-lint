@@ -220,7 +220,7 @@ class UnusedCustomPropertiesRule(LintingRule):
 		# Get all property paths we're looking for
 		search_patterns = []
 
-		for prop_path in self.defined_properties.keys():
+		for prop_path in self.defined_properties.keys(): # pylint: disable=consider-iterating-dictionary
 			if prop_path.startswith('view.custom.'):
 				# For view custom properties: view.custom.propName
 				prop_name = prop_path[12:]  # Remove 'view.custom.'
