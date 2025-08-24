@@ -8,7 +8,7 @@ import tempfile
 import os
 import re
 import shutil
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from io import StringIO
 from pylint import lint
@@ -44,16 +44,36 @@ class PylintScriptRule(ScriptRule):
 
 	def _run_pylint_batch(self, scripts: Dict[str, ScriptNode]) -> Dict[str, List[str]]:
 		"""Run pylint on multiple scripts at once."""
+		debug_dir = self._setup_debug_directory()
+		combined_content, line_map = self._combine_scripts(scripts)
+		path_to_issues = {path: [] for path in scripts.keys()}
+		temp_file_path = None
+		try:
+			temp_file_path = self._create_temp_file(combined_content)
+			pylint_output = self._run_pylint_on_file(temp_file_path, debug_dir)
+			self._parse_pylint_output(pylint_output, line_map, path_to_issues, debug_dir)
+		except (OSError, IOError) as e:
+			error_msg = f"Error with file operations during pylint: {str(e)}"
+			self._handle_pylint_error(error_msg, debug_dir, path_to_issues)
+		except ImportError as e:
+			error_msg = f"Error importing pylint modules: {str(e)}"
+			self._handle_pylint_error(error_msg, debug_dir, path_to_issues)
+		finally:
+			self._cleanup_temp_file(temp_file_path, debug_dir, path_to_issues)
 
-		# Create a debug directory if it doesn't exist
+		return path_to_issues
+
+	def _setup_debug_directory(self) -> str:
+		"""Create and return debug directory path."""
 		debug_dir = os.path.join(os.getcwd(), "debug")
 		os.makedirs(debug_dir, exist_ok=True)
+		return debug_dir
 
-		# Map line numbers in the combined file back to script paths
+	def _combine_scripts(self, scripts: Dict[str, ScriptNode]) -> Tuple[str, Dict[int, str]]:
+		"""Combine all scripts into a single string with line mapping."""
 		line_map = {}
 		line_count = 1
 
-		# Combine all scripts into one file with separator comments
 		combined_scripts = [
 			"#pylint: disable=unused-argument,missing-docstring,invalid-name,redefined-outer-name",
 			"# Stub for common globals, and to simulate the Ignition environment",
@@ -62,114 +82,115 @@ class PylintScriptRule(ScriptRule):
 			"event = {}  # Simulated event object",
 			"",
 		]
+		line_count += len(combined_scripts)
 
 		for i, (path, script_obj) in enumerate(scripts.items()):
-			# Add separator comment with script path
 			header = f"# Script {i+1}: {path}"
 			combined_scripts.append(header)
 			line_count += 1
 
-			# Get the script code
 			formatted_script = script_obj.get_formatted_script()
+			script_lines = formatted_script.count('\n') + 1
 
 			# Record line numbers for this script
-			script_lines = formatted_script.count('\n') + 1
 			for line_num in range(line_count, line_count + script_lines):
 				line_map[line_num] = path
 
-			# Add the formatted script code
 			combined_scripts.append(formatted_script)
 			line_count += script_lines
 
-			# Add a blank line for separation
-			combined_scripts.append("")
+			combined_scripts.append("")  # Blank line separator
 			line_count += 1
 
-		# Join all scripts into a single string
-		combined_scripts_str = "\n".join(combined_scripts)
+		return "\n".join(combined_scripts), line_map
 
-		# Create a temporary file with all scripts
-		temp_file_path = None
-		path_to_issues = {path: [] for path in scripts.keys()}
+	def _create_temp_file(self, content: str) -> str:
+		"""Create temporary file with script content."""
+		timestamp = datetime.datetime.now().strftime("%H%M%S")
+		with tempfile.NamedTemporaryFile(
+			prefix=f"{timestamp}_", suffix=".py", delete=False
+		) as temp_file:
+			temp_file.write(content.encode('utf-8'))
+			return temp_file.name
 
-		try:
-			timestamp = datetime.datetime.now().strftime("%H%M%S")
+	def _run_pylint_on_file(self, temp_file_path: str, debug_dir: str) -> str:
+		"""Execute pylint on the temporary file and return output."""
+		if self.debug:
+			_save_debug_file(temp_file_path, debug_dir)
 
-			with tempfile.NamedTemporaryFile(
-				prefix=f"{timestamp}_", suffix=".py", delete=False
-			) as temp_file:
-				temp_file_path = temp_file.name
-				temp_file.write(combined_scripts_str.encode('utf-8'))
+		pylint_output = StringIO()
+		args = [
+			'--disable=all',
+			'--enable=unused-import,undefined-variable,syntax-error',
+			'--output-format=text',
+			'--score=no',
+			temp_file_path,
+		]
 
-			# Save a copy to the debug directory
-			if self.debug:
-				_save_debug_file(temp_file_path, debug_dir)
+		lint.Run(args, reporter=TextReporter(pylint_output), exit=False)
+		output = pylint_output.getvalue()
 
-			# Configure pylint with text reporter
-			pylint_output = StringIO()
-			args = [
-				'--disable=all',
-				'--enable=unused-import,undefined-variable,syntax-error',
-				'--output-format=text',
-				'--score=no',
-				temp_file_path,
-			]
+		if self.debug:
+			with open(os.path.join(debug_dir, "pylint_output.txt"), 'w', encoding='utf-8') as f:
+				f.write(output)
 
-			lint.Run(args, reporter=TextReporter(pylint_output), exit=False)
+		return output
 
-			# Save the pylint output for debugging if needed
-			output = pylint_output.getvalue()
-			if self.debug:
-				with open(os.path.join(debug_dir, "pylint_output.txt"), 'w', encoding='utf-8') as f:
-					f.write(output)
+	def _parse_pylint_output(self, output: str, line_map: Dict[int, str],
+							 path_to_issues: Dict[str, List[str]], debug_dir: str) -> None:
+		"""Parse pylint output and map issues back to original scripts."""
+		pattern = r'.*:(\d+):\d+: .+: (.+)'
+		for line in output.splitlines():
+			match = re.match(pattern, line)
+			if not match:
+				continue
 
-			# Parse text results
-			pattern = r'.*:(\d+):\d+: .+: (.+)'
-			for line in output.splitlines():
-				match = re.match(pattern, line)
-				if not match:
-					continue
-				try:
-					line_num = int(match.group(1))
-					message = match.group(2)
+			try:
+				line_num = int(match.group(1))
+				message = match.group(2)
+				script_path = self._find_script_for_line(line_num, line_map)
 
-					# Find which script this line belongs to
-					script_path = None
-					for ln in sorted(line_map.keys(), reverse=True):
-						if ln <= line_num:
-							script_path = line_map[ln]
-							break
+				if script_path and script_path in path_to_issues:
+					relative_line = self._calculate_relative_line(line_num, script_path, line_map)
+					path_to_issues[script_path].append(f"Line {relative_line}: {message}")
 
-					if script_path and script_path in path_to_issues:
-						script_start_line = min(
-							ln for ln, path in line_map.items() if path == script_path
-						)
-						relative_line = line_num - script_start_line + 1
-						path_to_issues[script_path].append(f"Line {relative_line}: {message}")
+			except (ValueError, IndexError) as e:
+				self._log_parse_error(line, e, debug_dir)
 
-				except (ValueError, IndexError) as e:
-					with open(
-						os.path.join(debug_dir, "pylint_error.txt"), 'a', encoding='utf-8'
-					) as f:
-						f.write(f"Error parsing line: {line}\nException: {str(e)}\n\n")
-					continue
+	def _find_script_for_line(self, line_num: int, line_map: Dict[int, str]) -> str:
+		"""Find which script a line number belongs to."""
+		for ln in sorted(line_map.keys(), reverse=True):
+			if ln <= line_num:
+				return line_map[ln]
+		return None
 
-		except Exception as e:
-			error_msg = f"Error running pylint: {str(e)}"
-			with open(os.path.join(debug_dir, "pylint_error.txt"), 'w', encoding='utf-8') as f:
-				f.write(error_msg)
-			for path in path_to_issues:
-				path_to_issues[path].append(error_msg)
+	def _calculate_relative_line(self, line_num: int, script_path: str, line_map: Dict[int, str]) -> int:
+		"""Calculate the relative line number within the original script."""
+		script_start_line = min(ln for ln, path in line_map.items() if path == script_path)
+		return line_num - script_start_line + 1
 
-		finally:
-			if temp_file_path and os.path.exists(temp_file_path):
-				if any(issues for issues in path_to_issues.values()):
-					shutil.copy(temp_file_path, os.path.join(debug_dir, "pylint_input_temp.py"))
-					print(f"Pylint encountered issues. Debug files saved to: {debug_dir}")
-				else:
-					os.remove(temp_file_path)
+	def _log_parse_error(self, line: str, error: Exception, debug_dir: str) -> None:
+		"""Log parsing errors to debug file."""
+		with open(os.path.join(debug_dir, "pylint_error.txt"), 'a', encoding='utf-8') as f:
+			f.write(f"Error parsing line: {line}\nException: {str(error)}\n\n")
 
-		return path_to_issues
+	def _handle_pylint_error(self, error_msg: str, debug_dir: str,
+							 path_to_issues: Dict[str, List[str]]) -> None:
+		"""Handle and log pylint execution errors."""
+		with open(os.path.join(debug_dir, "pylint_error.txt"), 'w', encoding='utf-8') as f:
+			f.write(error_msg)
+		for path in path_to_issues:
+			path_to_issues[path].append(error_msg)
+
+	def _cleanup_temp_file(self, temp_file_path: str, debug_dir: str,
+						 path_to_issues: Dict[str, List[str]]) -> None:
+		"""Clean up temporary file, keeping it for debug if there were issues."""
+		if temp_file_path and os.path.exists(temp_file_path):
+			if any(issues for issues in path_to_issues.values()):
+				shutil.copy(temp_file_path, os.path.join(debug_dir, "pylint_input_temp.py"))
+				print(f"Pylint encountered issues. Debug files saved to: {debug_dir}")
+			else:
+				os.remove(temp_file_path)
 
 
 def _save_debug_file(temp_file_path: str, debug_dir: str):
