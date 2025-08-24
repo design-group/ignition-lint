@@ -644,7 +644,7 @@ class TestRuleInteractions(BaseIntegrationTest):
     def test_naming_and_polling_rules_together(self):
         """Test that naming and polling rules don't interfere."""
         rule_configs = {
-            "ComponentNameRule": {
+            "NamePatternRule": {
                 "enabled": True,
                 "kwargs": {"convention": "PascalCase"}
             },
@@ -676,9 +676,9 @@ class TestComponentNamingConventions(BaseRuleTest):
         
         for convention, test_case in conventions:
             with self.subTest(convention=convention):
-                rule_config = get_test_config("ComponentNameRule", convention=convention)
+                rule_config = get_test_config("NamePatternRule", convention=convention)
                 view_file = load_test_view(self.test_cases_dir, test_case)
-                self.assert_rule_passes(view_file, rule_config, "ComponentNameRule")
+                self.assert_rule_passes(view_file, rule_config, "NamePatternRule")
 ```
 
 ### Testing Error Messages
@@ -686,11 +686,11 @@ class TestComponentNamingConventions(BaseRuleTest):
 ```python
 def test_error_message_content(self):
     """Test that error messages are helpful and specific."""
-    rule_config = get_test_config("ComponentNameRule", convention="PascalCase")
+    rule_config = get_test_config("NamePatternRule", convention="PascalCase")
     view_file = load_test_view(self.test_cases_dir, "camelCase")
     
     errors = self.run_lint_on_file(view_file, rule_config)
-    error_messages = errors.get("ComponentNameRule", [])
+    error_messages = errors.get("NamePatternRule", [])
     
     # Check error message contains useful information
     self.assertTrue(any("PascalCase" in error for error in error_messages))
@@ -714,7 +714,7 @@ def test_rule_performance(self):
     view_file = create_temp_view_file(view_content)
     
     try:
-        rule_config = get_test_config("ComponentNameRule", convention="PascalCase")
+        rule_config = get_test_config("NamePatternRule", convention="PascalCase")
         
         start_time = time.time()
         errors = self.run_lint_on_file(view_file, rule_config)
@@ -724,7 +724,7 @@ def test_rule_performance(self):
         self.assertLess(elapsed_time, 5.0, "Rule should process 1000 components in under 5 seconds")
         
         # Should handle all components
-        self.assertIsInstance(errors.get("ComponentNameRule", []), list)
+        self.assertIsInstance(errors.get("NamePatternRule", []), list)
     finally:
         view_file.unlink()
 ```

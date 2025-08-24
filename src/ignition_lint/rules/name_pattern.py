@@ -23,8 +23,18 @@ class NamePatternRule(LintingRule):
 		# Convert target_node_types from strings to NodeType enums
 		if 'target_node_types' in processed_config:
 			target_types = processed_config['target_node_types']
-			if isinstance(target_types, (list, set)):
-				converted_types = set()
+			converted_types = set()
+			
+			if isinstance(target_types, str):
+				# Handle single string
+				try:
+					converted_types.add(NodeType(target_types))
+				except ValueError:
+					print(
+						f"Warning: Unknown node type '{target_types}'. Available types: {[nt.value for nt in NodeType]}"
+					)
+			elif isinstance(target_types, (list, set)):
+				# Handle list/set of strings
 				for nt_str in target_types:
 					try:
 						converted_types.add(NodeType(nt_str))
@@ -32,6 +42,8 @@ class NamePatternRule(LintingRule):
 						print(
 							f"Warning: Unknown node type '{nt_str}'. Available types: {[nt.value for nt in NodeType]}"
 						)
+			
+			if converted_types:  # Only set if we successfully converted something
 				processed_config['target_node_types'] = converted_types
 
 		# Convert node_type_specific_rules keys from strings to NodeType enums

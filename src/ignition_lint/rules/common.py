@@ -4,7 +4,7 @@ This module contains common and base node types for rule implementation
 
 from abc import ABC, abstractmethod
 from typing import Set, List, Dict, Any
-from ..model.node_types import ViewNode, NodeType, ScriptNode
+from ..model.node_types import ViewNode, NodeType, ScriptNode, ALL_BINDINGS, ALL_SCRIPTS
 
 
 class NodeVisitor(ABC):
@@ -12,35 +12,34 @@ class NodeVisitor(ABC):
 
 	def visit_generic(self, node: ViewNode):
 		"""Generic visit method for nodes that don't have specific handlers."""
-		pass
 
 	# Specific visit methods - rules only need to implement what they care about
 	def visit_component(self, node: ViewNode):
-		pass
+		"""Visit a component node."""
 
 	def visit_expression_binding(self, node: ViewNode):
-		pass
+		"""Visit an expression binding node."""
 
 	def visit_property_binding(self, node: ViewNode):
-		pass
+		"""Visit a property binding node."""
 
 	def visit_tag_binding(self, node: ViewNode):
-		pass
+		"""Visit a tag binding node."""
 
 	def visit_message_handler(self, node: ViewNode):
-		pass
+		"""Visit a message handler node."""
 
 	def visit_custom_method(self, node: ViewNode):
-		pass
+		"""Visit a component custom method node."""
 
 	def visit_transform(self, node: ViewNode):
-		pass
+		"""Visit a transform node."""
 
 	def visit_event_handler(self, node: ViewNode):
-		pass
+		"""Visit an event handler node."""
 
 	def visit_property(self, node: ViewNode):
-		pass
+		"""Visit a property node."""
 
 
 class LintingRule(NodeVisitor):
@@ -105,13 +104,11 @@ class LintingRule(NodeVisitor):
 
 	def post_process(self):
 		"""Override this method if you need to do batch processing after visiting all nodes."""
-		pass
 
 	@property
 	@abstractmethod
 	def error_message(self) -> str:
 		"""Return a description of what this rule checks for."""
-		pass
 
 	@property
 	def error_key(self) -> str:
@@ -124,7 +121,7 @@ class BindingRule(LintingRule):
 
 	def __init__(self, target_node_types: Set[NodeType] = None):
 		if target_node_types is None:
-			target_node_types = NodeType.ALL_BINDINGS()
+			target_node_types = ALL_BINDINGS
 		super().__init__(target_node_types)
 
 
@@ -133,7 +130,7 @@ class ScriptRule(LintingRule):
 
 	def __init__(self, target_node_types: Set[NodeType] = None):
 		if target_node_types is None:
-			target_node_types = NodeType.ALL_SCRIPTS()
+			target_node_types = ALL_SCRIPTS
 		super().__init__(target_node_types)
 		self.collected_scripts = {}
 
@@ -163,4 +160,3 @@ class ScriptRule(LintingRule):
 	@abstractmethod
 	def process_scripts(self, scripts: Dict[str, ScriptNode]):
 		"""Process the collected scripts. Override in subclasses."""
-		pass

@@ -95,7 +95,7 @@ class TestCLIIntegration(BaseIntegrationTest):
 	def test_cli_with_config_file(self):
 		"""Test CLI with a configuration file."""
 		# Create a temporary config file
-		config = {"ComponentNameRule": {"enabled": True, "kwargs": {"convention": "PascalCase"}}}
+		config = {"NamePatternRule": {"enabled": True, "kwargs": {"convention": "PascalCase"}}}
 
 		with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
 			json.dump(config, f)

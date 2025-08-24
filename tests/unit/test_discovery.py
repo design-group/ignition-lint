@@ -46,9 +46,9 @@ class TestDiscoveryFunctionality(BaseRuleTest):
 
 	def test_config_creation_and_usage(self):
 		"""Test creating and using test configurations."""
-		config = get_test_config("ComponentNameRule", convention="PascalCase")
+		config = get_test_config("NamePatternRule", convention="PascalCase")
 
-		expected_config = {"ComponentNameRule": {"enabled": True, "kwargs": {"convention": "PascalCase"}}}
+		expected_config = {"NamePatternRule": {"enabled": True, "kwargs": {"convention": "PascalCase"}}}
 
 		self.assertEqual(config, expected_config)
 
@@ -113,7 +113,7 @@ class TestFrameworkIntegration(BaseRuleTest):
 	def test_rule_engine_creation(self):
 		"""Test creating lint engines with different rule configurations."""
 		configs = [
-			get_test_config("ComponentNameRule", convention="PascalCase"),
+			get_test_config("NamePatternRule", convention="PascalCase"),
 			get_test_config("PollingIntervalRule", minimum_interval=5000),
 		]
 

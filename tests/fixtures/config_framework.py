@@ -392,14 +392,14 @@ def create_sample_test_configs():
 
 	# Component naming rule tests
 	component_name_config = {
-		"test_suite_name": "ComponentNameRule Tests",
+		"test_suite_name": "NamePatternRule Tests",
 		"description": "Test cases for component naming conventions",
 		"test_cases": [{
 			"name": "pascal_case_positive",
 			"description": "PascalCase view should pass PascalCase rule",
 			"view_file": "PascalCase/view.json",
 			"rule_config": {
-				"ComponentNameRule": {
+				"NamePatternRule": {
 					"enabled": True,
 					"kwargs": {
 						"convention": "PascalCase",
@@ -409,7 +409,7 @@ def create_sample_test_configs():
 				}
 			},
 			"expectations": [{
-				"rule_name": "ComponentNameRule",
+				"rule_name": "NamePatternRule",
 				"error_count": 0,
 				"should_pass": True
 			}],
@@ -419,7 +419,7 @@ def create_sample_test_configs():
 			"description": "camelCase view should fail PascalCase rule",
 			"view_file": "camelCase/view.json",
 			"rule_config": {
-				"ComponentNameRule": {
+				"NamePatternRule": {
 					"enabled": True,
 					"kwargs": {
 						"convention": "PascalCase",
@@ -429,7 +429,7 @@ def create_sample_test_configs():
 				}
 			},
 			"expectations": [{
-				"rule_name": "ComponentNameRule",
+				"rule_name": "NamePatternRule",
 				"error_count": 1,
 				"should_pass": False,
 				"error_patterns": ["doesn't follow"]
@@ -440,7 +440,7 @@ def create_sample_test_configs():
 			"description": "camelCase view should pass camelCase rule",
 			"view_file": "camelCase/view.json",
 			"rule_config": {
-				"ComponentNameRule": {
+				"NamePatternRule": {
 					"enabled": True,
 					"kwargs": {
 						"convention": "camelCase",
@@ -450,7 +450,7 @@ def create_sample_test_configs():
 				}
 			},
 			"expectations": [{
-				"rule_name": "ComponentNameRule",
+				"rule_name": "NamePatternRule",
 				"error_count": 0,
 				"should_pass": True
 			}],
@@ -460,7 +460,7 @@ def create_sample_test_configs():
 			"description": "snake_case view should pass snake_case rule",
 			"view_file": "snake_case/view.json",
 			"rule_config": {
-				"ComponentNameRule": {
+				"NamePatternRule": {
 					"enabled": True,
 					"kwargs": {
 						"convention": "snake_case",
@@ -470,7 +470,7 @@ def create_sample_test_configs():
 				}
 			},
 			"expectations": [{
-				"rule_name": "ComponentNameRule",
+				"rule_name": "NamePatternRule",
 				"error_count": 0,
 				"should_pass": True
 			}],
@@ -480,7 +480,7 @@ def create_sample_test_configs():
 			"description": "inconsistentCase view should fail any naming rule",
 			"view_file": "inconsistentCase/view.json",
 			"rule_config": {
-				"ComponentNameRule": {
+				"NamePatternRule": {
 					"enabled": True,
 					"kwargs": {
 						"convention": "PascalCase",
@@ -490,7 +490,7 @@ def create_sample_test_configs():
 				}
 			},
 			"expectations": [{
-				"rule_name": "ComponentNameRule",
+				"rule_name": "NamePatternRule",
 				"error_count": 1,
 				"should_pass": False
 			}],
