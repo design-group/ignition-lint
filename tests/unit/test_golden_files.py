@@ -88,7 +88,9 @@ class TestGoldenFiles(unittest.TestCase):
 	def test_01_flattened_json_matches_golden(self):
 		"""Test that JSON flattening produces output matching golden files."""
 		if not self.test_cases_with_golden_files:
-			self.skipTest("No test cases with golden files found. Run: python scripts/generate-debug-files.py")
+			self.skipTest(
+				"No test cases with golden files found. Run: python scripts/generate-debug-files.py"
+			)
 
 		for case_dir in self.test_cases_with_golden_files:
 			with self.subTest(test_case=case_dir.name):
@@ -97,7 +99,9 @@ class TestGoldenFiles(unittest.TestCase):
 	def test_02_model_matches_golden(self):
 		"""Test that model building produces output matching golden files."""
 		if not self.test_cases_with_golden_files:
-			self.skipTest("No test cases with golden files found. Run: python scripts/generate-debug-files.py")
+			self.skipTest(
+				"No test cases with golden files found. Run: python scripts/generate-debug-files.py"
+			)
 
 		for case_dir in self.test_cases_with_golden_files:
 			with self.subTest(test_case=case_dir.name):
@@ -106,7 +110,9 @@ class TestGoldenFiles(unittest.TestCase):
 	def test_03_stats_match_golden(self):
 		"""Test that statistics generation produces output matching golden files."""
 		if not self.test_cases_with_golden_files:
-			self.skipTest("No test cases with golden files found. Run: python scripts/generate-debug-files.py")
+			self.skipTest(
+				"No test cases with golden files found. Run: python scripts/generate-debug-files.py"
+			)
 
 		for case_dir in self.test_cases_with_golden_files:
 			with self.subTest(test_case=case_dir.name):

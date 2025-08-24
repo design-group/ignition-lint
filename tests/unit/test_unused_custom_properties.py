@@ -110,9 +110,32 @@ class TestUnusedCustomPropertiesRule(BaseRuleTest):
 
 	def test_used_custom_property_in_script(self):
 		"""Test that custom properties referenced in scripts are not flagged."""
-		# SKIPPED: Current limitation - script reference detection not implemented
-		# due to model builder not creating script content nodes
-		self.skipTest("Script reference detection not currently supported due to architectural limitations")
+		# Create a view with a custom property used in a script
+		view_data = {
+			"custom": {
+				"scriptProp": "test value"
+			},
+			"root": {
+				"children": [{
+					"meta": {
+						"name": "TestButton"
+					},
+					"events": {
+						"onClick": {
+							"script":
+								"# Use the custom property\nlogger.info('Value: ' + str(self.view.custom.scriptProp))"
+						}
+					}
+				}]
+			}
+		}
+		mock_view_content = json.dumps(view_data, indent=2)
+		mock_view = create_temp_view_file(mock_view_content)
+
+		rule_config = get_test_config("UnusedCustomPropertiesRule")
+
+		# Should not flag properties that are used in scripts
+		self.assert_rule_errors(mock_view, rule_config, "UnusedCustomPropertiesRule", expected_error_count=0)
 
 	def test_mixed_used_and_unused_properties(self):
 		"""Test a view with both used and unused custom properties."""

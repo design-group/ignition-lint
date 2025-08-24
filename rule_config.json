@@ -29,6 +29,10 @@
       }
     }
   },
+  "UnusedCustomPropertiesRule": {
+    "enabled": true,
+    "kwargs": {}
+  },
   "_info": {
     "_description": "Rule severity levels are defined by rule developers:",
     "rule_severities": {

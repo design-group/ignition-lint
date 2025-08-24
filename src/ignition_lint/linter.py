@@ -58,6 +58,10 @@ class LintEngine:
 
 		# Apply each rule to the nodes
 		for rule in self.rules:
+			# Give rules access to flattened JSON if they need it
+			if hasattr(rule, 'set_flattened_json'):
+				rule.set_flattened_json(self.flattened_json)
+
 			# Let the rule process all nodes it's interested in
 			rule.process_nodes(all_nodes)
 

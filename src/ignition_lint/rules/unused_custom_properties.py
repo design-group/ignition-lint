@@ -18,10 +18,11 @@ SUPPORTED DETECTION:
 
 These properties are considered "used" if they are referenced in:
 - ✅ Expression bindings (e.g., {view.custom.myProp}, {this.custom.myProp})
-- Property bindings (e.g., tag paths, property paths)
-- Tag bindings (e.g., tag paths containing property references)
-- Script expressions in event handlers, message handlers, transforms, etc. (NOT YET IMPLEMENTED)
-- Custom method scripts (NOT YET IMPLEMENTED)
+- ✅ Property bindings (e.g., tag paths, property paths)
+- ✅ Tag bindings (e.g., tag paths containing property references)
+- ✅ Script expressions in event handlers, message handlers, transforms, etc. (via comprehensive search)
+- ✅ Custom method scripts (via comprehensive search)
+- ✅ Any other context where property paths appear as strings in the view definition
 """
 
 import re
@@ -57,6 +58,10 @@ class UnusedCustomPropertiesRule(LintingRule):
 		self.defined_properties = {}
 		self.used_properties = set()
 		self.flattened_json = {}
+
+	def set_flattened_json(self, flattened_json: Dict[str, Any]):
+		"""Set the flattened JSON for comprehensive property reference searching."""
+		self.flattened_json = flattened_json
 
 	def process_nodes(self, nodes):
 		"""Process nodes to detect unused custom properties and view parameters."""
@@ -182,6 +187,9 @@ class UnusedCustomPropertiesRule(LintingRule):
 
 	def finalize(self):
 		"""Called after all nodes are visited - check for unused properties."""
+		# Search entire flattened JSON for property references
+		self._search_flattened_json_for_references()
+
 		unused_properties = []
 
 		for prop_path, definition_location in self.defined_properties.items():
@@ -204,3 +212,81 @@ class UnusedCustomPropertiesRule(LintingRule):
 			self.errors.append(
 				f"{definition_location}: {prop_type} '{prop_path.split('.')[-1]}' is defined but never referenced"
 			)
+
+	def _search_flattened_json_for_references(self):
+		"""Search the entire flattened JSON for any references to defined properties."""
+		if not self.flattened_json or not self.defined_properties:
+			return
+
+		# Get all property paths we're looking for
+		search_patterns = []
+
+		for prop_path in self.defined_properties.keys():
+			if prop_path.startswith('view.custom.'):
+				# For view custom properties: view.custom.propName
+				prop_name = prop_path[12:]  # Remove 'view.custom.'
+				search_patterns.extend([
+					f"view.custom.{prop_name}",
+					f"self.view.custom.{prop_name}",
+					f"{{{prop_name}}}",  # Short form in expressions
+				])
+			elif prop_path.startswith('view.params.'):
+				# For view parameters: view.params.paramName
+				param_name = prop_path[12:]  # Remove 'view.params.'
+				search_patterns.extend([
+					f"view.params.{param_name}",
+					f"self.view.params.{param_name}",
+					f"{{{param_name}}}",  # Short form in expressions
+				])
+			elif '.custom.' in prop_path:
+				# For component custom properties: ComponentName.custom.propName
+				parts = prop_path.split('.custom.')
+				component_name = parts[0]
+				prop_name = parts[1]
+				search_patterns.extend([
+					f"{component_name}.custom.{prop_name}",
+					f"this.custom.{prop_name}",
+					f"self.custom.{prop_name}",
+				])
+
+		# Search through all values in the flattened JSON
+		for json_path, json_value in self.flattened_json.items():
+			if not isinstance(json_value, str):
+				continue
+
+			# Check if any of our search patterns appear in this value
+			for pattern in search_patterns:
+				if pattern in json_value:
+					# Mark the corresponding property as used
+					self._mark_property_used_from_pattern(pattern)
+
+	def _mark_property_used_from_pattern(self, pattern: str):
+		"""Mark a property as used based on a found pattern."""
+		# Extract the property path from the pattern
+		if 'view.custom.' in pattern:
+			# Extract property name from patterns like "view.custom.propName" or "self.view.custom.propName"
+			match = re.search(r'view\.custom\.([a-zA-Z_][a-zA-Z0-9_]*)', pattern)
+			if match:
+				prop_name = match.group(1)
+				self.used_properties.add(f"view.custom.{prop_name}")
+		elif 'view.params.' in pattern:
+			# Extract parameter name from patterns like "view.params.paramName" or "self.view.params.paramName"
+			match = re.search(r'view\.params\.([a-zA-Z_][a-zA-Z0-9_]*)', pattern)
+			if match:
+				param_name = match.group(1)
+				self.used_properties.add(f"view.params.{param_name}")
+		elif '.custom.' in pattern:
+			# Extract component and property name from patterns like "ComponentName.custom.propName" or "this.custom.propName"
+			if pattern.startswith('this.custom.') or pattern.startswith('self.custom.'):
+				# Generic component reference - mark as wildcard
+				match = re.search(r'\.custom\.([a-zA-Z_][a-zA-Z0-9_]*)', pattern)
+				if match:
+					prop_name = match.group(1)
+					self.used_properties.add(f"*.custom.{prop_name}")
+			else:
+				# Specific component reference
+				match = re.search(r'([^.]+)\.custom\.([a-zA-Z_][a-zA-Z0-9_]*)', pattern)
+				if match:
+					component_name = match.group(1)
+					prop_name = match.group(2)
+					self.used_properties.add(f"{component_name}.custom.{prop_name}")
