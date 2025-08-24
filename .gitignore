@@ -1,9 +1,15 @@
-# VSCode workspace
-*.code-workspace
+# Python cache
+**/__pycache__/
+**/*.egg-info
 
-# .vscode directory
-.vscode
+# Debug directories
+**/debug/*
 
-# pycache
-src/__pycache__/
-src/*.egg-info
+# Local testing tools
+bin/
+.cache/
+.actrc
+.github/act-secrets.env
+
+# Build artifacts
+dist/

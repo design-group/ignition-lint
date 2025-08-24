@@ -1,0 +1,162 @@
+"""
+This module contains common and base node types for rule implementation
+"""
+
+from abc import ABC, abstractmethod
+from typing import Set, List, Dict, Any
+from ..model.node_types import ViewNode, NodeType, ScriptNode, ALL_BINDINGS, ALL_SCRIPTS
+
+
+class NodeVisitor(ABC):
+	"""Simplified base visitor class that rules can extend."""
+
+	def visit_generic(self, node: ViewNode):
+		"""Generic visit method for nodes that don't have specific handlers."""
+
+	# Specific visit methods - rules only need to implement what they care about
+	def visit_component(self, node: ViewNode):
+		"""Visit a component node."""
+
+	def visit_expression_binding(self, node: ViewNode):
+		"""Visit an expression binding node."""
+
+	def visit_property_binding(self, node: ViewNode):
+		"""Visit a property binding node."""
+
+	def visit_tag_binding(self, node: ViewNode):
+		"""Visit a tag binding node."""
+
+	def visit_message_handler(self, node: ViewNode):
+		"""Visit a message handler node."""
+
+	def visit_custom_method(self, node: ViewNode):
+		"""Visit a component custom method node."""
+
+	def visit_transform(self, node: ViewNode):
+		"""Visit a transform node."""
+
+	def visit_event_handler(self, node: ViewNode):
+		"""Visit an event handler node."""
+
+	def visit_property(self, node: ViewNode):
+		"""Visit a property node."""
+
+
+class LintingRule(NodeVisitor):
+	"""Base class for linting rules with simplified interface and self-processing capability."""
+
+	def __init__(self, target_node_types: Set[NodeType] = None):
+		"""
+		Initialize the rule.
+		
+		Args:
+			target_node_types: Set of node types this rule applies to. 
+							  If None, applies to all nodes.
+		"""
+		self.target_node_types = target_node_types or set()
+		self.errors = []
+
+	@classmethod
+	def preprocess_config(cls, config: Dict[str, Any]) -> Dict[str, Any]:
+		"""
+		Preprocess configuration before rule instantiation.
+		Override this method in subclasses that need special config handling.
+		
+		Args:
+			config: Raw configuration dictionary from JSON
+			
+		Returns:
+			Processed configuration dictionary ready for __init__
+		"""
+		return config.copy()
+
+	@classmethod
+	def create_from_config(cls, config: Dict[str, Any]):
+		"""
+		Create a rule instance from configuration, applying any necessary preprocessing.
+		
+		Args:
+			config: Raw configuration dictionary from JSON
+			
+		Returns:
+			Rule instance
+		"""
+		processed_config = cls.preprocess_config(config)
+		return cls(**processed_config)
+
+	def applies_to(self, node: ViewNode) -> bool:
+		"""Check if this rule applies to the given node."""
+		return node.applies_to_rule(self.target_node_types)
+
+	def process_nodes(self, nodes: List[ViewNode]):
+		"""Process a list of nodes, applying the rule to applicable ones."""
+		self.errors = []  # Reset errors
+
+		# Filter nodes that this rule applies to
+		applicable_nodes = [node for node in nodes if self.applies_to(node)]
+
+		# Visit each applicable node
+		for node in applicable_nodes:
+			node.accept(self)
+
+		# Allow for batch processing if needed
+		self.post_process()
+
+	def post_process(self):
+		"""Override this method if you need to do batch processing after visiting all nodes."""
+
+	@property
+	@abstractmethod
+	def error_message(self) -> str:
+		"""Return a description of what this rule checks for."""
+
+	@property
+	def error_key(self) -> str:
+		"""Key to use in the errors dict for this rule."""
+		return self.__class__.__name__
+
+
+class BindingRule(LintingRule):
+	"""Base class for binding-specific rules."""
+
+	def __init__(self, target_node_types: Set[NodeType] = None):
+		if target_node_types is None:
+			target_node_types = ALL_BINDINGS
+		super().__init__(target_node_types)
+
+
+class ScriptRule(LintingRule):
+	"""Base class for script-specific rules with built-in script collection."""
+
+	def __init__(self, target_node_types: Set[NodeType] = None):
+		if target_node_types is None:
+			target_node_types = ALL_SCRIPTS
+		super().__init__(target_node_types)
+		self.collected_scripts = {}
+
+	def visit_message_handler(self, node: ViewNode):
+		self._collect_script(node)
+
+	def visit_custom_method(self, node: ViewNode):
+		self._collect_script(node)
+
+	def visit_transform(self, node: ViewNode):
+		self._collect_script(node)
+
+	def visit_event_handler(self, node: ViewNode):
+		self._collect_script(node)
+
+	def _collect_script(self, node: ViewNode):
+		"""Collect script for batch processing."""
+		if isinstance(node, ScriptNode):
+			self.collected_scripts[node.path] = node
+
+	def post_process(self):
+		"""Process all collected scripts in batch."""
+		if self.collected_scripts:
+			self.process_scripts(self.collected_scripts)
+			self.collected_scripts = {}
+
+	@abstractmethod
+	def process_scripts(self, scripts: Dict[str, ScriptNode]):
+		"""Process the collected scripts. Override in subclasses."""

@@ -1,4 +1,8 @@
-Features
+Fix github actions.
+
+Fix tests to work properly.
+
+#Features
 
 Script transform and message handlers excessive length
 

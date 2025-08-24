@@ -1,0 +1,44 @@
+name: Example CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'  # Matches ^3.6 requirement
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Install pre-commit
+        run: poetry run pip install pre-commit
+
+      - name: Run pre-commit
+        run: poetry run pre-commit run --all-files
+
+      - name: Test ignition-lint CLI
+        run: |
+          poetry run ignition-lint --help
+          # Test with a sample file if available
+          if [ -f "tests/cases/PreferredStyle/view.json" ]; then
+            poetry run ignition-lint tests/cases/PreferredStyle/view.json
+          fi

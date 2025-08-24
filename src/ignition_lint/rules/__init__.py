@@ -1,21 +1,32 @@
-from .base import LintingRule, Visitor
-from .script_rules import ScriptLintingRule, PylintScriptRule
-from .binding_rules import BindingLintingRule, PollingIntervalRule
+from .common import LintingRule, NodeVisitor, BindingRule
+from .registry import register_rule, get_registry, get_all_rules, discover_rules
 
-# Map rule names to their classes for configuration
-RULES_MAP = {
-	"PylintScriptRule": PylintScriptRule,
-	"PollingIntervalRule": PollingIntervalRule,
-	"ScriptLintingRule": ScriptLintingRule,
-	"BindingLintingRule": BindingLintingRule,
-}
+# Import and register built-in rules
+from .lint_script import PylintScriptRule
+from .polling_interval import PollingIntervalRule
+from .name_pattern import NamePatternRule
+
+# Auto-discover and register all rules in this package
+_discovered_rules = discover_rules()
+
+# Create RULES_MAP for backward compatibility
+def get_rules_map():
+	"""Get the current rules map for backward compatibility."""
+	return get_all_rules()
+
+# Dynamic RULES_MAP that stays up-to-date
+RULES_MAP = get_rules_map()
 
 __all__ = [
 	"LintingRule",
-	"Visitor",
-	"ScriptLintingRule",
+	"NodeVisitor",
+	"BindingRule", 
 	"PylintScriptRule",
-	"BindingLintingRule",
 	"PollingIntervalRule",
+	"NamePatternRule",
 	"RULES_MAP",
+	"register_rule",
+	"get_registry",
+	"get_all_rules",
+	"discover_rules",
 ]
