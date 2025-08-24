@@ -139,6 +139,22 @@ class ScriptRule(LintingRule):
 		super().__init__(target_node_types)
 		self.collected_scripts = {}
 
+	def process_nodes(self, nodes: List[ViewNode]):
+		"""Process a list of nodes, applying the rule to applicable ones."""
+		self.errors = []  # Reset errors
+		self.warnings = []  # Reset warnings
+		self.collected_scripts = {}  # Reset collected scripts
+
+		# Filter nodes that this rule applies to
+		applicable_nodes = [node for node in nodes if self.applies_to(node)]
+
+		# Visit each applicable node
+		for node in applicable_nodes:
+			node.accept(self)
+
+		# Allow for batch processing if needed
+		self.post_process()
+
 	def visit_message_handler(self, node: ViewNode):
 		self._collect_script(node)
 

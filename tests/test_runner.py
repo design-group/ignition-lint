@@ -112,15 +112,31 @@ def run_config_tests(tags=None):
 					for detail in result['expectation_details']:
 						if not detail['met']:
 							print(f"  Rule {detail['rule_name']}:")
-							print(
-								f"    Expected {detail['expected_count']} errors, got {detail['actual_count']}"
-							)
-							if detail['pattern_matches']:
+							# Handle both old and new format
+							if 'expected_count' in detail:
+								print(
+									f"    Expected {detail['expected_count']} errors, got {detail['actual_count']}"
+								)
+							else:
+								print(
+									f"    Expected {detail['expected_warnings']} warnings, got {detail['actual_warnings']}"
+								)
+								print(
+									f"    Expected {detail['expected_errors']} errors, got {detail['actual_errors']}"
+								)
+							# Handle pattern matches for both old and new format
+							if 'pattern_matches' in detail and detail['pattern_matches']:
 								for pm in detail['pattern_matches']:
 									if not pm['found']:
-										print(
-											f"    Missing pattern: '{pm['pattern']}'"
-										)
+										print(f"    Missing pattern: '{pm['pattern']}'")
+							elif 'error_pattern_matches' in detail or 'warning_pattern_matches' in detail:
+								# New format with separate error and warning patterns
+								for pm in detail.get('error_pattern_matches', []):
+									if not pm['found']:
+										print(f"    Missing error pattern: '{pm['pattern']}'")
+								for pm in detail.get('warning_pattern_matches', []):
+									if not pm['found']:
+										print(f"    Missing warning pattern: '{pm['pattern']}'")
 
 	return results['failed'] == 0 and results['errors'] == 0
 

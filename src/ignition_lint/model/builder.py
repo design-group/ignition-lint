@@ -49,15 +49,15 @@ class ViewModelBuilder:
 
 	def _get_expression(self, binding_path: str) -> str:
 		"""Get the expression from an expression binding."""
-		return self._search_for_path_value(binding_path, "config.expression", "unknown")
+		return self._search_for_path_value(binding_path, "binding.config.expression", "unknown")
 
 	def _get_property_path(self, binding_path: str) -> str:
 		"""Get the target path from a property binding."""
-		return self._search_for_path_value(binding_path, "config.path", "unknown")
+		return self._search_for_path_value(binding_path, "binding.config.path", "unknown")
 
 	def _get_tag_path(self, binding_path: str) -> str:
 		"""Get the tag path from a tag binding."""
-		return self._search_for_path_value(binding_path, "config.tagPath", "unknown")
+		return self._search_for_path_value(binding_path, "binding.config.tagPath", "unknown")
 
 	def _get_script_transforms(self, binding_path: str) -> List[tuple]:
 		"""Get script transforms from a binding."""
@@ -97,6 +97,40 @@ class ViewModelBuilder:
 				config[key] = value
 		return config
 
+	def _is_property_persistent(self, property_path: str) -> bool:
+		"""
+		Check if a property is persistent (exists at startup) or non-persistent (created by bindings).
+		
+		Properties are considered persistent if:
+		1. They have no propConfig entry (default behavior)
+		2. They have propConfig.{property_path}.persistent = True
+		
+		Args:
+			property_path: The path to the property (e.g., "custom.myProp" or "root.root.children[0].Button.custom.myProp")
+		
+		Returns:
+			True if the property should be persistent, False if it's created by bindings at runtime
+		"""
+		# Check for explicit persistence configuration
+		config_path = f"propConfig.{property_path}.persistent"
+		persistent_value = self.flattened_json.get(config_path)
+		
+		if persistent_value is not None:
+			# Explicit configuration found
+			return persistent_value
+		
+		# No explicit configuration - check if there's any propConfig for this property
+		config_prefix = f"propConfig.{property_path}."
+		has_any_config = any(path.startswith(config_prefix) for path in self.flattened_json.keys())
+		
+		if has_any_config:
+			# Property has configuration but no explicit persistent setting
+			# Default to True (persistent) unless proven otherwise
+			return True
+		
+		# No configuration at all - default to persistent
+		return True
+
 	def _collect_components(self):
 		# First, identify components by looking for meta.name entries
 		for path, value in self.flattened_json.items():
@@ -117,7 +151,7 @@ class ViewModelBuilder:
 			if binding_path not in visited_paths:
 				visited_paths.append(binding_path)
 
-				if binding_type == 'expr':
+				if binding_type == 'expression' or binding_type == 'expr':
 					expression = self._get_expression(binding_path)
 					binding = ExpressionBinding(binding_path, expression)
 					self.model['expression_bindings'].append(binding)
@@ -232,9 +266,22 @@ class ViewModelBuilder:
 
 	def _collect_properties(self):
 		for path, value in self.flattened_json.items():
-			# Skip meta properties, bindings, scripts - we already processed those
+			# Skip meta properties, bindings, scripts, events - we already processed those
 			processed_props = ['meta', 'binding', 'scripts', 'events']
 			if any(f".{prop}." in path for prop in processed_props) or path.endswith('.type'):
+				continue
+
+			# Skip propConfig properties - these are configuration, not actual properties
+			if path.startswith('propConfig.'):
+				continue
+
+			# Handle view-level properties (custom.* and params.*)
+			if path.startswith('custom.') or path.startswith('params.'):
+				# Check if this is a persistent property
+				if self._is_property_persistent(path):
+					property_name = path.split(".")[-1]
+					prop = Property(path, property_name, value)
+					self.model['properties'].append(prop)
 				continue
 
 			# Find the component this property belongs to
@@ -246,6 +293,10 @@ class ViewModelBuilder:
 						component_path = comp_obj.path
 
 			if component_path:
+				# For component properties, also check persistence for custom properties
+				if '.custom.' in path and not self._is_property_persistent(path):
+					continue
+
 				property_name = path.split(".")[-1]
 
 				prop = Property(path, property_name, value)

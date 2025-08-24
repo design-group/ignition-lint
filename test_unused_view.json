@@ -1,0 +1,37 @@
+{
+  "custom": {
+    "usedProp": "used",
+    "unusedProp": "unused"
+  },
+  "params": {
+    "usedParam": "used",
+    "unusedParam": "unused"
+  },
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "TestLabel"
+        },
+        "type": "ia.display.label",
+        "custom": {
+          "usedComponentProp": "used in binding",
+          "unusedComponentProp": "never used"
+        },
+        "props": {
+          "text": {
+            "binding": {
+              "type": "expression",
+              "config": {
+                "expression": "{view.custom.usedProp} + {this.custom.usedComponentProp} + {view.params.usedParam}"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "meta": {
+      "name": "root"
+    }
+  }
+}

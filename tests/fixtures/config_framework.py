@@ -24,14 +24,19 @@ from ignition_lint.common.flatten_json import flatten_file
 class TestExpectation:
 	"""Represents expected results for a test case."""
 	rule_name: str
-	error_count: int
+	error_count: int = 0
+	warning_count: int = 0
 	error_patterns: List[str] = None
+	warning_patterns: List[str] = None
 	should_pass: bool = None
 
 	def __post_init__(self):
 		if self.error_patterns is None:
 			self.error_patterns = []
+		if self.warning_patterns is None:
+			self.warning_patterns = []
 		if self.should_pass is None:
+			# Rule passes if no errors (warnings are allowed for "pass")
 			self.should_pass = self.error_count == 0
 
 
@@ -67,7 +72,7 @@ class ConfigurableTestFramework:
 		tests_dir = Path(__file__).parent.parent
 
 		if config_dir is None:
-			config_dir = tests_dir / "configs"
+			config_dir = tests_dir / "fixtures" / "configs"
 		if test_cases_dir is None:
 			test_cases_dir = tests_dir / "cases"
 
@@ -100,7 +105,9 @@ class ConfigurableTestFramework:
 							TestExpectation(
 								rule_name=exp_data['rule_name'],
 								error_count=exp_data.get('error_count', 0),
+								warning_count=exp_data.get('warning_count', 0),
 								error_patterns=exp_data.get('error_patterns', []),
+								warning_patterns=exp_data.get('warning_patterns', []),
 								should_pass=exp_data.get('should_pass')
 							)
 						)
@@ -166,7 +173,7 @@ class ConfigurableTestFramework:
 				kwargs = rule_config.get('kwargs', {})
 
 				try:
-					rules.append(rule_class(**kwargs))
+					rules.append(rule_class.create_from_config(kwargs))
 				except Exception as e:
 					print(f"Error creating rule {rule_name}: {e}")
 					continue
@@ -174,43 +181,72 @@ class ConfigurableTestFramework:
 			# Run linting
 			lint_engine = LintEngine(rules)
 			flattened_json = flatten_file(view_file_path)
-			actual_errors = lint_engine.process(flattened_json)
+			lint_results = lint_engine.process(flattened_json)
+			
+			# Combine warnings and errors for backward compatibility
+			actual_errors = {}
+			actual_errors.update(lint_results.warnings)
+			actual_errors.update(lint_results.errors)
 
 			# Check expectations
 			expectations_met = True
 			expectation_details = []
 
 			for expectation in test_case.expectations:
-				rule_errors = actual_errors.get(expectation.rule_name, [])
-				actual_count = len(rule_errors)
+				rule_warnings = lint_results.warnings.get(expectation.rule_name, [])
+				rule_errors = lint_results.errors.get(expectation.rule_name, [])
+				
+				actual_warning_count = len(rule_warnings)
+				actual_error_count = len(rule_errors)
 
-				count_match = actual_count == expectation.error_count
-				pass_match = (actual_count == 0) == expectation.should_pass
+				# Check counts
+				warning_count_match = actual_warning_count == expectation.warning_count
+				error_count_match = actual_error_count == expectation.error_count
+				pass_match = (actual_error_count == 0) == expectation.should_pass
 
-				pattern_matches = []
+				# Check error patterns
+				error_pattern_matches = []
 				if expectation.error_patterns:
 					for pattern in expectation.error_patterns:
 						matches = [error for error in rule_errors if pattern in error]
-						pattern_matches.append({
+						error_pattern_matches.append({
 							'pattern': pattern,
 							'matches': len(matches),
 							'found': len(matches) > 0
 						})
 
-				expectation_met = count_match and pass_match
+				# Check warning patterns
+				warning_pattern_matches = []
+				if expectation.warning_patterns:
+					for pattern in expectation.warning_patterns:
+						matches = [warning for warning in rule_warnings if pattern in warning]
+						warning_pattern_matches.append({
+							'pattern': pattern,
+							'matches': len(matches),
+							'found': len(matches) > 0
+						})
+
+				# Overall expectation check
+				expectation_met = warning_count_match and error_count_match and pass_match
 				if expectation.error_patterns:
-					expectation_met = expectation_met and all(pm['found'] for pm in pattern_matches)
+					expectation_met = expectation_met and all(pm['found'] for pm in error_pattern_matches)
+				if expectation.warning_patterns:
+					expectation_met = expectation_met and all(pm['found'] for pm in warning_pattern_matches)
 
 				expectations_met = expectations_met and expectation_met
 
 				expectation_details.append({
 					'rule_name': expectation.rule_name,
-					'expected_count': expectation.error_count,
-					'actual_count': actual_count,
+					'expected_warnings': expectation.warning_count,
+					'actual_warnings': actual_warning_count,
+					'expected_errors': expectation.error_count,
+					'actual_errors': actual_error_count,
 					'should_pass': expectation.should_pass,
-					'count_match': count_match,
+					'warning_count_match': warning_count_match,
+					'error_count_match': error_count_match,
 					'pass_match': pass_match,
-					'pattern_matches': pattern_matches,
+					'error_pattern_matches': error_pattern_matches,
+					'warning_pattern_matches': warning_pattern_matches,
 					'met': expectation_met
 				})
 
