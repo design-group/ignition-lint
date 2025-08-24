@@ -73,16 +73,16 @@ Generate comprehensive debug files for test cases to understand model building a
 ls scripts/
 
 # Generate debug files for all test cases
-python scripts/generate-debug-files.py
+python scripts/generate_debug_files.py
 
 # Generate for specific test cases
-python scripts/generate-debug-files.py PascalCase LineDashboard
+python scripts/generate_debug_files.py PascalCase LineDashboard
 
 # List test cases and their debug status
-python scripts/generate-debug-files.py --list
+python scripts/generate_debug_files.py --list
 
 # Remove all debug directories
-python scripts/generate-debug-files.py --clean
+python scripts/generate_debug_files.py --clean
 ```
 
 Each test case's debug directory contains:
@@ -98,7 +98,7 @@ The framework includes golden file tests that validate LintEngine model generati
 
 ```bash
 # If golden files don't exist, generate them first (from repository root)
-python scripts/generate-debug-files.py
+python scripts/generate_debug_files.py
 
 # Run golden file tests (from tests directory)
 cd tests
@@ -118,7 +118,7 @@ Golden file tests automatically detect regressions in:
 
 **Developer Workflow:**
 1. Update a `view.json` test case
-2. Run `python scripts/generate-debug-files.py TestCaseName` to regenerate debug files
+2. Run `python scripts/generate_debug_files.py TestCaseName` to regenerate debug files
 3. Review the debug files to understand how changes affect model building
 4. Use debug files for rule development and troubleshooting
 5. Run golden file tests to ensure no regressions
@@ -563,7 +563,7 @@ ls pyproject.toml scripts/
 poetry install
 
 # Generate debug files
-python scripts/generate-debug-files.py
+python scripts/generate_debug_files.py
 
 # Run the tool
 poetry run python -m ignition_lint.main --files "**/view.json"

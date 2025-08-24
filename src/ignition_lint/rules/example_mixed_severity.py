@@ -26,7 +26,7 @@ class ExampleMixedSeverityRule(LintingRule):
 	def error_message(self) -> str:
 		return "Component validation with mixed severity levels"
 
-	def visit_component(self, component):
+	def visit_component(self, node):
 		"""
 		Check components for different types of issues demonstrating severity levels.
 		
@@ -41,34 +41,34 @@ class ExampleMixedSeverityRule(LintingRule):
 		- Names that could cause runtime issues
 		"""
 		# WARNING: Style issue - temporary naming pattern
-		if component.name.lower().startswith(('temp', 'test', 'tmp')):
+		if node.name.lower().startswith(('temp', 'test', 'tmp')):
 			self.warnings.append(
-				f"{component.path}: Component name '{component.name}' "
+				f"{node.path}: Component name '{node.name}' "
 				f"uses temporary naming pattern (consider renaming for production)"
 			)
 
 		# ERROR: Functional issue - potentially unsafe component
-		if component.name.lower() in ['unsafecomponent', 'debugcomponent', 'adminpanel']:
+		if node.name.lower() in ['unsafecomponent', 'debugcomponent', 'adminpanel']:
 			self.errors.append(
-				f"{component.path}: Component name '{component.name}' "
+				f"{node.path}: Component name '{node.name}' "
 				f"indicates potentially unsafe or debug functionality"
 			)
 
 		# WARNING: Style issue - very short names hurt readability
-		if len(component.name) < 3 and not component.name.lower() in ['ok', 'no', 'go', 'id']:
+		if len(node.name) < 3 and not node.name.lower() in ['ok', 'no', 'go', 'id']:
 			self.warnings.append(
-				f"{component.path}: Component name '{component.name}' "
+				f"{node.path}: Component name '{node.name}' "
 				f"is very short (consider more descriptive naming)"
 			)
 
 		# ERROR: Functional issue - conflicting indicators
 		conflicting_patterns = [('debug', 'prod'), ('test', 'live'), ('dev', 'production'), ('mock', 'real'),
 					('sample', 'actual')]
-		name_lower = component.name.lower()
+		name_lower = node.name.lower()
 		for pattern1, pattern2 in conflicting_patterns:
 			if pattern1 in name_lower and pattern2 in name_lower:
 				self.errors.append(
-					f"{component.path}: Component name '{component.name}' "
+					f"{node.path}: Component name '{node.name}' "
 					f"contains conflicting indicators '{pattern1}' and '{pattern2}'"
 				)
 				break
@@ -76,11 +76,11 @@ class ExampleMixedSeverityRule(LintingRule):
 		# WARNING: Style recommendation - missing component type suffix
 		common_types = ['button', 'label', 'input', 'panel', 'container', 'table', 'chart']
 		if (
-			len(component.name) > 5 and
-			not any(comp_type in component.name.lower() for comp_type in common_types) and
-			not component.name.lower().endswith(('btn', 'lbl', 'txt', 'img', 'icon'))
+			len(node.name) > 5 and
+			not any(comp_type in node.name.lower() for comp_type in common_types) and
+			not node.name.lower().endswith(('btn', 'lbl', 'txt', 'img', 'icon'))
 		):
 			self.warnings.append(
-				f"{component.path}: Component name '{component.name}' "
+				f"{node.path}: Component name '{node.name}' "
 				f"might benefit from a descriptive suffix (e.g., Button, Label, Panel)"
 			)

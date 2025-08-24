@@ -4,9 +4,9 @@ Modular test runner script for ignition-lint.
 This script provides a simple command-line interface for running organized tests.
 """
 
-import sys
-import os
 import argparse
+import os
+import sys
 import unittest
 from pathlib import Path
 

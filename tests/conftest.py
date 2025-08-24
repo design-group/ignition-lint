@@ -3,11 +3,12 @@ Shared test configuration and fixtures for ignition-lint tests.
 This file contains common setup, fixtures, and utilities used across all tests.
 """
 
-import pytest
 import os
 import sys
 from pathlib import Path
 from typing import Dict, Any
+
+import pytest
 
 # Add the src directory to the PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))

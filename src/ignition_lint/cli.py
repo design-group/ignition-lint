@@ -13,7 +13,7 @@ from typing import List, Dict, Any
 try:
 	# Try relative imports first (when run as module)
 	from .common.flatten_json import read_json_file, flatten_json
-	from .linter import LintEngine, LintResults
+	from .linter import LintEngine
 	from .rules import RULES_MAP
 except ImportError:
 	# Fall back to absolute imports (when run directly or from tests)
@@ -23,7 +23,7 @@ except ImportError:
 		sys.path.insert(0, str(src_dir))
 
 	from ignition_lint.common.flatten_json import read_json_file, flatten_json
-	from ignition_lint.linter import LintEngine, LintResults
+	from ignition_lint.linter import LintEngine
 	from ignition_lint.rules import RULES_MAP
 
 

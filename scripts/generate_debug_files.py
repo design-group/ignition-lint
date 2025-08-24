@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# pylint: disable=wrong-import-position
 """
 Generate debug files for test cases.
 
@@ -6,10 +7,10 @@ This script processes all test cases in tests/cases/ and generates debug files
 (flattened JSON, model state, statistics) in a debug/ subdirectory within each test case.
 
 Usage:
-  python scripts/generate-debug-files.py                    # Generate for all test cases
-  python scripts/generate-debug-files.py PascalCase         # Generate for specific test case
-  python scripts/generate-debug-files.py --clean            # Remove all debug directories
-  python scripts/generate-debug-files.py --list             # List available test cases
+  python scripts/generate_debug_files.py                    # Generate for all test cases
+  python scripts/generate_debug_files.py PascalCase         # Generate for specific test case
+  python scripts/generate_debug_files.py --clean            # Remove all debug directories
+  python scripts/generate_debug_files.py --list             # List available test cases
 """
 
 import argparse
@@ -17,7 +18,7 @@ import json
 import shutil
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 # Add src to path (from scripts directory, go up one level to repo root)
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
@@ -76,7 +77,7 @@ def generate_debug_files_for_case(case_dir: Path, lint_engine: LintEngine) -> bo
 
 		# Build the model
 		lint_engine.flattened_json = flattened_json
-		lint_engine.view_model = lint_engine._get_view_model()
+		lint_engine.view_model = lint_engine.get_view_model()
 
 		# Create debug directory
 		debug_dir.mkdir(exist_ok=True)
@@ -86,7 +87,7 @@ def generate_debug_files_for_case(case_dir: Path, lint_engine: LintEngine) -> bo
 			json.dump(flattened_json, f, indent=2, sort_keys=True)
 
 		# Save serialized model
-		serialized_model = lint_engine._serialize_view_model()
+		serialized_model = lint_engine.serialize_view_model()
 		with open(debug_dir / 'model.json', 'w', encoding='utf-8') as f:
 			json.dump(serialized_model, f, indent=2, sort_keys=True)
 
@@ -112,7 +113,7 @@ This directory contains debug information generated from `{case_dir.name}/view.j
 
 These files were generated using:
 ```bash
-python scripts/generate-debug-files.py {case_dir.name}
+python scripts/generate_debug_files.py {case_dir.name}
 ```
 
 ## Usage
@@ -163,10 +164,11 @@ def list_test_cases():
 		status = "🔍" if debug_exists else "  "
 		print(f"  {status} {case_dir.name}")
 
-	print(f"\n🔍 = has debug files")
+	print("\n🔍 = has debug files")
 
 
 def main():
+	"""Main entry point."""
 	parser = argparse.ArgumentParser(description="Generate debug files for test cases")
 	parser.add_argument('test_cases', nargs='*', help='Specific test case names to process (default: all)')
 	parser.add_argument('--clean', action='store_true', help='Remove all debug directories')
@@ -176,11 +178,11 @@ def main():
 
 	if args.clean:
 		clean_debug_directories()
-		return
+		return 0
 
 	if args.list:
 		list_test_cases()
-		return
+		return 0
 
 	# Get test cases to process
 	all_test_cases = get_test_cases()

@@ -153,7 +153,7 @@ class ViewModelBuilder:
 			if binding_path not in visited_paths:
 				visited_paths.append(binding_path)
 
-				if binding_type == 'expression' or binding_type == 'expr':
+				if binding_type in ('expression', 'expr'):
 					expression = self._get_expression(binding_path)
 					binding = ExpressionBinding(binding_path, expression)
 					self.model['expression_bindings'].append(binding)

@@ -3,10 +3,8 @@ Unit tests for test discovery and framework functionality.
 Tests the test infrastructure itself.
 """
 
-import unittest
 import json
-import tempfile
-from pathlib import Path
+import unittest
 
 from fixtures.base_test import BaseRuleTest
 from fixtures.test_helpers import (

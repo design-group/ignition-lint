@@ -26,7 +26,7 @@ These properties are considered "used" if they are referenced in:
 """
 
 import re
-from typing import Set, List, Dict, Any
+from typing import Set, Dict, Any
 from .common import LintingRule
 from .registry import register_rule
 from ..model.node_types import NodeType
@@ -73,11 +73,10 @@ class UnusedCustomPropertiesRule(LintingRule):
 
 	def post_process(self):
 		"""Called after all nodes are visited - but we handle this in process_nodes."""
-		pass
 
-	def visit_property(self, property_node):
+	def visit_property(self, node):
 		"""Visit property nodes to find custom property definitions."""
-		path = property_node.path
+		path = node.path
 
 		# Check for view-level custom properties: custom.propName
 		if path.startswith('custom.') and '.' not in path[7:]:  # Exactly custom.propName
@@ -106,40 +105,40 @@ class UnusedCustomPropertiesRule(LintingRule):
 
 				self.defined_properties[full_prop_path] = path
 
-	def visit_expression_binding(self, binding_node):
+	def visit_expression_binding(self, node):
 		"""Check expression bindings for custom property references."""
-		self._check_expression_for_references(binding_node.expression)
+		self._check_expression_for_references(node.expression)
 
-	def visit_property_binding(self, binding_node):
+	def visit_property_binding(self, node):
 		"""Check property bindings for custom property references."""
 		# Property bindings might reference custom properties in their source paths
-		if hasattr(binding_node, 'source_property') and binding_node.source_property:
-			self._check_expression_for_references(binding_node.source_property)
+		if hasattr(node, 'source_property') and node.source_property:
+			self._check_expression_for_references(node.source_property)
 
-	def visit_tag_binding(self, binding_node):
+	def visit_tag_binding(self, node):
 		"""Check tag bindings for custom property references in tag paths."""
-		if hasattr(binding_node, 'tag_path') and binding_node.tag_path:
-			self._check_expression_for_references(binding_node.tag_path)
+		if hasattr(node, 'tag_path') and node.tag_path:
+			self._check_expression_for_references(node.tag_path)
 
-	def visit_event_handler(self, script_node):
+	def visit_event_handler(self, node):
 		"""Check event handler scripts for custom property references."""
-		if hasattr(script_node, 'script') and script_node.script:
-			self._check_script_for_references(script_node.script)
+		if hasattr(node, 'script') and node.script:
+			self._check_script_for_references(node.script)
 
-	def visit_message_handler(self, script_node):
+	def visit_message_handler(self, node):
 		"""Check message handler scripts for custom property references."""
-		if hasattr(script_node, 'script') and script_node.script:
-			self._check_script_for_references(script_node.script)
+		if hasattr(node, 'script') and node.script:
+			self._check_script_for_references(node.script)
 
-	def visit_custom_method(self, script_node):
+	def visit_custom_method(self, node):
 		"""Check custom method scripts for custom property references."""
-		if hasattr(script_node, 'script') and script_node.script:
-			self._check_script_for_references(script_node.script)
+		if hasattr(node, 'script') and node.script:
+			self._check_script_for_references(node.script)
 
-	def visit_transform(self, script_node):
+	def visit_transform(self, node):
 		"""Check transform scripts for custom property references."""
-		if hasattr(script_node, 'script') and script_node.script:
-			self._check_script_for_references(script_node.script)
+		if hasattr(node, 'script') and node.script:
+			self._check_script_for_references(node.script)
 
 	def _check_expression_for_references(self, expression: str):
 		"""Check an expression string for custom property references."""
@@ -250,7 +249,7 @@ class UnusedCustomPropertiesRule(LintingRule):
 				])
 
 		# Search through all values in the flattened JSON
-		for json_path, json_value in self.flattened_json.items():
+		for _, json_value in self.flattened_json.items():
 			if not isinstance(json_value, str):
 				continue
 

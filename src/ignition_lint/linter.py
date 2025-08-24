@@ -5,7 +5,6 @@ It also includes methods for debugging nodes and analyzing rule impact on the vi
 """
 
 import json
-import os
 from pathlib import Path
 from typing import Dict, List, Any, NamedTuple, Optional
 from .rules.common import LintingRule
@@ -34,7 +33,7 @@ class LintEngine:
 		if self.debug_output_dir:
 			Path(self.debug_output_dir).mkdir(parents=True, exist_ok=True)
 
-	def _get_view_model(self) -> Dict[str, List[Any]]:
+	def get_view_model(self) -> Dict[str, List[Any]]:
 		"""Return the structured view model."""
 		return self.model_builder.build_model(self.flattened_json)
 
@@ -42,7 +41,7 @@ class LintEngine:
 		"""Lint the given flattened JSON and return warnings and errors."""
 		# Build the object model
 		self.flattened_json = flattened_json
-		self.view_model = self._get_view_model()
+		self.view_model = self.get_view_model()
 
 		# Save debug information if debug output directory is configured
 		if self.debug_output_dir and source_file_path:
@@ -78,7 +77,7 @@ class LintEngine:
 	def get_model_statistics(self, flattened_json: Dict[str, Any]) -> Dict[str, Any]:
 		"""Get statistics about the parsed model for debugging/analysis."""
 		self.flattened_json = flattened_json
-		self.view_model = self._get_view_model()
+		self.view_model = self.get_view_model()
 
 		# Get all nodes for analysis
 		all_nodes = []
@@ -134,7 +133,7 @@ class LintEngine:
 	def debug_nodes(self, flattened_json: Dict[str, Any], node_types: List[str] = None) -> List[Dict]:
 		"""Get detailed information about nodes for debugging."""
 		self.flattened_json = flattened_json
-		self.view_model = self._get_view_model()
+		self.view_model = self.get_view_model()
 
 		all_nodes = []
 		for node_list in self.view_model.values():
@@ -161,7 +160,7 @@ class LintEngine:
 	def analyze_rule_impact(self, flattened_json: Dict[str, Any]) -> Dict[str, Dict]:
 		"""Analyze which nodes each rule would target."""
 		self.flattened_json = flattened_json
-		self.view_model = self._get_view_model()
+		self.view_model = self.get_view_model()
 
 		all_nodes = []
 		for node_list in self.view_model.values():
@@ -225,7 +224,7 @@ class LintEngine:
 				json.dump(self.flattened_json, f, indent=2, sort_keys=True)
 
 			# Serialize the view model
-			serialized_model = self._serialize_view_model()
+			serialized_model = self.serialize_view_model()
 
 			# Save serialized model
 			model_file = Path(self.debug_output_dir) / f"{source_name}_model.json"
@@ -238,7 +237,7 @@ class LintEngine:
 			with open(stats_file, 'w', encoding='utf-8') as f:
 				json.dump(stats, f, indent=2, sort_keys=True)
 
-			print(f"✅ Debug files saved:")
+			print("✅ Debug files saved:")
 			print(f"   - Flattened JSON: {flattened_file}")
 			print(f"   - Model state: {model_file}")
 			print(f"   - Statistics: {stats_file}")
@@ -246,7 +245,7 @@ class LintEngine:
 		except Exception as e:
 			print(f"⚠️  Warning: Could not save debug files: {e}")
 
-	def _serialize_view_model(self) -> Dict[str, Any]:
+	def serialize_view_model(self) -> Dict[str, Any]:
 		"""Serialize the view model to a JSON-compatible format."""
 		serialized = {}
 

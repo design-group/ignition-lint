@@ -393,34 +393,34 @@ class ConfigurableTestRunner(unittest.TestCase):
 
 	def test_run_configured_tests(self):
 		"""Run all configured test cases."""
-		results = self.framework.run_all_tests()
+		test_results = self.framework.run_all_tests()
 
 		# Print detailed results
-		print(f"\nTest Results Summary:")
-		print(f"Total: {results['total']}")
-		print(f"Passed: {results['passed']}")
-		print(f"Failed: {results['failed']}")
-		print(f"Skipped: {results['skipped']}")
-		print(f"Errors: {results['errors']}")
+		print("\nTest Results Summary:")
+		print(f"Total: {test_results['total']}")
+		print(f"Passed: {test_results['passed']}")
+		print(f"Failed: {test_results['failed']}")
+		print(f"Skipped: {test_results['skipped']}")
+		print(f"Errors: {test_results['errors']}")
 
 		# Print details for failed tests
-		for result in results['results']:
-			if result['status'] == 'failed':
-				print(f"\nFAILED: {result['name']}")
-				if 'expectation_details' in result:
-					for detail in result['expectation_details']:
+		for test_result in test_results['results']:
+			if test_result['status'] == 'failed':
+				print(f"\nFAILED: {test_result['name']}")
+				if 'expectation_details' in test_result:
+					for detail in test_result['expectation_details']:
 						if not detail['met']:
 							print(f"  Rule: {detail['rule_name']}")
 							print(
 								f"    Expected count: {detail['expected_count']}, Got: {detail['actual_count']}"
 							)
 							print(f"    Should pass: {detail['should_pass']}")
-			elif result['status'] == 'error':
-				print(f"\nERROR: {result['name']} - {result['reason']}")
+			elif test_result['status'] == 'error':
+				print(f"\nERROR: {test_result['name']} - {test_result['reason']}")
 
 		# Assert that all tests passed (no failures or errors)
-		self.assertEqual(results['failed'], 0, f"Some tests failed. See details above.")
-		self.assertEqual(results['errors'], 0, f"Some tests had errors. See details above.")
+		self.assertEqual(results['failed'], 0, "Some tests failed. See details above.")
+		self.assertEqual(results['errors'], 0, "Some tests had errors. See details above.")
 
 
 def create_sample_test_configs():

@@ -5,16 +5,16 @@ Tests the JSON flattening functionality that converts hierarchical JSON
 structures into flat path-value pairs for linting processing.
 """
 
-import unittest
 import json
-import tempfile
 import os
-from pathlib import Path
+import shutil
+import sys
+import tempfile
+import unittest
 from collections import OrderedDict
+from pathlib import Path
 
 # Import the module under test
-import sys
-
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 
 from ignition_lint.common.flatten_json import (
@@ -182,7 +182,6 @@ class TestFileOperations(unittest.TestCase):
 
 	def tearDown(self):
 		"""Clean up temporary files."""
-		import shutil
 		if self.temp_dir.exists():
 			shutil.rmtree(self.temp_dir)
 
