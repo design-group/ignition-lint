@@ -172,6 +172,101 @@ def print_rule_analysis(lint_engine: LintEngine, flattened_json: Dict[str, Any])
 		print()
 
 
+def print_debug_nodes(lint_engine: LintEngine, flattened_json: Dict[str, Any], debug_node_types: List[str]):
+	"""Print debug information for specific node types."""
+	debug_nodes = lint_engine.debug_nodes(flattened_json, debug_node_types or [])
+	if debug_node_types:
+		print(f"\n🔧 Debug info for node types: {', '.join(debug_node_types)}")
+	else:
+		print("\n🔧 Debug info for all nodes:")
+
+	for i, node_info in enumerate(debug_nodes[:10]):  # Limit to first 10
+		print(f"  {i+1}. {node_info['path']} ({node_info['node_type']})")
+		if 'summary' in node_info:
+			print(f"     {node_info['summary']}")
+
+	if len(debug_nodes) > 10:
+		print(f"     ... and {len(debug_nodes) - 10} more nodes")
+
+
+def setup_linter(args) -> LintEngine:
+	"""Set up the linting engine with rules from configuration."""
+	if args.stats_only:
+		return LintEngine([])
+	config = load_config(args.config)
+	if not config:
+		print("❌ No valid configuration found")
+		sys.exit(1)
+
+	print(f"🔧 Loaded configuration from {args.config}")
+	rules = create_rules_from_config(config)
+	if not rules:
+		print("❌ No valid rules configured")
+		sys.exit(1)
+
+	lint_engine = LintEngine(rules)
+
+	if args.verbose:
+		print(f"✅ Loaded {len(rules)} rules: {[rule.__class__.__name__ for rule in rules]}")
+	return lint_engine
+
+
+def process_single_file(file_path: Path, lint_engine: LintEngine, args) -> int:
+	"""Process a single view file and return the number of errors found."""
+	if not file_path.exists():
+		print(f"⚠️  File {file_path} does not exist, skipping")
+		return 0
+
+	# Read and flatten the JSON file
+	flattened_json = get_view_file(file_path)
+	if not flattened_json:
+		print(f"❌ Failed to read or parse {file_path}, skipping")
+		return 0
+
+	# Get statistics
+	stats = lint_engine.get_model_statistics(flattened_json)
+	print_statistics(file_path, stats, args.verbose or args.stats_only)
+
+	# Show rule analysis if requested
+	if args.analyze_rules and not args.stats_only:
+		print_rule_analysis(lint_engine, flattened_json)
+
+	# Show debug node info if requested
+	if args.debug_nodes is not None:
+		print_debug_nodes(lint_engine, flattened_json, args.debug_nodes)
+
+	# Run linting (unless stats-only mode)
+	if not args.stats_only:
+		errors = lint_engine.process(flattened_json)
+		file_errors = print_file_errors(file_path, errors)
+
+		if file_errors == 0:
+			print(f"✅ No issues found in {file_path}")
+
+		return file_errors
+
+	return 0
+
+
+def print_final_summary(processed_files: int, total_errors: int, files_with_errors: int, stats_only: bool):
+	"""Print the final summary of the linting process."""
+	print("\n📈 Summary:")
+	print(f"  Files processed: {processed_files}")
+
+	if not stats_only:
+		if total_errors == 0:
+			print("  ✅ No style inconsistencies found!")
+			sys.exit(0)
+		else:
+			print(f"  ❌ Total issues: {total_errors}")
+			print(f"  📁 Files with issues: {files_with_errors}")
+			print(f"  📁 Clean files: {processed_files - files_with_errors}")
+			sys.exit(1)
+	else:
+		print("  📊 Statistics analysis complete")
+		sys.exit(0)
+
+
 def main():
 	"""Main function to lint Ignition view.json files for style inconsistencies."""
 	parser = argparse.ArgumentParser(description="Lint Ignition JSON files")
@@ -213,26 +308,8 @@ def main():
 	)
 	args = parser.parse_args()
 
-	# Load config and create rules (unless we're only showing stats)
-	if not args.stats_only:
-		config = load_config(args.config)
-		if not config:
-			print("❌ No valid configuration found")
-			sys.exit(1)
-		print(f"🔧 Loaded configuration from {args.config}")
-		rules = create_rules_from_config(config)
-		if not rules:
-			print("❌ No valid rules configured")
-			sys.exit(1)
-
-		# Create the linter
-		lint_engine = LintEngine(rules)
-
-		if args.verbose:
-			print(f"✅ Loaded {len(rules)} rules: {[rule.__class__.__name__ for rule in rules]}")
-	else:
-		# For stats-only mode, create minimal linter
-		lint_engine = LintEngine([])
+	# Set up the linting engine
+	lint_engine = setup_linter(args)
 
 	# Collect files to process
 	file_paths = collect_files(args)
@@ -249,69 +326,18 @@ def main():
 	processed_files = 0
 
 	for file_path in file_paths:
-		if not file_path.exists():
-			print(f"⚠️  File {file_path} does not exist, skipping")
-			continue
+		file_errors = process_single_file(file_path, lint_engine, args)
 
-		# Read and flatten the JSON file
-		flattened_json = get_view_file(file_path)
-		if not flattened_json:
-			print(f"❌ Failed to read or parse {file_path}, skipping")
+		if file_errors == -1:  # File was skipped
 			continue
 
 		processed_files += 1
+		total_errors += file_errors
+		if file_errors > 0:
+			files_with_errors += 1
 
-		# Get statistics
-		stats = lint_engine.get_model_statistics(flattened_json)
-		print_statistics(file_path, stats, args.verbose or args.stats_only)
-
-		# Show rule analysis if requested
-		if args.analyze_rules and not args.stats_only:
-			print_rule_analysis(lint_engine, flattened_json)
-
-		# Show debug node info if requested
-		if args.debug_nodes is not None:
-			debug_nodes = lint_engine.debug_nodes(flattened_json, args.debug_nodes or [])
-			if args.debug_nodes:
-				print(f"\n🔧 Debug info for node types: {', '.join(args.debug_nodes)}")
-			else:
-				print("\n🔧 Debug info for all nodes:")
-
-			for i, node_info in enumerate(debug_nodes[:10]):  # Limit to first 10
-				print(f"  {i+1}. {node_info['path']} ({node_info['node_type']})")
-				if 'summary' in node_info:
-					print(f"     {node_info['summary']}")
-
-			if len(debug_nodes) > 10:
-				print(f"     ... and {len(debug_nodes) - 10} more nodes")
-
-		# Run linting (unless stats-only mode)
-		if not args.stats_only:
-			errors = lint_engine.process(flattened_json)
-			file_errors = print_file_errors(file_path, errors)
-
-			total_errors += file_errors
-			if file_errors > 0:
-				files_with_errors += 1
-			else:
-				print(f"✅ No issues found in {file_path}")
-
-	# Print summary
-	print("\n📈 Summary:")
-	print(f"  Files processed: {processed_files}")
-
-	if not args.stats_only:
-		if total_errors == 0:
-			print("  ✅ No style inconsistencies found!")
-			sys.exit(0)
-		else:
-			print(f"  ❌ Total issues: {total_errors}")
-			print(f"  📁 Files with issues: {files_with_errors}")
-			print(f"  📁 Clean files: {processed_files - files_with_errors}")
-			sys.exit(1)
-	else:
-		print("  📊 Statistics analysis complete")
-		sys.exit(0)
+	# Print final summary
+	print_final_summary(processed_files, total_errors, files_with_errors, args.stats_only)
 
 
 if __name__ == "__main__":
