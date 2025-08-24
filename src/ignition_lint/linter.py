@@ -4,7 +4,10 @@ It provides functionality to apply linting rules, collect errors, and analyze th
 It also includes methods for debugging nodes and analyzing rule impact on the view model.
 """
 
-from typing import Dict, List, Any, NamedTuple
+import json
+import os
+from pathlib import Path
+from typing import Dict, List, Any, NamedTuple, Optional
 from .rules.common import LintingRule
 from .model.builder import ViewModelBuilder
 from .model.node_types import NodeType, NodeUtils
@@ -20,21 +23,30 @@ class LintResults(NamedTuple):
 class LintEngine:
 	"""Simplified linter engine that processes nodes more efficiently."""
 
-	def __init__(self, rules: List[LintingRule]):
+	def __init__(self, rules: List[LintingRule], debug_output_dir: Optional[str] = None):
 		self.rules = rules
 		self.model_builder = ViewModelBuilder()
 		self.flattened_json = {}
 		self.view_model = {}
+		self.debug_output_dir = debug_output_dir
+		
+		# Create debug output directory if specified
+		if self.debug_output_dir:
+			Path(self.debug_output_dir).mkdir(parents=True, exist_ok=True)
 
 	def _get_view_model(self) -> Dict[str, List[Any]]:
 		"""Return the structured view model."""
 		return self.model_builder.build_model(self.flattened_json)
 
-	def process(self, flattened_json: Dict[str, Any]) -> LintResults:
+	def process(self, flattened_json: Dict[str, Any], source_file_path: Optional[str] = None) -> LintResults:
 		"""Lint the given flattened JSON and return warnings and errors."""
 		# Build the object model
 		self.flattened_json = flattened_json
 		self.view_model = self._get_view_model()
+
+		# Save debug information if debug output directory is configured
+		if self.debug_output_dir and source_file_path:
+			self._save_debug_files(source_file_path)
 
 		# Collect all nodes in a flat list
 		all_nodes = []
@@ -200,3 +212,56 @@ class LintEngine:
 			script_preview = node.script[:30] + '...' if len(node.script) > 30 else node.script
 			return f"Script: {script_preview}"
 		return f"{node.node_type.value} node"
+
+	def _save_debug_files(self, source_file_path: str):
+		"""Save debug information (flattened JSON and model state) to files."""
+		try:
+			# Get a safe filename from the source path
+			source_name = Path(source_file_path).stem
+			
+			# Save flattened JSON
+			flattened_file = Path(self.debug_output_dir) / f"{source_name}_flattened.json"
+			with open(flattened_file, 'w', encoding='utf-8') as f:
+				json.dump(self.flattened_json, f, indent=2, sort_keys=True)
+			
+			# Serialize the view model
+			serialized_model = self._serialize_view_model()
+			
+			# Save serialized model
+			model_file = Path(self.debug_output_dir) / f"{source_name}_model.json"  
+			with open(model_file, 'w', encoding='utf-8') as f:
+				json.dump(serialized_model, f, indent=2, sort_keys=True)
+				
+			# Save model statistics
+			stats = self.get_model_statistics(self.flattened_json)
+			stats_file = Path(self.debug_output_dir) / f"{source_name}_stats.json"
+			with open(stats_file, 'w', encoding='utf-8') as f:
+				json.dump(stats, f, indent=2, sort_keys=True)
+			
+			print(f"✅ Debug files saved:")
+			print(f"   - Flattened JSON: {flattened_file}")
+			print(f"   - Model state: {model_file}")
+			print(f"   - Statistics: {stats_file}")
+			
+		except Exception as e:
+			print(f"⚠️  Warning: Could not save debug files: {e}")
+
+	def _serialize_view_model(self) -> Dict[str, Any]:
+		"""Serialize the view model to a JSON-compatible format."""
+		serialized = {}
+		
+		for model_key, nodes in self.view_model.items():
+			if nodes:  # Only include non-empty node lists
+				serialized[model_key] = {
+					'count': len(nodes),
+					'nodes': [node.serialize() for node in nodes]
+				}
+			else:
+				serialized[model_key] = {'count': 0, 'nodes': []}
+		
+		return serialized
+
+	def enable_debug_output(self, debug_output_dir: str):
+		"""Enable debug output to the specified directory."""
+		self.debug_output_dir = debug_output_dir
+		Path(self.debug_output_dir).mkdir(parents=True, exist_ok=True)

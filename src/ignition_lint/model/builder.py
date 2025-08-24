@@ -318,6 +318,21 @@ class ViewModelBuilder:
 		"""
 		self.flattened_json = flattened_json
 
+		# Reset model to avoid accumulation from multiple calls
+		self.model = {
+			'components': [],
+			'bindings': [],
+			'scripts': [],
+			'event_handlers': [],
+			'message_handlers': [],
+			'custom_methods': [],
+			'expression_bindings': [],
+			'property_bindings': [],
+			'tag_bindings': [],
+			'script_transforms': [],
+			'properties': []
+		}
+
 		# First, identify components
 		self._collect_components()
 

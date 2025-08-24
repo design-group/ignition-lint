@@ -1,0 +1,41 @@
+{
+  "components_by_type": {
+    "ia.display.label": 3,
+    "unknown": 3
+  },
+  "model_keys": [
+    "components",
+    "bindings",
+    "scripts",
+    "event_handlers",
+    "message_handlers",
+    "custom_methods",
+    "expression_bindings",
+    "property_bindings",
+    "tag_bindings",
+    "script_transforms",
+    "properties"
+  ],
+  "node_type_counts": {
+    "component": 6,
+    "expression_binding": 6,
+    "property": 18
+  },
+  "rule_coverage": {
+    "UnusedCustomPropertiesRule": {
+      "applicable_node_count": 30,
+      "target_types": [
+        "expression_binding",
+        "transform",
+        "custom_method",
+        "property_binding",
+        "tag_binding",
+        "message_handler",
+        "event_handler",
+        "property",
+        "component"
+      ]
+    }
+  },
+  "total_nodes": 30
+}

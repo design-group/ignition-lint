@@ -2,10 +2,24 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Working Directory Context
+
+**IMPORTANT**: This documentation assumes you're starting from the repository root directory. Commands must be executed from the correct directory to work properly:
+
+- **Repository root** (`.`): For most commands including setup, linting, running the tool, and generating debug files
+- **Tests directory** (`tests/`): For test runner and unit test commands
+
+**Always verify you're in the repository root before starting. Use `pwd` to check your current location - you should see the directory containing `pyproject.toml`, `generate-debug-files.py`, and the `src/` folder.**
+
 ## Development Commands
 
 ### Setup and Installation
+**Directory**: Repository root (`.`)
+
 ```bash
+# Verify you're in the repository root (should show pyproject.toml)
+ls pyproject.toml
+
 # Install dependencies with Poetry
 poetry install
 
@@ -17,9 +31,13 @@ poetry shell
 ```
 
 ### Testing
+**Directory**: Tests directory (`tests/`)
+
 ```bash
-# Run all tests via test runner
+# Change to tests directory
 cd tests
+
+# Run all tests via test runner
 python test_runner.py --run-all
 
 # Run only unit tests (fastest)
@@ -37,12 +55,81 @@ python test_runner.py --test component_naming
 # Set up test environment (creates directories, sample configs)
 python test_runner.py --setup
 
-# Alternative: Run tests via unittest discovery
+# Alternative: Run specific unit tests from tests directory
+python -m unittest unit.test_golden_files.TestGoldenFiles -v
+
+# Alternative: Run tests via unittest discovery from repository root
+cd ..
 python -m unittest discover tests
 ```
 
-### Local GitHub Actions Testing
+### Test Case Debug Files
+**Directory**: Repository root (`.`)
+
+Generate comprehensive debug files for test cases to understand model building and rule processing:
+
 ```bash
+# Verify you're in the repository root (should show generate-debug-files.py)
+ls generate-debug-files.py
+
+# Generate debug files for all test cases
+python generate-debug-files.py
+
+# Generate for specific test cases
+python generate-debug-files.py PascalCase LineDashboard
+
+# List test cases and their debug status
+python generate-debug-files.py --list
+
+# Remove all debug directories
+python generate-debug-files.py --clean
+```
+
+Each test case's debug directory contains:
+- **`flattened.json`**: Path-value pairs from JSON flattening
+- **`model.json`**: Serialized object model with all nodes
+- **`stats.json`**: Statistics and rule coverage analysis  
+- **`README.md`**: Documentation explaining the debug files
+
+### Golden File Testing
+**Directory**: Tests directory (`tests/`) for running tests, Repository root (`.`) for generating debug files
+
+The framework includes golden file tests that validate LintEngine model generation against reference files to catch regressions:
+
+```bash
+# If golden files don't exist, generate them first (from repository root)
+python generate-debug-files.py
+
+# Run golden file tests (from tests directory)
+cd tests
+python -m unittest unit.test_golden_files -v
+
+# Tests validate:
+# - JSON flattening consistency 
+# - Model building reproducibility
+# - Statistics generation accuracy
+```
+
+Golden file tests automatically detect regressions in:
+- JSON flattening logic
+- Model building process
+- Node creation and serialization
+- Statistics generation
+
+**Developer Workflow:**
+1. Update a `view.json` test case
+2. Run `python generate-debug-files.py TestCaseName` to regenerate debug files
+3. Review the debug files to understand how changes affect model building
+4. Use debug files for rule development and troubleshooting
+5. Run golden file tests to ensure no regressions
+
+### Local GitHub Actions Testing
+**Directory**: Repository root (`.`)
+
+```bash
+# Verify you're in the repository root (should show test-actions.sh)
+ls test-actions.sh
+
 # Test all workflows before committing (prevents CI failures)
 ./test-actions.sh
 
@@ -61,7 +148,12 @@ python -m unittest discover tests
 ```
 
 ### Linting and Code Quality
+**Directory**: Repository root (`.`)
+
 ```bash
+# Verify you're in the repository root (should show .pylintrc)
+ls .pylintrc
+
 # Run pylint on source code (uses .pylintrc configuration)
 poetry run pylint ignition_lint/
 
@@ -73,7 +165,12 @@ poetry run yapf -dr ignition_lint/
 ```
 
 ### Running the Tool
+**Directory**: Repository root (`.`)
+
 ```bash
+# Verify you're in the repository root (should show src/ directory)
+ls src/
+
 # Run on a specific file
 poetry run python -m ignition_lint.main path/to/view.json
 
@@ -85,6 +182,32 @@ poetry run python -m ignition_lint.main --config my_rules.json --files "views/**
 
 # CLI entry point (after poetry install)
 ignition-lint --config rule_config.json --files "**/view.json"
+
+# Verbose mode with statistics
+ignition-lint --config rule_config.json --files "**/view.json" --verbose
+
+# Stats-only mode (no linting, just model analysis)
+ignition-lint --files "**/view.json" --stats-only
+
+# Debug specific node types
+ignition-lint --config rule_config.json --files "**/view.json" --debug-nodes expression_binding property
+```
+
+## Debugging and Analysis
+
+### Analysis Commands
+```bash
+# Get model statistics without running rules
+ignition-lint --files "**/view.json" --stats-only --verbose
+
+# Analyze rule impact and coverage
+ignition-lint --config rule_config.json --files "**/view.json" --analyze-rules
+
+# Debug specific node types (useful for rule development)
+ignition-lint --files "**/view.json" --debug-nodes component expression_binding property
+
+# Combined analysis with debug output
+ignition-lint --config rule_config.json --files "**/view.json" --verbose --debug-output ./analysis --analyze-rules
 ```
 
 ## Architecture Overview
@@ -379,8 +502,12 @@ Based on `.style.yapf`, the project uses:
 - **Argument splitting:** When comma-terminated
 
 ### Formatting Commands
+**Directory**: Repository root (`.`)
 
 ```bash
+# Verify you're in the repository root (should show .style.yapf)
+ls .style.yapf
+
 # Format all code with yapf
 poetry run yapf -ir src/ tests/
 
@@ -392,10 +519,14 @@ poetry run yapf -i src/ignition_lint/cli.py
 ```
 
 ### Pre-commit Hooks
+**Directory**: Repository root (`.`)
 
 The project uses pre-commit hooks for code quality:
 
 ```bash
+# Verify you're in the repository root (should show .pre-commit-config.yaml)
+ls .pre-commit-config.yaml
+
 # Install pre-commit hooks
 poetry run pre-commit install
 
@@ -404,8 +535,12 @@ poetry run pre-commit run --all-files
 ```
 
 ### Style Validation
+**Directory**: Repository root (`.`)
 
 ```bash
+# Verify you're in the repository root (should show .pylintrc)
+ls .pylintrc
+
 # Check pylint compliance
 poetry run pylint ignition_lint/
 
@@ -414,3 +549,46 @@ poetry run yapf -dr ignition_lint/
 ```
 
 This style guide ensures consistent, readable code across the project while maintaining compatibility with the existing codebase and automated formatting tools.
+
+---
+
+## Quick Reference: Common Commands by Directory
+
+### Repository Root (`.`)
+```bash
+# Verify you're in the right place
+ls pyproject.toml generate-debug-files.py
+
+# Setup and dependencies
+poetry install
+
+# Generate debug files
+python generate-debug-files.py
+
+# Run the tool
+poetry run python -m ignition_lint.main --files "**/view.json"
+
+# Code quality
+poetry run pylint ignition_lint/
+poetry run yapf -ir ignition_lint/
+
+# Local CI testing
+./test-actions.sh
+```
+
+### Tests Directory (`tests/`)
+```bash
+cd tests
+
+# Run tests
+python test_runner.py --run-all
+python test_runner.py --run-unit
+
+# Run specific tests
+python -m unittest unit.test_golden_files -v
+
+# Return to repository root
+cd ..
+```
+
+**Remember**: Always start from the repository root and verify your working directory with `pwd` before running commands!

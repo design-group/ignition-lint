@@ -199,22 +199,28 @@ def print_debug_nodes(lint_engine: LintEngine, flattened_json: Dict[str, Any], d
 def setup_linter(args) -> LintEngine:
 	"""Set up the linting engine with rules from configuration."""
 	if args.stats_only:
-		return LintEngine([])
-	config = load_config(args.config)
-	if not config:
-		print("❌ No valid configuration found")
-		sys.exit(1)
+		lint_engine = LintEngine([], debug_output_dir=args.debug_output)
+	else:
+		config = load_config(args.config)
+		if not config:
+			print("❌ No valid configuration found")
+			sys.exit(1)
 
-	print(f"🔧 Loaded configuration from {args.config}")
-	rules = create_rules_from_config(config)
-	if not rules:
-		print("❌ No valid rules configured")
-		sys.exit(1)
+		print(f"🔧 Loaded configuration from {args.config}")
+		rules = create_rules_from_config(config)
+		if not rules:
+			print("❌ No valid rules configured")
+			sys.exit(1)
 
-	lint_engine = LintEngine(rules)
+		lint_engine = LintEngine(rules, debug_output_dir=args.debug_output)
 
-	if args.verbose:
-		print(f"✅ Loaded {len(rules)} rules: {[rule.__class__.__name__ for rule in rules]}")
+		if args.verbose:
+			print(f"✅ Loaded {len(rules)} rules: {[rule.__class__.__name__ for rule in rules]}")
+
+	# Inform about debug output
+	if args.debug_output:
+		print(f"🔍 Debug output will be saved to: {args.debug_output}")
+		
 	return lint_engine
 
 
@@ -244,7 +250,7 @@ def process_single_file(file_path: Path, lint_engine: LintEngine, args) -> int:
 
 	# Run linting (unless stats-only mode)
 	if not args.stats_only:
-		lint_results = lint_engine.process(flattened_json)
+		lint_results = lint_engine.process(flattened_json, source_file_path=str(file_path))
 		file_errors = print_file_results(file_path, lint_results)
 
 		if file_errors == 0 and not lint_results.warnings:
@@ -309,6 +315,10 @@ def main():
 		"--analyze-rules",
 		action="store_true",
 		help="Show detailed rule impact analysis",
+	)
+	parser.add_argument(
+		"--debug-output",
+		help="Directory to save debug files (flattened JSON, model state, statistics)",
 	)
 	parser.add_argument(
 		"filenames",
