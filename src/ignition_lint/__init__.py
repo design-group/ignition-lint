@@ -1,3 +1,6 @@
+# pylint: disable=invalid-name
 """
-Init intentional blank line to ensure this file is recognized as a package.
+Init file for ignition_lint package.
+
+This file ensures the directory is recognized as a Python package.
 """
