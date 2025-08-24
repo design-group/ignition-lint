@@ -2,7 +2,7 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, dev ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -45,7 +45,11 @@ jobs:
         run: poetry install
 
       - name: Run linting with pylint
-        run: poetry run pylint ignition_lint/
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Files in current directory: $(ls -la)"
+          echo "Checking for .pylintrc: $(ls -la .pylintrc 2>/dev/null || echo 'not found')"
+          poetry run pylint ignition_lint/
 
       - name: Run unit tests
         run: |
