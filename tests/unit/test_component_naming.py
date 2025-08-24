@@ -13,8 +13,8 @@ from fixtures.test_helpers import get_test_config, load_test_view
 class TestNamePatternPascalCase(BaseRuleTest):
 	"""Test PascalCase naming convention for components."""
 
-	def setUp(self):
-		super().setUp()
+	def setup(self):
+		super().setup()
 		self.rule_config = get_test_config(
 			"NamePatternRule", target_node_types=["component"], convention="PascalCase", allow_numbers=True,
 			min_length=1
@@ -44,8 +44,8 @@ class TestNamePatternPascalCase(BaseRuleTest):
 class TestNamePatternCamelCase(BaseRuleTest):
 	"""Test camelCase naming convention for components."""
 
-	def setUp(self):
-		super().setUp()
+	def setup(self):
+		super().setup()
 		self.rule_config = get_test_config(
 			"NamePatternRule", target_node_types=["component"], convention="camelCase", allow_numbers=True,
 			min_length=1
@@ -70,8 +70,8 @@ class TestNamePatternCamelCase(BaseRuleTest):
 class TestNamePatternSnakeCase(BaseRuleTest):
 	"""Test snake_case naming convention for components."""
 
-	def setUp(self):
-		super().setUp()
+	def setup(self):
+		super().setup()
 		self.rule_config = get_test_config(
 			"NamePatternRule", target_node_types=["component"], convention="snake_case", allow_numbers=True,
 			min_length=1
@@ -96,8 +96,8 @@ class TestNamePatternSnakeCase(BaseRuleTest):
 class TestNamePatternKebabCase(BaseRuleTest):
 	"""Test kebab-case naming convention for components."""
 
-	def setUp(self):
-		super().setUp()
+	def setup(self):
+		super().setup()
 		self.rule_config = get_test_config(
 			"NamePatternRule", target_node_types=["component"], convention="kebab-case", allow_numbers=True,
 			min_length=1

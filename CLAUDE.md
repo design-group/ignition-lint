@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Repository root** (`.`): For most commands including setup, linting, running the tool, and generating debug files
 - **Tests directory** (`tests/`): For test runner and unit test commands
 
-**Always verify you're in the repository root before starting. Use `pwd` to check your current location - you should see the directory containing `pyproject.toml`, `generate-debug-files.py`, and the `src/` folder.**
+**Always verify you're in the repository root before starting. Use `pwd` to check your current location - you should see the directory containing `pyproject.toml`, `scripts/`, and the `src/` folder.**
 
 ## Development Commands
 
@@ -69,20 +69,20 @@ python -m unittest discover tests
 Generate comprehensive debug files for test cases to understand model building and rule processing:
 
 ```bash
-# Verify you're in the repository root (should show generate-debug-files.py)
-ls generate-debug-files.py
+# Verify you're in the repository root (should show scripts/ directory)
+ls scripts/
 
 # Generate debug files for all test cases
-python generate-debug-files.py
+python scripts/generate-debug-files.py
 
 # Generate for specific test cases
-python generate-debug-files.py PascalCase LineDashboard
+python scripts/generate-debug-files.py PascalCase LineDashboard
 
 # List test cases and their debug status
-python generate-debug-files.py --list
+python scripts/generate-debug-files.py --list
 
 # Remove all debug directories
-python generate-debug-files.py --clean
+python scripts/generate-debug-files.py --clean
 ```
 
 Each test case's debug directory contains:
@@ -98,7 +98,7 @@ The framework includes golden file tests that validate LintEngine model generati
 
 ```bash
 # If golden files don't exist, generate them first (from repository root)
-python generate-debug-files.py
+python scripts/generate-debug-files.py
 
 # Run golden file tests (from tests directory)
 cd tests
@@ -118,7 +118,7 @@ Golden file tests automatically detect regressions in:
 
 **Developer Workflow:**
 1. Update a `view.json` test case
-2. Run `python generate-debug-files.py TestCaseName` to regenerate debug files
+2. Run `python scripts/generate-debug-files.py TestCaseName` to regenerate debug files
 3. Review the debug files to understand how changes affect model building
 4. Use debug files for rule development and troubleshooting
 5. Run golden file tests to ensure no regressions
@@ -127,24 +127,24 @@ Golden file tests automatically detect regressions in:
 **Directory**: Repository root (`.`)
 
 ```bash
-# Verify you're in the repository root (should show test-actions.sh)
-ls test-actions.sh
+# Verify you're in the repository root (should show scripts/ directory)
+ls scripts/
 
 # Test all workflows before committing (prevents CI failures)
-./test-actions.sh
+scripts/test-actions.sh
 
 # Test specific workflow
-./test-actions.sh ci               # Run CI pipeline locally
-./test-actions.sh unittest         # Run unit tests in CI environment  
+scripts/test-actions.sh ci               # Run CI pipeline locally
+scripts/test-actions.sh unittest         # Run unit tests in CI environment  
 
 # List available workflows
-./test-actions.sh list
+scripts/test-actions.sh list
 
 # Validate local testing setup
-./validate-local-actions.sh
+scripts/validate-local-actions.sh
 
 # Test with specific event (push, pull_request, etc.)
-./test-actions.sh unittest pull_request
+scripts/test-actions.sh unittest pull_request
 ```
 
 ### Linting and Code Quality
@@ -557,13 +557,13 @@ This style guide ensures consistent, readable code across the project while main
 ### Repository Root (`.`)
 ```bash
 # Verify you're in the right place
-ls pyproject.toml generate-debug-files.py
+ls pyproject.toml scripts/
 
 # Setup and dependencies
 poetry install
 
 # Generate debug files
-python generate-debug-files.py
+python scripts/generate-debug-files.py
 
 # Run the tool
 poetry run python -m ignition_lint.main --files "**/view.json"
@@ -573,7 +573,7 @@ poetry run pylint ignition_lint/
 poetry run yapf -ir ignition_lint/
 
 # Local CI testing
-./test-actions.sh
+scripts/test-actions.sh
 ```
 
 ### Tests Directory (`tests/`)

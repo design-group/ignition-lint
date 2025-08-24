@@ -88,7 +88,7 @@ class TestGoldenFiles(unittest.TestCase):
 	def test_01_flattened_json_matches_golden(self):
 		"""Test that JSON flattening produces output matching golden files."""
 		if not self.test_cases_with_golden_files:
-			self.skipTest("No test cases with golden files found. Run: python generate-debug-files.py")
+			self.skipTest("No test cases with golden files found. Run: python scripts/generate-debug-files.py")
 
 		for case_dir in self.test_cases_with_golden_files:
 			with self.subTest(test_case=case_dir.name):
@@ -97,7 +97,7 @@ class TestGoldenFiles(unittest.TestCase):
 	def test_02_model_matches_golden(self):
 		"""Test that model building produces output matching golden files."""
 		if not self.test_cases_with_golden_files:
-			self.skipTest("No test cases with golden files found. Run: python generate-debug-files.py")
+			self.skipTest("No test cases with golden files found. Run: python scripts/generate-debug-files.py")
 
 		for case_dir in self.test_cases_with_golden_files:
 			with self.subTest(test_case=case_dir.name):
@@ -106,7 +106,7 @@ class TestGoldenFiles(unittest.TestCase):
 	def test_03_stats_match_golden(self):
 		"""Test that statistics generation produces output matching golden files."""
 		if not self.test_cases_with_golden_files:
-			self.skipTest("No test cases with golden files found. Run: python generate-debug-files.py")
+			self.skipTest("No test cases with golden files found. Run: python scripts/generate-debug-files.py")
 
 		for case_dir in self.test_cases_with_golden_files:
 			with self.subTest(test_case=case_dir.name):
@@ -128,13 +128,13 @@ class TestGoldenFiles(unittest.TestCase):
 		except FileNotFoundError:
 			self.fail(
 				f"Golden file missing: {golden_file}\n"
-				f"Generate it with: python generate-debug-files.py {case_dir.name}"
+				f"Generate it with: python scripts/generate-debug-files.py {case_dir.name}"
 			)
 
 		# Compare
 		self.assertEqual(
 			current_flattened, expected_flattened, f"Flattened JSON mismatch for {case_dir.name}. "
-			f"Regenerate golden files with: python generate-debug-files.py {case_dir.name}"
+			f"Regenerate golden files with: python scripts/generate-debug-files.py {case_dir.name}"
 		)
 
 	def _assert_model_matches(self, case_dir: Path):
@@ -158,7 +158,7 @@ class TestGoldenFiles(unittest.TestCase):
 		except FileNotFoundError:
 			self.fail(
 				f"Golden file missing: {golden_file}\n"
-				f"Generate it with: python generate-debug-files.py {case_dir.name}"
+				f"Generate it with: python scripts/generate-debug-files.py {case_dir.name}"
 			)
 
 		# Compare models - use detailed comparison for better error messages
@@ -183,7 +183,7 @@ class TestGoldenFiles(unittest.TestCase):
 		except FileNotFoundError:
 			self.fail(
 				f"Golden file missing: {golden_file}\n"
-				f"Generate it with: python generate-debug-files.py {case_dir.name}"
+				f"Generate it with: python scripts/generate-debug-files.py {case_dir.name}"
 			)
 
 		# Compare key statistics (ignore rule_coverage which may vary with new rules)
@@ -193,7 +193,7 @@ class TestGoldenFiles(unittest.TestCase):
 			self.assertEqual(
 				current_stats.get(stat_key), expected_stats.get(stat_key),
 				f"Statistics mismatch for {case_dir.name}.{stat_key}. "
-				f"Regenerate golden files with: python generate-debug-files.py {case_dir.name}"
+				f"Regenerate golden files with: python scripts/generate-debug-files.py {case_dir.name}"
 			)
 
 	def _compare_models_detailed(self, current: Dict[str, Any], expected: Dict[str, Any], case_name: str):
@@ -211,7 +211,7 @@ class TestGoldenFiles(unittest.TestCase):
 				error_msg += f"\n  Missing keys: {sorted(missing_keys)}"
 			if extra_keys:
 				error_msg += f"\n  Extra keys: {sorted(extra_keys)}"
-			error_msg += f"\n  Regenerate with: python generate-debug-files.py {case_name}"
+			error_msg += f"\n  Regenerate with: python scripts/generate-debug-files.py {case_name}"
 			self.fail(error_msg)
 
 		# Check each model section
@@ -227,7 +227,7 @@ class TestGoldenFiles(unittest.TestCase):
 				self.fail(
 					f"Model count mismatch for {case_name}.{key}: "
 					f"got {current_count}, expected {expected_count}. "
-					f"Regenerate with: python generate-debug-files.py {case_name}"
+					f"Regenerate with: python scripts/generate-debug-files.py {case_name}"
 				)
 
 			# Compare node structures (without comparing exact node details which may vary)
@@ -238,7 +238,7 @@ class TestGoldenFiles(unittest.TestCase):
 				self.fail(
 					f"Model node count mismatch for {case_name}.{key}: "
 					f"got {len(current_nodes)}, expected {len(expected_nodes)}. "
-					f"Regenerate with: python generate-debug-files.py {case_name}"
+					f"Regenerate with: python scripts/generate-debug-files.py {case_name}"
 				)
 
 			# Compare node paths (order-independent)
@@ -251,7 +251,7 @@ class TestGoldenFiles(unittest.TestCase):
 						f"Model node paths mismatch for {case_name}.{key}. "
 						f"Current: {current_paths[:3]}{'...' if len(current_paths) > 3 else ''}, "
 						f"Expected: {expected_paths[:3]}{'...' if len(expected_paths) > 3 else ''}. "
-						f"Regenerate with: python generate-debug-files.py {case_name}"
+						f"Regenerate with: python scripts/generate-debug-files.py {case_name}"
 					)
 
 

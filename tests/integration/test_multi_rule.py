@@ -75,9 +75,8 @@ class TestMultipleRules(BaseIntegrationTest):
 					self.assertIsInstance(errors, dict)
 
 					# Verify each rule either passed or failed gracefully
-					for rule_name in rule_configs.keys():
+					for rule_name, rule_errors in rule_configs.items():
 						if rule_name in errors:
-							rule_errors = errors[rule_name]
 							self.assertIsInstance(rule_errors, list)
 
 				except FileNotFoundError:
@@ -256,9 +255,8 @@ class TestMultipleRules(BaseIntegrationTest):
 		self.assertIsInstance(errors, dict)
 
 		# Verify each configured rule either passed or failed gracefully
-		for rule_name in rule_configs.keys():
+		for rule_name, rule_errors in rule_configs.items():
 			if rule_name in errors:
-				rule_errors = errors[rule_name]
 				self.assertIsInstance(
 					rule_errors, list, f"Rule {rule_name} should return a list of errors"
 				)

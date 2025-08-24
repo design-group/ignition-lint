@@ -6,10 +6,10 @@ This script processes all test cases in tests/cases/ and generates debug files
 (flattened JSON, model state, statistics) in a debug/ subdirectory within each test case.
 
 Usage:
-  python generate-debug-files.py                    # Generate for all test cases
-  python generate-debug-files.py PascalCase         # Generate for specific test case
-  python generate-debug-files.py --clean            # Remove all debug directories
-  python generate-debug-files.py --list             # List available test cases
+  python scripts/generate-debug-files.py                    # Generate for all test cases
+  python scripts/generate-debug-files.py PascalCase         # Generate for specific test case
+  python scripts/generate-debug-files.py --clean            # Remove all debug directories
+  python scripts/generate-debug-files.py --list             # List available test cases
 """
 
 import argparse
@@ -19,8 +19,8 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent / 'src'))
+# Add src to path (from scripts directory, go up one level to repo root)
+sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 from ignition_lint.common.flatten_json import read_json_file, flatten_json
 from ignition_lint.linter import LintEngine
@@ -29,7 +29,8 @@ from ignition_lint.rules import RULES_MAP
 
 def get_test_cases() -> List[Path]:
 	"""Get all test case directories that contain view.json files."""
-	cases_dir = Path(__file__).parent / 'tests' / 'cases'
+	# From scripts directory, go up one level to repo root, then to tests/cases
+	cases_dir = Path(__file__).parent.parent / 'tests' / 'cases'
 	test_cases = []
 
 	for case_dir in cases_dir.iterdir():
@@ -111,7 +112,7 @@ This directory contains debug information generated from `{case_dir.name}/view.j
 
 These files were generated using:
 ```bash
-python generate-debug-files.py {case_dir.name}
+python scripts/generate-debug-files.py {case_dir.name}
 ```
 
 ## Usage
@@ -188,7 +189,7 @@ def main():
 		# Process specific test cases
 		test_cases_to_process = []
 		for case_name in args.test_cases:
-			case_dir = Path(__file__).parent / 'tests' / 'cases' / case_name
+			case_dir = Path(__file__).parent.parent / 'tests' / 'cases' / case_name
 			if case_dir in all_test_cases:
 				test_cases_to_process.append(case_dir)
 			else:
