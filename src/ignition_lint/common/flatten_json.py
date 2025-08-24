@@ -101,6 +101,37 @@ def write_json_file(file_path, data):
 		sys.exit(1)
 
 
+def _get_component_path(data, path):
+	"""Extract component name and update path for better clarity."""
+	component_name = data.get('meta', {}).get('name')
+	if component_name:
+		return f"{path}.{component_name}" if path else component_name
+	return path
+
+
+def _process_dict_item(key, value, path, results):
+	"""Process a single key-value pair from a dictionary."""
+	current_path = f"{path}.{key}" if path else key
+	if isinstance(value, dict):
+		flatten_json(value, current_path, results)
+	elif isinstance(value, list):
+		_process_list_items(value, current_path, results)
+	else:
+		results[current_path] = value
+
+def _process_list_items(items, base_path, results):
+	"""Process all items in a list."""
+	for index, item in enumerate(items):
+		item_path = f"{base_path}[{index}]"
+		_process_single_item(item, item_path, results)
+
+def _process_single_item(item, item_path, results):
+	"""Process a single item, whether primitive or complex."""
+	if isinstance(item, (dict, list)):
+		flatten_json(item, item_path, results)
+	else:
+		results[item_path] = item
+
 def flatten_json(data, path="", results=None):
 	"""
 	Recursively flattens a JSON-like dictionary into path-to-value pairs.
@@ -116,48 +147,28 @@ def flatten_json(data, path="", results=None):
 	if results is None:
 		results = OrderedDict()
 
-	# Handle component names for better path clarity
-	component_name = data.get('meta', {}).get('name')
-	if component_name:
-		path = f"{path}.{component_name}" if path else component_name
-
-	# Process each key-value pair
 	if isinstance(data, dict):
+		path = _get_component_path(data, path)
 		for key, value in data.items():
-			current_path = f"{path}.{key}" if path else key
-
-			if isinstance(value, dict):
-				flatten_json(value, current_path, results)
-			elif isinstance(value, list):
-				# Process each item in the list, regardless of type
-				for index, item in enumerate(value):
-					item_path = f"{current_path}[{index}]"
-
-					if isinstance(item, (dict, list)):
-						# Recursively flatten complex items
-						flatten_json(item, item_path, results)
-					else:
-						# Store primitive values directly
-						results[item_path] = item
-			else:
-				# Store primitive values directly
-				results[current_path] = value
-
-	# Handle lists directly (for when a list is passed to the function)
+			_process_dict_item(key, value, path, results)
 	elif isinstance(data, list):
+		base_path = path if path else ""
 		for index, item in enumerate(data):
-			item_path = f"{path}[{index}]" if path else f"[{index}]"
-
-			if isinstance(item, (dict, list)):
-				flatten_json(item, item_path, results)
-			else:
-				results[item_path] = item
+			item_path = f"{base_path}[{index}]" if base_path else f"[{index}]"
+			_process_single_item(item, item_path, results)
 
 	return results
 
 
 def flatten_file(file_path):
-
+	"""Flatten a JSON file and return sorted results.
+	
+	Args:
+		file_path: Path to the JSON file.
+		
+	Returns:
+		OrderedDict: Sorted flattened JSON data.
+	"""
 	json_data = read_json_file(file_path)
 	flat_json = flatten_json(json_data)
 	return OrderedDict(sorted(flat_json.items()))
