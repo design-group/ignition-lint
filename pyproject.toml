@@ -17,7 +17,6 @@ pre-commit = "^4.2.0"
 [tool.poetry.group.dev.dependencies]
 # Development and testing dependencies
 yapf = "*"
-pytest = "*"
 
 [tool.poetry.requires-plugins]
 poetry-plugin-export = ">=1.8"

@@ -33,11 +33,13 @@ poetry shell
 ### Testing
 **Directory**: Tests directory (`tests/`)
 
+**Framework**: This project uses **unittest** (Python's built-in testing framework).
+
 ```bash
 # Change to tests directory
 cd tests
 
-# Run all tests via test runner
+# Run all tests via test runner (recommended)
 python test_runner.py --run-all
 
 # Run only unit tests (fastest)
@@ -62,6 +64,12 @@ python -m unittest unit.test_golden_files.TestGoldenFiles -v
 cd ..
 python -m unittest discover tests
 ```
+
+**Test Development Guidelines**:
+- **Use unittest.TestCase** for all test classes
+- **Inherit from BaseRuleTest** for rule testing (provides common setup)
+- **Use fixtures/test_helpers.py** for common test utilities
+- **Follow test file naming**: `test_*.py` in `tests/unit/` or `tests/integration/`
 
 ### Test Case Debug Files
 **Directory**: Repository root (`.`)
