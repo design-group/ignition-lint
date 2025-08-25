@@ -6,6 +6,8 @@ Base test classes providing common functionality for ignition-lint tests.
 import unittest
 import os
 import sys
+import tempfile
+import json
 from pathlib import Path
 from typing import Dict, List, Any
 
@@ -19,8 +21,8 @@ from ignition_lint.common.flatten_json import flatten_file
 
 class BaseRuleTest(unittest.TestCase):
 	"""Base class for testing individual linting rules."""
-	def __init__(self):
-		super().__init__()
+	def __init__(self, methodName='runTest'):
+		super().__init__(methodName)
 		self.test_cases_dir = None
 		self.configs_dir = None
 		self.rule_config = None
@@ -100,6 +102,28 @@ class BaseRuleTest(unittest.TestCase):
 		lint_engine = self.create_lint_engine(rule_configs)
 		flattened_json = flatten_file(view_file)
 		return lint_engine.process(flattened_json)
+
+	def run_lint_on_mock_view(self, mock_view_content: str, rule_configs: Dict[str, Dict[str, Any]]) -> Dict[str, List[str]]:
+		"""
+		Run linting on mock view JSON content with the given rule configuration.
+		
+		Args:
+			mock_view_content: JSON string content for the mock view
+			rule_configs: Rule configurations
+			
+		Returns:
+			Dictionary of errors found by rule (combined warnings and errors for backward compatibility)
+		"""
+		# Create a temporary file with the mock content
+		with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+			f.write(mock_view_content)
+			temp_file = Path(f.name)
+		
+		try:
+			return self.run_lint_on_file(temp_file, rule_configs)
+		finally:
+			# Clean up the temporary file
+			temp_file.unlink(missing_ok=True)
 
 	def assert_rule_passes(self, view_file: Path, rule_configs: Dict[str, Dict[str, Any]], rule_name: str):
 		"""Assert that a rule passes (no errors) for a given view file."""

@@ -13,6 +13,7 @@ from .registry import register_rule, get_registry, get_all_rules, discover_rules
 from .lint_script import PylintScriptRule
 from .polling_interval import PollingIntervalRule
 from .name_pattern import NamePatternRule
+from .bad_component_reference import BadComponentReferenceRule
 
 # Auto-discover and register all rules in this package
 _discovered_rules = discover_rules()
@@ -34,6 +35,7 @@ __all__ = [
 	"PylintScriptRule",
 	"PollingIntervalRule",
 	"NamePatternRule",
+	"BadComponentReferenceRule",
 	"RULES_MAP",
 	"register_rule",
 	"get_registry",

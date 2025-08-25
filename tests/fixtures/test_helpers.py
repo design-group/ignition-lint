@@ -137,3 +137,85 @@ def load_test_view(test_cases_dir: Path, case_name: str) -> Path:
 			print(f"Contents of test_cases_dir: {list(test_cases_dir.iterdir())}")
 		raise FileNotFoundError(f"Test view file not found: {view_file}")
 	return view_file
+
+
+def create_mock_script(script_type: str, source_code: str, component_name: str = "TestComponent") -> str:
+	"""
+	Create a mock view.json with a script for testing script-based rules.
+	
+	Args:
+		script_type: Type of script ("message_handler", "custom_method", "transform", "event_handler")
+		source_code: Python source code for the script
+		component_name: Name of the component containing the script
+		
+	Returns:
+		JSON string representing the view with the script
+	"""
+	# Map script types to their JSON structure paths
+	script_configs = {
+		"message_handler": {
+			"path": ["props", "messageHandlers", "test_handler"],
+			"structure": {
+				"enabled": True,
+				"script": source_code
+			}
+		},
+		"custom_method": {
+			"path": ["props", "customMethods", "testMethod"],  
+			"structure": {
+				"parameters": [],
+				"script": source_code
+			}
+		},
+		"transform": {
+			"path": ["propConfig", "props.text", "transform"],
+			"structure": {
+				"expression": {
+					"type": "script",
+					"value": source_code
+				}
+			}
+		},
+		"event_handler": {
+			"path": ["props", "onStartup", "script"],
+			"structure": source_code  # Event handlers store script directly
+		}
+	}
+	
+	if script_type not in script_configs:
+		raise ValueError(f"Unknown script type: {script_type}. Available: {list(script_configs.keys())}")
+	
+	config = script_configs[script_type]
+	
+	# Build the component structure
+	component = {
+		"meta": {"name": component_name},
+		"type": "ia.display.button",
+		"props": {}
+	}
+	
+	# Navigate to the correct path and set the script
+	current = component
+	path_parts = config["path"]
+	
+	for part in path_parts[:-1]:
+		if part not in current:
+			current[part] = {}
+		current = current[part]
+	
+	# Set the final script structure
+	current[path_parts[-1]] = config["structure"]
+	
+	# Create the full view structure
+	view_data = {
+		"meta": {"name": "root"},
+		"type": "ia.container.coord", 
+		"version": 0,
+		"props": {
+			"children": {
+				component_name: component
+			}
+		}
+	}
+	
+	return json.dumps(view_data, indent=2)
