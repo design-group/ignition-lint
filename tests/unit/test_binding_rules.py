@@ -1,3 +1,4 @@
+# pylint: disable=import-error
 """
 Unit tests for binding-related rules.
 Tests various binding validation rules.

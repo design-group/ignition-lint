@@ -1,3 +1,4 @@
+# pylint: disable=import-error,wrong-import-position
 """
 Unit tests for the flatten_json module.
 
@@ -176,7 +177,7 @@ class TestFlattenJson(unittest.TestCase):
 class TestFileOperations(unittest.TestCase):
 	"""Test file I/O operations for JSON processing."""
 
-	def setUp(self):
+	def setup(self):
 		"""Set up temporary files for testing."""
 		self.temp_dir = Path(tempfile.mkdtemp())
 

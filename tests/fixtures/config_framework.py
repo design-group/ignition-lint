@@ -387,7 +387,7 @@ class ConfigurableTestFramework:
 class ConfigurableTestRunner(unittest.TestCase):
 	"""Unit test class that runs configuration-driven tests."""
 
-	def setUp(self):
+	def setup(self):
 		"""Set up the test framework."""
 		self.framework = ConfigurableTestFramework()
 

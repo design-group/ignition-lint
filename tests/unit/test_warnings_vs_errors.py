@@ -1,3 +1,4 @@
+# pylint: disable=import-error
 """
 Test cases to demonstrate and verify the warnings vs errors infrastructure.
 """

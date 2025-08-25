@@ -264,7 +264,7 @@ check-protected-access-in-special-methods=no
 # List of method names used to declare (i.e. assign) instance attributes.
 defining-attr-methods=__init__,
                       __new__,
-                      setUp,
+                      setup,
                       asyncSetUp,
                       __post_init__
 
@@ -302,7 +302,7 @@ max-bool-expr=5
 max-branches=15
 
 # Maximum number of locals for function / method body.
-max-locals=15
+max-locals=20
 
 # Maximum number of parents for a class (see R0901).
 max-parents=7

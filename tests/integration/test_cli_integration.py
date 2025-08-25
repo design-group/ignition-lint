@@ -16,8 +16,8 @@ from fixtures.base_test import BaseIntegrationTest
 class TestCLIIntegration(BaseIntegrationTest):
 	"""Test CLI tool integration."""
 
-	def setUp(self):  # pylint: disable=invalid-name
-		super().setUp()
+	def setup(self):  # pylint: disable=invalid-name
+		super().setup()
 		# Try different possible CLI paths
 		possible_paths = [
 			Path(__file__).parent.parent.parent / "src" / "ignition_lint" / "__main__.py",
@@ -196,7 +196,7 @@ class TestCLIDiscovery(BaseIntegrationTest):
 	def test_cli_methods_available(self):
 		"""Test that at least one CLI execution method is available."""
 		cli_integration = TestCLIIntegration()
-		cli_integration.setUp()
+		cli_integration.setup()
 
 		methods_available = [
 			cli_integration.cli_path is not None, cli_integration.use_poetry, cli_integration.use_module

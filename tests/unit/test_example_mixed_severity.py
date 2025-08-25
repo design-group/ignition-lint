@@ -1,11 +1,11 @@
+# pylint: disable=import-error
 """
 Test cases for ExampleMixedSeverityRule demonstrating warnings vs errors.
 This serves as both a test and a demonstration of how to test mixed-severity rules.
 """
 
 from fixtures.base_test import BaseRuleTest
-from fixtures.test_helpers import get_test_config, create_mock_view
-
+from fixtures.test_helpers import get_test_config, create_mock_view, create_temp_view_file
 
 class TestExampleMixedSeverityRule(BaseRuleTest):
 	"""Test the ExampleMixedSeverityRule to demonstrate mixed severity testing."""
@@ -28,7 +28,6 @@ class TestExampleMixedSeverityRule(BaseRuleTest):
 			}  # WARNING: no type suffix
 		]
 		mock_view_content = create_mock_view(components)
-		from fixtures.test_helpers import create_temp_view_file
 		mock_view = create_temp_view_file(mock_view_content)
 
 		rule_config = get_test_config("ExampleMixedSeverityRule")
@@ -52,7 +51,6 @@ class TestExampleMixedSeverityRule(BaseRuleTest):
 			}  # ERROR: conflicting indicators
 		]
 		mock_view_content = create_mock_view(components)
-		from fixtures.test_helpers import create_temp_view_file
 		mock_view = create_temp_view_file(mock_view_content)
 
 		rule_config = get_test_config("ExampleMixedSeverityRule")
@@ -84,7 +82,6 @@ class TestExampleMixedSeverityRule(BaseRuleTest):
 			}  # ERROR: conflicting indicators
 		]
 		mock_view_content = create_mock_view(components)
-		from fixtures.test_helpers import create_temp_view_file
 		mock_view = create_temp_view_file(mock_view_content)
 
 		rule_config = get_test_config("ExampleMixedSeverityRule")
@@ -112,7 +109,6 @@ class TestExampleMixedSeverityRule(BaseRuleTest):
 			"type": "container"
 		}]
 		mock_view_content = create_mock_view(components)
-		from fixtures.test_helpers import create_temp_view_file
 		mock_view = create_temp_view_file(mock_view_content)
 
 		rule_config = get_test_config("ExampleMixedSeverityRule")
@@ -124,7 +120,6 @@ class TestExampleMixedSeverityRule(BaseRuleTest):
 		"""Test that warnings contain expected patterns."""
 		components = [{"name": "tempLogin", "type": "container"}]
 		mock_view_content = create_mock_view(components)
-		from fixtures.test_helpers import create_temp_view_file
 		mock_view = create_temp_view_file(mock_view_content)
 
 		rule_config = get_test_config("ExampleMixedSeverityRule")
@@ -140,7 +135,6 @@ class TestExampleMixedSeverityRule(BaseRuleTest):
 		"""Test that errors contain expected patterns."""
 		components = [{"name": "DebugComponent", "type": "container"}]
 		mock_view_content = create_mock_view(components)
-		from fixtures.test_helpers import create_temp_view_file
 		mock_view = create_temp_view_file(mock_view_content)
 
 		rule_config = get_test_config("ExampleMixedSeverityRule")
@@ -169,7 +163,6 @@ class TestExampleMixedSeverityRule(BaseRuleTest):
 			}  # Should not warn - common short name
 		]
 		mock_view_content = create_mock_view(components)
-		from fixtures.test_helpers import create_temp_view_file
 		mock_view = create_temp_view_file(mock_view_content)
 
 		rule_config = get_test_config("ExampleMixedSeverityRule")

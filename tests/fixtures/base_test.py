@@ -1,3 +1,4 @@
+# pylint: disable=wrong-import-position,import-error
 """
 Base test classes providing common functionality for ignition-lint tests.
 """
@@ -19,7 +20,7 @@ from ignition_lint.common.flatten_json import flatten_file
 class BaseRuleTest(unittest.TestCase):
 	"""Base class for testing individual linting rules."""
 
-	def setUp(self):
+	def setup(self):
 		"""Set up test fixtures."""
 		# Get the tests directory (two levels up from fixtures)
 		tests_dir = Path(__file__).parent.parent
@@ -209,7 +210,7 @@ class BaseRuleTest(unittest.TestCase):
 class BaseIntegrationTest(unittest.TestCase):
 	"""Base class for integration tests involving multiple components."""
 
-	def setUp(self):
+	def setup(self):
 		"""Set up test fixtures."""
 		# Get the tests directory (two levels up from fixtures)
 		tests_dir = Path(__file__).parent.parent

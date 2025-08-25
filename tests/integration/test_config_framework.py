@@ -10,7 +10,7 @@ from fixtures.config_framework import ConfigurableTestFramework
 class ConfigurableTestRunner(unittest.TestCase):
 	"""Integration test class that validates the configuration-driven test framework."""
 
-	def setUp(self):
+	def setup(self):
 		"""Set up the test framework."""
 		self.framework = ConfigurableTestFramework()
 

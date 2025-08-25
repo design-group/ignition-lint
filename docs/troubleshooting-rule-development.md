@@ -326,8 +326,8 @@ class TestMyRule(unittest.TestCase):
 from tests.fixtures.base_test import BaseRuleTest
 
 class TestMyRule(BaseRuleTest):
-    def setUp(self):
-        super().setUp()  # Important!
+    def setup(self):
+        super().setup()  # Important!
         # Your setup here
 ```
 

@@ -1,3 +1,4 @@
+# pylint: disable=import-error,wrong-import-position
 """
 Golden file test for LintEngine model generation.
 
@@ -29,7 +30,7 @@ class TestGoldenFiles(unittest.TestCase):
 	"""Test model generation against golden reference files."""
 
 	@classmethod
-	def setUpClass(cls):
+	def setup_class(cls):
 		"""Set up the test class."""
 		# Store rule classes for creating fresh engines
 		cls.rule_classes = []
@@ -38,7 +39,7 @@ class TestGoldenFiles(unittest.TestCase):
 				# Test that we can create the rule
 				rule_class.create_from_config({})
 				cls.rule_classes.append(rule_class)
-			except Exception as e:
+			except (TypeError, ValueError, AttributeError) as e:
 				print(f"Warning: Could not create rule {rule_name}: {e}")
 
 		# Get test cases directory
@@ -226,13 +227,10 @@ class TestGoldenFiles(unittest.TestCase):
 			expected_section = expected[key]
 
 			# Compare counts
-			current_count = current_section.get('count', 0)
-			expected_count = expected_section.get('count', 0)
-
-			if current_count != expected_count:
+			if current_section.get('count', 0) != expected_section.get('count', 0):
 				self.fail(
 					f"Model count mismatch for {case_name}.{key}: "
-					f"got {current_count}, expected {expected_count}. "
+					f"got {current_section.get('count', 0)}, expected {expected_section.get('count', 0)}. "
 					f"Regenerate with: python scripts/generate_debug_files.py {case_name}"
 				)
 

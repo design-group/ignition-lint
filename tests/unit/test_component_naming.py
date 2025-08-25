@@ -1,3 +1,4 @@
+# pylint: disable=import-error
 """
 Unit tests for the NamePatternRule.
 Tests various naming conventions and edge cases for different node types.
