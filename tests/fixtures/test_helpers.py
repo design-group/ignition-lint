@@ -151,71 +151,126 @@ def create_mock_script(script_type: str, source_code: str, component_name: str =
 	Returns:
 		JSON string representing the view with the script
 	"""
-	# Map script types to their JSON structure paths
-	script_configs = {
-		"message_handler": {
-			"path": ["props", "messageHandlers", "test_handler"],
-			"structure": {
-				"enabled": True,
-				"script": source_code
-			}
-		},
-		"custom_method": {
-			"path": ["props", "customMethods", "testMethod"],  
-			"structure": {
-				"parameters": [],
-				"script": source_code
-			}
-		},
-		"transform": {
-			"path": ["propConfig", "props.text", "transform"],
-			"structure": {
-				"expression": {
-					"type": "script",
-					"value": source_code
+	
+	if script_type == "message_handler":
+		# Message handlers are at root level scripts.messageHandlers
+		view_data = {
+			"custom": {},
+			"params": {},
+			"propConfig": {},
+			"props": {},
+			"root": {
+				"children": [
+					{
+						"meta": {"name": component_name},
+						"type": "ia.input.button",
+						"props": {"text": "Test Button"}
+					}
+				],
+				"meta": {"name": "root"},
+				"type": "ia.container.coord",
+				"scripts": {
+					"messageHandlers": [
+						{
+							"messageType": "test_message",
+							"script": source_code,
+							"pageScope": False,
+							"sessionScope": False,
+							"viewScope": True
+						}
+					]
 				}
 			}
-		},
-		"event_handler": {
-			"path": ["props", "onStartup", "script"],
-			"structure": source_code  # Event handlers store script directly
 		}
-	}
-	
-	if script_type not in script_configs:
-		raise ValueError(f"Unknown script type: {script_type}. Available: {list(script_configs.keys())}")
-	
-	config = script_configs[script_type]
-	
-	# Build the component structure
-	component = {
-		"meta": {"name": component_name},
-		"type": "ia.display.button",
-		"props": {}
-	}
-	
-	# Navigate to the correct path and set the script
-	current = component
-	path_parts = config["path"]
-	
-	for part in path_parts[:-1]:
-		if part not in current:
-			current[part] = {}
-		current = current[part]
-	
-	# Set the final script structure
-	current[path_parts[-1]] = config["structure"]
-	
-	# Create the full view structure
-	view_data = {
-		"meta": {"name": "root"},
-		"type": "ia.container.coord", 
-		"version": 0,
-		"props": {
-			"children": {
-				component_name: component
+		
+	elif script_type == "custom_method":
+		# Custom methods are at component level scripts.customMethods
+		view_data = {
+			"custom": {},
+			"params": {},
+			"propConfig": {},
+			"props": {},
+			"root": {
+				"children": [
+					{
+						"meta": {"name": component_name},
+						"type": "ia.input.button",
+						"props": {"text": "Test Button"},
+						"scripts": {
+							"customMethods": [
+								{
+									"name": "testMethod",
+									"params": [],
+									"script": source_code
+								}
+							]
+						}
+					}
+				],
+				"meta": {"name": "root"},
+				"type": "ia.container.coord"
 			}
 		}
-	}
+		
+	elif script_type == "transform":
+		# Transform scripts are in binding transforms
+		view_data = {
+			"custom": {},
+			"params": {},
+			"propConfig": {
+				f"root.children[0].props.text": {
+					"binding": {
+						"type": "property",
+						"config": {"path": "view.params.inputValue"},
+						"transforms": [
+							{
+								"type": "script",
+								"script": source_code
+							}
+						]
+					}
+				}
+			},
+			"props": {},
+			"root": {
+				"children": [
+					{
+						"meta": {"name": component_name},
+						"type": "ia.display.label",
+						"props": {"text": "Initial Text"}
+					}
+				],
+				"meta": {"name": "root"},
+				"type": "ia.container.coord"
+			}
+		}
+		
+	elif script_type == "event_handler":
+		# Event handlers are at component level events
+		view_data = {
+			"custom": {},
+			"params": {},
+			"propConfig": {},
+			"props": {},
+			"root": {
+				"children": [
+					{
+						"meta": {"name": component_name},
+						"type": "ia.input.button",
+						"props": {"text": "Test Button"},
+						"events": {
+							"onActionPerformed": {
+								"script": source_code,
+								"scope": "L"
+							}
+						}
+					}
+				],
+				"meta": {"name": "root"},
+				"type": "ia.container.coord"
+			}
+		}
+	else:
+		raise ValueError(f"Unknown script type: {script_type}. Available: message_handler, custom_method, transform, event_handler")
 	
 	return json.dumps(view_data, indent=2)

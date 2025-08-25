@@ -47,10 +47,17 @@ class LintEngine:
 		if self.debug_output_dir and source_file_path:
 			self._save_debug_files(source_file_path)
 
-		# Collect all nodes in a flat list
+		# Collect all nodes in a flat list, excluding generic collections to avoid duplicates
+		# Generic collections ('bindings', 'scripts', 'event_handlers') are convenience collections
+		# that contain the same nodes as specific collections, causing duplicates
+		specific_collections = [
+			'components', 'message_handlers', 'custom_methods', 'expression_bindings',
+			'property_bindings', 'tag_bindings', 'script_transforms', 'event_handlers', 'properties'
+		]
 		all_nodes = []
-		for node_list in self.view_model.values():
-			all_nodes.extend(node_list)
+		for collection_name in specific_collections:
+			if collection_name in self.view_model:
+				all_nodes.extend(self.view_model[collection_name])
 
 		warnings = {}
 		errors = {}
@@ -79,10 +86,15 @@ class LintEngine:
 		self.flattened_json = flattened_json
 		self.view_model = self.get_view_model()
 
-		# Get all nodes for analysis
+		# Get all nodes for analysis, excluding generic collections to avoid duplicates
+		specific_collections = [
+			'components', 'message_handlers', 'custom_methods', 'expression_bindings',
+			'property_bindings', 'tag_bindings', 'script_transforms', 'event_handlers', 'properties'
+		]
 		all_nodes = []
-		for node_list in self.view_model.values():
-			all_nodes.extend(node_list)
+		for collection_name in specific_collections:
+			if collection_name in self.view_model:
+				all_nodes.extend(self.view_model[collection_name])
 
 		# Count by individual node types
 		node_type_counts = {}

@@ -172,7 +172,8 @@ class ViewModelBuilder:
 					self.model['bindings'].append(binding)
 
 				# Look for script transforms in the binding
-				transforms = self._get_script_transforms(binding_path)
+				full_binding_path = f"{binding_path}.binding"
+				transforms = self._get_script_transforms(full_binding_path)
 				for transform_path, script in transforms:
 					transform = TransformScript(transform_path, script, binding_path)
 					self.model['script_transforms'].append(transform)
@@ -245,23 +246,30 @@ class ViewModelBuilder:
 		"""Collect all event handlers from the flattened JSON."""
 		for path, script in self.flattened_json.items():
 			# Look for event handler script configurations
-			if '.events.' in path and '.config.script' in path:
-				# Extract the event path components
-				event_path_parts = path.split('.config.script')[0]
+			# Check both .config.script (alternative format) and .script (standard format)
+			if '.events.' in path and ('.config.script' in path or path.endswith('.script')):
+				if '.config.script' in path:
+					# Alternative format: path.events.eventType.config.script
+					event_path_parts = path.split('.config.script')[0]
+				else:
+					# Standard format: path.events.eventType.script
+					event_path_parts = path.split('.script')[0]
+				
 				event_path = event_path_parts
 
-				# Extract event domain and type from path
-				domain_type_match = re.search(r'\.events\.([^.]+)\.([^.]+)', event_path_parts)
-				if domain_type_match:
-					event_domain = domain_type_match.group(1)  # e.g., 'dom', 'system'
-					event_type = domain_type_match.group(2)  # e.g., 'onClick', 'onStartup'
-
-					# Get the scope if available, otherwise default to local scope
-					scope = self._search_for_path_value(path, "scope", "L")
+				# Extract event type from path (e.g., 'onActionPerformed', 'onStartup')
+				# Standard Ignition events don't use domains, just event types
+				event_type_match = re.search(r'\.events\.([^.]+)$', event_path_parts)
+				if event_type_match:
+					event_type = event_type_match.group(1)  # e.g., 'onActionPerformed', 'onStartup'
+					
+					# Get the scope from the same event path
+					scope_path = f"{event_path_parts}.scope"
+					scope = self.flattened_json.get(scope_path, "L")
 
 					# Create a script event handler
 					handler = EventHandlerScript(
-						event_path, event_domain, event_type, script, scope=scope
+						event_path, "component", event_type, script, scope=scope
 					)
 					self.model['event_handlers'].append(handler)
 					self.model['scripts'].append(handler)
