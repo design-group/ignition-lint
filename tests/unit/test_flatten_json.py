@@ -176,12 +176,15 @@ class TestFlattenJson(unittest.TestCase):
 
 class TestFileOperations(unittest.TestCase):
 	"""Test file I/O operations for JSON processing."""
+	def __init__(self):
+		super().__init__()
+		self.temp_dir = None
 
-	def setup(self):
+	def setUp(self): # pylint: disable=invalid-name
 		"""Set up temporary files for testing."""
 		self.temp_dir = Path(tempfile.mkdtemp())
 
-	def tearDown(self):
+	def tearDown(self): # pylint: disable=invalid-name
 		"""Clean up temporary files."""
 		if self.temp_dir.exists():
 			shutil.rmtree(self.temp_dir)

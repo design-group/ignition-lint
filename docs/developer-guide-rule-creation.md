@@ -278,8 +278,8 @@ from tests.fixtures.base_test import BaseRuleTest
 from tests.fixtures.test_helpers import get_test_config
 
 class TestYourRule(BaseRuleTest):
-    def setup(self):
-        super().setup()
+    def setUp(self):
+        super().setUp()
         self.rule_config = get_test_config("YourRule", param1="value1")
     
     def test_rule_passes_valid_case(self):

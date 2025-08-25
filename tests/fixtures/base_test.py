@@ -19,8 +19,13 @@ from ignition_lint.common.flatten_json import flatten_file
 
 class BaseRuleTest(unittest.TestCase):
 	"""Base class for testing individual linting rules."""
+	def __init__(self):
+		super().__init__()
+		self.test_cases_dir = None
+		self.configs_dir = None
+		self.rule_config = None
 
-	def setup(self):
+	def setUp(self): # pylint: disable=invalid-name
 		"""Set up test fixtures."""
 		# Get the tests directory (two levels up from fixtures)
 		tests_dir = Path(__file__).parent.parent
@@ -210,7 +215,7 @@ class BaseRuleTest(unittest.TestCase):
 class BaseIntegrationTest(unittest.TestCase):
 	"""Base class for integration tests involving multiple components."""
 
-	def setup(self):
+	def setUp(self):
 		"""Set up test fixtures."""
 		# Get the tests directory (two levels up from fixtures)
 		tests_dir = Path(__file__).parent.parent

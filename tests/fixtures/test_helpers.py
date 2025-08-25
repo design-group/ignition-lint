@@ -77,14 +77,14 @@ def assert_rule_errors(
 	rule_errors = errors.get(rule_name, [])
 
 	if expected_count is not None:
-		assert len(rule_errors) == expected_count, \
-                                                                           f"Rule {rule_name} should have {expected_count} errors but found {len(rule_errors)}: {rule_errors}"
+		error_msg = f"Rule {rule_name} should have {expected_count} errors but found {len(rule_errors)}: {rule_errors}"
+		assert len(rule_errors) == expected_count, error_msg
 
 	if error_patterns:
 		for pattern in error_patterns:
 			matching_errors = [error for error in rule_errors if pattern in error]
-			assert len(matching_errors) > 0, \
-                                                                                                                f"Rule {rule_name} should have error containing '{pattern}'. Found errors: {rule_errors}"
+			error_msg = f"Rule {rule_name} should have error containing '{pattern}'. Found errors: {rule_errors}"
+			assert len(matching_errors) > 0, error_msg
 
 
 def assert_no_errors(errors: Dict[str, List[str]], rule_name: str = None):

@@ -1,3 +1,4 @@
+# pylint: disable=import-error
 """
 Integration tests for multiple rules working together.
 Tests interactions between different linting rules.
@@ -6,6 +7,7 @@ Tests interactions between different linting rules.
 import unittest
 
 from fixtures.base_test import BaseIntegrationTest
+from fixtures.test_helpers import load_test_view
 
 
 class TestMultipleRules(BaseIntegrationTest):
@@ -73,9 +75,9 @@ class TestMultipleRules(BaseIntegrationTest):
 					self.assertIsInstance(errors, dict)
 
 					# Verify each rule either passed or failed gracefully
-					for rule_name, rule_errors in rule_configs.items():
+					for rule_name, _ in rule_configs.items():
 						if rule_name in errors:
-							self.assertIsInstance(rule_errors, list)
+							self.assertIsInstance(errors[rule_name], list)
 
 				except FileNotFoundError:
 					self.skipTest(f"Test case {case} not found")
@@ -197,7 +199,7 @@ class TestMultipleRules(BaseIntegrationTest):
 					self.assertIsInstance(errors, dict)
 
 					# Verify structure of results
-					for rule_name, rule_errors in errors.items():
+					for _, rule_errors in errors.items():
 						self.assertIsInstance(rule_errors, list)
 
 				except FileNotFoundError:
@@ -253,10 +255,10 @@ class TestMultipleRules(BaseIntegrationTest):
 		self.assertIsInstance(errors, dict)
 
 		# Verify each configured rule either passed or failed gracefully
-		for rule_name, rule_errors in rule_configs.items():
+		for rule_name, _ in rule_configs.items():
 			if rule_name in errors:
 				self.assertIsInstance(
-					rule_errors, list, f"Rule {rule_name} should return a list of errors"
+					errors[rule_name], list, f"Rule {rule_name} should return a list of errors"
 				)
 
 

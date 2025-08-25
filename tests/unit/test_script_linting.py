@@ -13,8 +13,8 @@ from fixtures.test_helpers import get_test_config, load_test_view
 class TestPylintScriptRule(BaseRuleTest):
 	"""Test script linting with pylint."""
 
-	def setup(self):  # pylint: disable=invalid-name
-		super().setup()
+	def setUp(self):  # pylint: disable=invalid-name
+		super().setUp()
 		self.rule_config = get_test_config("PylintScriptRule")
 
 	def test_basic_script_linting(self):

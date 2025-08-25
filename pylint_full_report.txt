@@ -31,7 +31,7 @@ tests/unit/test_binding_rules.py:9:0: E0401: Unable to import 'fixtures.test_hel
 ************* Module tests.unit.test_polling_interval
 tests/unit/test_polling_interval.py:8:0: E0401: Unable to import 'fixtures.base_test' (import-error)
 tests/unit/test_polling_interval.py:9:0: E0401: Unable to import 'fixtures.test_helpers' (import-error)
-tests/unit/test_polling_interval.py:15:1: C0103: Method name "setUp" doesn't conform to snake_case naming style (invalid-name)
+tests/unit/test_polling_interval.py:15:1: C0103: Method name "setup" doesn't conform to snake_case naming style (invalid-name)
 tests/unit/test_polling_interval.py:45:0: R0903: Too few public methods (1/2) (too-few-public-methods)
 ************* Module tests.unit.test_flatten_json
 tests/unit/test_flatten_json.py:20:0: C0413: Import "from ignition_lint.common.flatten_json import flatten_json, flatten_file, read_json_file, write_json_file, format_json, preserve_unicode_escapes, restore_unicode_escapes" should be placed at the top of the module (wrong-import-position)
@@ -74,7 +74,7 @@ tests/unit/test_warnings_vs_errors.py:6:0: E0401: Unable to import 'fixtures.tes
 ************* Module tests.unit.test_script_linting
 tests/unit/test_script_linting.py:9:0: E0401: Unable to import 'fixtures.base_test' (import-error)
 tests/unit/test_script_linting.py:10:0: E0401: Unable to import 'fixtures.test_helpers' (import-error)
-tests/unit/test_script_linting.py:16:1: C0103: Method name "setUp" doesn't conform to snake_case naming style (invalid-name)
+tests/unit/test_script_linting.py:16:1: C0103: Method name "setup" doesn't conform to snake_case naming style (invalid-name)
 tests/unit/test_script_linting.py:7:0: W0611: Unused Path imported from pathlib (unused-import)
 ************* Module tests.unit.test_golden_files
 tests/unit/test_golden_files.py:23:0: C0413: Import "from ignition_lint.common.flatten_json import read_json_file, flatten_json" should be placed at the top of the module (wrong-import-position)
@@ -91,7 +91,7 @@ tests/integration/test_multi_rule.py:10:0: W0611: Unused get_test_config importe
 ************* Module tests.integration.test_cli_integration
 tests/integration/test_cli_integration.py:13:0: E0401: Unable to import 'fixtures.base_test' (import-error)
 tests/integration/test_cli_integration.py:19:1: C0116: Missing function or method docstring (missing-function-docstring)
-tests/integration/test_cli_integration.py:19:1: C0103: Method name "setUp" doesn't conform to snake_case naming style (invalid-name)
+tests/integration/test_cli_integration.py:19:1: C0103: Method name "setup" doesn't conform to snake_case naming style (invalid-name)
 tests/integration/test_cli_integration.py:39:13: W1510: 'subprocess.run' used without explicitly defining the value for 'check'. (subprocess-run-check)
 tests/integration/test_cli_integration.py:47:14: W1510: 'subprocess.run' used without explicitly defining the value for 'check'. (subprocess-run-check)
 tests/integration/test_cli_integration.py:69:9: W1510: 'subprocess.run' used without explicitly defining the value for 'check'. (subprocess-run-check)

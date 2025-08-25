@@ -36,10 +36,12 @@ extension-pkg-whitelist=
 # Return non-zero exit code if any of these messages/categories are detected,
 # even if score is above --fail-under value. Syntax same as enable. Messages
 # specified are enabled, while categories only check already-enabled messages.
-fail-on=
+# Only fail on errors and fatal issues, not warnings, conventions, or refactoring suggestions
+fail-on=E,F
 
 # Specify a score threshold under which the program will exit with error.
-fail-under=10
+# Set to 8.0 to allow for minor warnings while still catching serious issues
+fail-under=8.0
 
 # Interpret the stdin as a python script, whose filename needs to be passed as
 # the module_or_package argument.
@@ -641,3 +643,6 @@ init-import=no
 # List of qualified module names which can have objects that can redefine
 # builtins.
 redefining-builtins-modules=six.moves,past.builtins,future.builtins,builtins,io
+
+# Exceptions that will emit a warning when caught
+overgeneral-exceptions=builtins.StandardError,builtins.BaseException

@@ -30,7 +30,7 @@ class TestGoldenFiles(unittest.TestCase):
 	"""Test model generation against golden reference files."""
 
 	@classmethod
-	def setup_class(cls):
+	def setUpClass(cls): # pylint: disable=invalid-name
 		"""Set up the test class."""
 		# Store rule classes for creating fresh engines
 		cls.rule_classes = []

@@ -257,8 +257,8 @@ from tests.fixtures.test_helpers import get_test_config, create_mock_view
 
 
 class TestComponentDescriptionRule(BaseRuleTest):
-    def setup(self):
-        super().setup()
+    def setUp(self):
+        super().setUp()
         self.rule_config = get_test_config("ComponentDescriptionRule", 
                                          min_length=10, 
                                          max_length=50)
