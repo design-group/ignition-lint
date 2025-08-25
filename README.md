@@ -519,19 +519,93 @@ class LifecycleAwareRule(LintingRule):
 - `scope`: Scope setting ("L", "P", "S")
 - `get_formatted_script()`: Returns formatted Python code
 
-## Built-in Rules
+## Available Rules
 
-### PylintScriptRule
-Runs Pylint on all scripts in the view to check for:
+The following rules are currently implemented and available for use:
+
+| Rule | Type | Description | Configuration Options | Default Enabled |
+|------|------|-------------|----------------------|-----------------|
+| `NamePatternRule` | Warning | Validates naming conventions for components and other elements | `convention`, `target_node_types`, `custom_pattern`, `node_type_specific_rules` | ✅ |
+| `PollingIntervalRule` | Error | Ensures polling intervals meet minimum thresholds to prevent performance issues | `minimum_interval` (default: 10000ms) | ✅ |
+| `PylintScriptRule` | Error | Runs Pylint analysis on all scripts to detect syntax errors, undefined variables, and code quality issues | None (uses default Pylint configuration) | ✅ |
+| `UnusedCustomPropertiesRule` | Warning | Detects custom properties and view parameters that are defined but never referenced | None | ✅ |
+| `BadComponentReferenceRule` | Error | Identifies brittle component object traversal patterns (getSibling, getParent, etc.) | `forbidden_patterns`, `case_sensitive` | ✅ |
+
+### Rule Details
+
+#### NamePatternRule
+Validates naming conventions across different node types with flexible configuration options.
+
+**Supported Conventions:**
+- `PascalCase` (default)
+- `camelCase` 
+- `snake_case`
+- `kebab-case`
+- `SCREAMING_SNAKE_CASE`
+- `Title Case`
+- `lower case`
+
+**Configuration Example:**
+```json
+{
+  "NamePatternRule": {
+    "enabled": true,
+    "kwargs": {
+      "convention": "PascalCase",
+      "target_node_types": ["component"],
+      "node_type_specific_rules": {
+        "custom_method": {
+          "convention": "camelCase"
+        }
+      }
+    }
+  }
+}
+```
+
+#### PollingIntervalRule
+Prevents performance issues by enforcing minimum polling intervals in `now()` expressions.
+
+**What it checks:**
+- Expression bindings containing `now()` calls
+- Property and tag bindings with polling configurations
+- Validates interval values are above minimum threshold
+
+#### PylintScriptRule
+Comprehensive Python code analysis using Pylint for all script types:
+- Custom method scripts
+- Event handler scripts  
+- Message handler scripts
+- Transform scripts
+
+**Detected Issues:**
+- Syntax errors
 - Undefined variables
 - Unused imports
-- Syntax errors
+- Code style violations
+- Logical errors
 
-### PollingIntervalRule
-Ensures that polling intervals in expressions meet minimum requirements:
-- Checks `now()` function calls
-- Validates interval values
-- Default minimum: 10,000ms
+#### UnusedCustomPropertiesRule
+Identifies unused custom properties and view parameters to reduce view complexity.
+
+**Detection Coverage:**
+- View-level custom properties (`custom.*`)
+- View parameters (`params.*`)
+- Component-level custom properties (`*.custom.*`)
+- References in expressions, bindings, and scripts
+
+#### BadComponentReferenceRule
+Prevents brittle view dependencies by detecting object traversal patterns.
+
+**Forbidden Patterns:**
+- `.getSibling()`, `.getParent()`, `.getChild()`, `.getChildren()`
+- `self.parent`, `self.children` property access
+- Any direct component tree navigation
+
+**Recommended Alternatives:**
+- Use `view.custom` properties for data sharing
+- Implement message handling for component communication
+- Design views with explicit data flow patterns
 
 ## Usage Methods
 

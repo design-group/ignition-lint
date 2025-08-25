@@ -29,7 +29,6 @@ class BadComponentReferenceRule(LintingRule):
 		# Target both script types and expression bindings
 		target_types = ALL_SCRIPTS | {NodeType.EXPRESSION_BINDING}
 		super().__init__(target_types)
-		
 		# Configure patterns to detect (methods and properties)
 		self.forbidden_patterns = forbidden_patterns or [
 			# Method calls (with parentheses)
@@ -49,7 +48,6 @@ class BadComponentReferenceRule(LintingRule):
 			'self.parent\r',
 			'self.children\r'
 		]
-		
 		# Allow case-insensitive matching
 		self.case_sensitive = case_sensitive
 

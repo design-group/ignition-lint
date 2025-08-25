@@ -176,9 +176,6 @@ class TestFlattenJson(unittest.TestCase):
 
 class TestFileOperations(unittest.TestCase):
 	"""Test file I/O operations for JSON processing."""
-	def __init__(self):
-		super().__init__()
-		self.temp_dir = None
 
 	def setUp(self): # pylint: disable=invalid-name
 		"""Set up temporary files for testing."""

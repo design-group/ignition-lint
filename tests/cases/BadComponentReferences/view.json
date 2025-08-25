@@ -1,0 +1,160 @@
+{
+  "custom": {},
+  "params": {},
+  "propConfig": {
+    "props.root.children.0.props.text": {
+      "binding": {
+        "type": "expr",
+        "config": {
+          "expression": "self.getSibling('OtherLabel').props.text + ' - Updated'"
+        }
+      }
+    }
+  },
+  "props": {
+    "defaultSize": {
+      "height": 600,
+      "width": 800
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "BadButton"
+        },
+        "position": {
+          "height": 50,
+          "width": 150,
+          "x": 50,
+          "y": 50
+        },
+        "props": {
+          "style": {
+            "classes": ""
+          },
+          "text": "Click Me"
+        },
+        "events": {
+          "onActionPerformed": {
+            "script": "\n# Bad pattern 1: getSibling\nsibling = self.getSibling('StatusLabel')\nsibling.props.text = 'Button clicked!'\n\n# Bad pattern 2: getParent\nparent = self.getParent()\nparent.props.style.backgroundColor = 'red'\n",
+            "scope": "G"
+          }
+        },
+        "type": "ia.input.button"
+      },
+      {
+        "meta": {
+          "name": "StatusLabel"
+        },
+        "position": {
+          "height": 30,
+          "width": 200,
+          "x": 50,
+          "y": 120
+        },
+        "props": {
+          "text": "Ready",
+          "style": {
+            "textAlign": "center"
+          }
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "ContainerWithBadScript"
+        },
+        "position": {
+          "height": 200,
+          "width": 300,
+          "x": 300,
+          "y": 50
+        },
+        "propConfig": {
+          "props.children": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "self.parent.getChild('DataSource').props.data"
+              }
+            }
+          }
+        },
+        "props": {
+          "children": [
+            {
+              "meta": {
+                "name": "ChildLabel"
+              },
+              "props": {
+                "text": "Child Component"
+              },
+              "events": {
+                "onStartup": {
+                  "script": "\n# Bad pattern 3: getChild\ntarget = self.getChild('SubChild')\ntarget.props.visible = True\n\n# Bad pattern 4: parent property\nif self.parent.props.visible:\n    logger.info('Parent is visible')\n\n# Bad pattern 5: children property  \nfor child in self.children:\n    child.props.enabled = True\n",
+                  "scope": "G"
+                }
+              },
+              "type": "ia.display.label"
+            }
+          ]
+        },
+        "type": "ia.container.flex"
+      },
+      {
+        "meta": {
+          "name": "CustomMethodComponent"
+        },
+        "position": {
+          "height": 100,
+          "width": 200,
+          "x": 50,
+          "y": 300
+        },
+        "props": {
+          "text": "Custom Methods",
+          "customMethods": [
+            {
+              "name": "updateSibling",
+              "parameters": [],
+              "script": "\n# Bad pattern in custom method\ntarget = self.getSibling('StatusLabel')\ntarget.props.text = 'Updated by custom method'\nreturn target.props.text\n"
+            },
+            {
+              "name": "navigateHierarchy", 
+              "parameters": ["direction"],
+              "script": "\n# Multiple bad patterns in one method\nif direction == 'up':\n    return self.getParent().props.name\nelif direction == 'down':\n    children = self.getChildren()\n    return [child.props.name for child in children]\nelse:\n    sibling = self.getSibling('StatusLabel')\n    return sibling.props.text\n"
+            }
+          ]
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "MessageHandlerComponent"
+        },
+        "position": {
+          "height": 80,
+          "width": 180,
+          "x": 300,
+          "y": 300
+        },
+        "props": {
+          "text": "Message Handler",
+          "messageHandlers": [
+            {
+              "messageType": "update-status",
+              "script": "\n# Bad pattern in message handler\nstatusLabel = self.getSibling('StatusLabel')\nstatusLabel.props.text = payload['newStatus']\n\n# Another bad pattern\ncontainer = self.getParent()\ncontainer.props.style.backgroundColor = payload['color']\n",
+              "scope": "view"
+            }
+          ]
+        },
+        "type": "ia.display.label"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "type": "ia.container.coord"
+  }
+}

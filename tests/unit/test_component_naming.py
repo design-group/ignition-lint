@@ -12,9 +12,6 @@ from fixtures.test_helpers import get_test_config, load_test_view
 
 class TestNamePatternPascalCase(BaseRuleTest):
 	"""Test PascalCase naming convention for components."""
-	def __init__(self):
-		super().__init__()
-		self.rule_config = None
 
 	def setUp(self): # pylint: disable=invalid-name
 		super().setUp()
