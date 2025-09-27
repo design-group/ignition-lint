@@ -1,30 +1,27 @@
-name: Action Integration Test
+name: Integration Test
 
-on: 
+on:
   push:
   pull_request:
     branches: [main]
-    types: [closed]
   workflow_dispatch:
 
 jobs:
-  standard-style:
+  integration:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Lint json file
-        uses: ia-eknorr/ignition-lint@v2.1
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          files: tests/cases/PreferredStyle/view.json
-          component_style: PascalCase
-          parameter_style: camelCase
-  regex-style:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Lint json file
-        uses: ia-eknorr/ignition-lint@v2.1
-        with:
-          files: tests/cases/kebab-case/view.json
-          component_style: "^[a-z]+(-[a-z]+)*$"
-          parameter_style: "^[a-z]+(-[a-z]+)*$"
+          python-version: "3.12"
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Install dependencies
+        run: poetry install
+      - name: Run integration tests
+        run: |
+          cd tests
+          poetry run python test_runner.py --run-integration

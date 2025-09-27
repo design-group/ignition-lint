@@ -1,0 +1,20 @@
+{
+  "NamePatternRule": {
+    "enabled": true,
+    "kwargs": {
+      "target_node_types": ["component", "property"],
+      "convention": "camelCase",
+      "min_length": 1,
+      "severity": "warning"
+    }
+  },
+  "PollingIntervalRule": {
+    "enabled": true,
+    "kwargs": {
+      "minimum_interval": 10000
+    }
+  },
+  "UnusedCustomPropertiesRule": {
+    "enabled": false
+  }
+}
