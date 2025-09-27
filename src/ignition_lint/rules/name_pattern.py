@@ -155,14 +155,19 @@ class NamePatternRule(LintingRule):
 		Initialize the naming rule.
 
 		Args:
-			target_node_types: Node types this rule should apply to
+			target_node_types: Node types this rule should apply to. If not provided and
+			                  node_type_specific_rules is provided, will be auto-derived from the keys
 			convention: Naming convention (PascalCase, camelCase, etc.)
 			custom_pattern: Custom regex pattern (overrides convention)
 			config: Configuration for validation and abbreviation handling
 			name_extractors: Custom name extraction functions for node types
-			node_type_specific_rules: Per-node-type rule overrides
+			node_type_specific_rules: Per-node-type rule overrides. Keys automatically become target_node_types
 			severity: Severity level for violations ('warning' or 'error')
 		"""
+		# Auto-derive target_node_types from node_type_specific_rules if not provided
+		if target_node_types is None and node_type_specific_rules:
+			target_node_types = set(node_type_specific_rules.keys())
+
 		super().__init__(target_node_types or {NodeType.COMPONENT})
 
 		self.convention = convention

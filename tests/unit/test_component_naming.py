@@ -463,6 +463,39 @@ class TestStandardNamingConventions(BaseRuleTest):
 		rule_warnings = results.warnings.get("NamePatternRule", [])
 		self.assertEqual(len(rule_warnings), 0)
 
+	def test_auto_derived_target_node_types(self):
+		"""Test that target_node_types can be auto-derived from node_type_specific_rules."""
+		rule_config = get_test_config(
+			"NamePatternRule",
+			# No explicit target_node_types provided
+			node_type_specific_rules={
+				"component": {
+					"convention": "PascalCase",
+					"severity": "warning"
+				},
+				"property": {
+					"convention": "camelCase",
+					"severity": "warning"
+				}
+			}
+		)
+
+		# Test with PascalCase view - should validate both components and properties
+		view_file = load_test_view(self.test_cases_dir, "PascalCase")
+
+		# Should have warnings for properties (they don't follow camelCase)
+		self.assert_rule_warnings(
+			view_file, rule_config, "NamePatternRule",
+			expected_warning_count=4,  # All properties are PascalCase instead of camelCase
+			warning_patterns=["doesn't follow camelCase", "property"]
+		)
+
+		# Should have no errors since severity is set to warning
+		self.assert_rule_errors(
+			view_file, rule_config, "NamePatternRule",
+			expected_error_count=0
+		)
+
 
 if __name__ == "__main__":
 	unittest.main()

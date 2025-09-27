@@ -1,19 +1,23 @@
 {
-  "_comment": "Pre-commit configuration - provides helpful feedback without blocking commits",
+  "_comment": "This is the standard configuration file for Ignition projects. Adjust rules as necessary for your project.",
   "NamePatternRule": {
     "enabled": true,
     "kwargs": {
-      "target_node_types": ["component", "property"],
       "node_type_specific_rules": {
         "component": {
           "convention": "PascalCase",
-          "severity": "warning",
-          "min_length": 3
+          "min_length": 3,
+          "severity": "error"
         },
         "property": {
           "convention": "camelCase",
-          "severity": "warning",
-          "min_length": 2
+          "min_length": 2,
+          "severity": "error"
+        },
+        "message_handler": {
+          "convention": "kebab-case",
+          "min_length": 3,
+          "severity": "error"
         }
       }
     }
@@ -23,9 +27,5 @@
     "kwargs": {
       "minimum_interval": 5000
     }
-  },
-  "UnusedCustomPropertiesRule": {
-    "enabled": false,
-    "_comment": "Disabled for pre-commit to avoid blocking commits on test properties"
   }
 }
