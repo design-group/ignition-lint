@@ -425,10 +425,10 @@ class ConfigurableTestRunner(unittest.TestCase):
 
 def create_sample_test_configs():
 	"""Create sample test configuration files for each rule."""
-	framework = ConfigurableTestFramework()
+	test_frame = ConfigurableTestFramework()
 
 	# Ensure config directory exists
-	framework.config_dir.mkdir(parents=True, exist_ok=True)
+	test_frame.config_dir.mkdir(parents=True, exist_ok=True)
 
 	# Component naming rule tests
 	component_name_config = {
@@ -594,7 +594,7 @@ def create_sample_test_configs():
 			("script_linting_tests.json", script_linting_config)]
 
 	for filename, config in configs:
-		config_path = framework.config_dir / filename
+		config_path = test_frame.config_dir / filename
 		with open(config_path, 'w', encoding='utf-8') as f:
 			json.dump(config, f, indent=2)
 		print(f"Created configuration file: {config_path}")

@@ -20,15 +20,21 @@ class NamePatternConfig:
 	# Abbreviation handling
 	allowed_abbreviations: Optional[Set[str]] = None
 	auto_detect_abbreviations: bool = True
+	# Severity configuration
+	severity: str = "warning"  # "warning" or "error"
 
 	def __post_init__(self):
-		"""Convert lists to sets if needed."""
+		"""Convert lists to sets if needed and validate severity."""
 		if self.forbidden_names is not None and not isinstance(self.forbidden_names, set):
 			self.forbidden_names = set(self.forbidden_names)
 		if self.skip_names is not None and not isinstance(self.skip_names, set):
 			self.skip_names = set(self.skip_names)
 		if self.allowed_abbreviations is not None and not isinstance(self.allowed_abbreviations, set):
 			self.allowed_abbreviations = set(self.allowed_abbreviations)
+
+		# Validate severity
+		if self.severity not in ("warning", "error"):
+			raise ValueError(f"severity must be 'warning' or 'error', got '{self.severity}'")
 
 
 class NamePatternRule(LintingRule):
@@ -142,11 +148,12 @@ class NamePatternRule(LintingRule):
 		config: Optional[NamePatternConfig] = None,
 		name_extractors: Optional[Dict[NodeType, Callable[[ViewNode], str]]] = None,
 		node_type_specific_rules: Optional[Dict[NodeType, Dict]] = None,
+		severity: str = "warning",  # New parameter for configurable severity
 		**kwargs  # Backward compatibility for old parameter names
 	):
 		"""
 		Initialize the naming rule.
-		
+
 		Args:
 			target_node_types: Node types this rule should apply to
 			convention: Naming convention (PascalCase, camelCase, etc.)
@@ -154,6 +161,7 @@ class NamePatternRule(LintingRule):
 			config: Configuration for validation and abbreviation handling
 			name_extractors: Custom name extraction functions for node types
 			node_type_specific_rules: Per-node-type rule overrides
+			severity: Severity level for violations ('warning' or 'error')
 		"""
 		super().__init__(target_node_types or {NodeType.COMPONENT})
 
@@ -170,7 +178,8 @@ class NamePatternRule(LintingRule):
 							None), forbidden_names=kwargs.get('forbidden_names', None),
 				skip_names=kwargs.get('skip_names', None),
 				allowed_abbreviations=kwargs.get('allowed_abbreviations', None),
-				auto_detect_abbreviations=kwargs.get('auto_detect_abbreviations', True)
+				auto_detect_abbreviations=kwargs.get('auto_detect_abbreviations', True),
+				severity=kwargs.get('severity', severity)  # Use provided severity or default
 			)
 		# Store configurations - use properties for backward compatibility access
 
@@ -228,6 +237,10 @@ class NamePatternRule(LintingRule):
 	@property
 	def auto_detect_abbreviations(self) -> bool:
 		return self.config.auto_detect_abbreviations
+
+	@property
+	def severity(self) -> str:
+		return self.config.severity
 
 	def _get_default_name_extractors(self) -> Dict[NodeType, Callable[[ViewNode], str]]:
 		"""Get default name extractors for different node types."""
@@ -363,8 +376,11 @@ class NamePatternRule(LintingRule):
 		if name:
 			validation_errors = self._validate_name(node, name)
 			for error in validation_errors:
-				# Naming convention violations are warnings, not errors
-				self.warnings.append(f"{node.path}: {error}")
+				# Use configurable severity for naming convention violations
+				if self.severity == "error":
+					self.errors.append(f"{node.path}: {error}")
+				else:
+					self.warnings.append(f"{node.path}: {error}")
 
 	# Specific visit methods that delegate to the generic method
 	def visit_component(self, node: ViewNode):

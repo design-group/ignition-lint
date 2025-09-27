@@ -80,6 +80,26 @@ class ViewModelBuilder:
 
 		return transforms
 
+	def _get_expression_transforms(self, binding_path: str) -> List[tuple]:
+		"""Get expression transforms from a binding."""
+		transforms = []
+		transform_paths = []
+
+		# Find transform paths for expression type transforms
+		for path, value in self.flattened_json.items():
+			if path.startswith(f"{binding_path}.transforms"
+						) and path.endswith('.type') and value == 'expression':
+				transform_base = path.rsplit('.type', 1)[0]
+				transform_paths.append(transform_base)
+
+		# Get transform expression for each path
+		for transform_path in transform_paths:
+			expression_path = f"{transform_path}.expression"
+			if expression_path in self.flattened_json:
+				transforms.append((transform_path, self.flattened_json[expression_path]))
+
+		return transforms
+
 	def _extract_event_type(self, handler_path: str) -> str:
 		"""Extract the event type from an event handler path."""
 		# Example: path.events.dom.onClick.type -> onClick
@@ -178,6 +198,14 @@ class ViewModelBuilder:
 					transform = TransformScript(transform_path, script, binding_path)
 					self.model['script_transforms'].append(transform)
 					self.model['scripts'].append(transform)
+
+				# Look for expression transforms in the binding
+				expression_transforms = self._get_expression_transforms(full_binding_path)
+				for transform_path, expression in expression_transforms:
+					# Create ExpressionBinding nodes for each expression transform
+					expression_binding = ExpressionBinding(transform_path, expression)
+					self.model['expression_bindings'].append(expression_binding)
+					self.model['bindings'].append(expression_binding)
 
 	def _collect_message_handlers(self):
 		"""Collect all message handlers from the flattened JSON."""

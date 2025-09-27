@@ -214,7 +214,7 @@ class TestMultipleRules(BaseIntegrationTest):
 					"target_node_types": [
 						"component", "property", "custom_method", "event_handler"
 					],
-					"convention": "PascalCase",  # Default
+					"convention": "PascalCase",
 					"node_type_specific_rules": {
 						"component": {
 							"convention": "PascalCase",

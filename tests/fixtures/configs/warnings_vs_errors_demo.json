@@ -44,7 +44,7 @@
         {
           "rule_name": "PollingIntervalRule",
           "warning_count": 0,
-          "error_count": 4,
+          "error_count": 3,
           "should_pass": false,
           "warning_patterns": [],
           "error_patterns": []
