@@ -103,16 +103,16 @@ def collect_files(args) -> List[Path]:
 	return files_to_process
 
 
-def print_file_results(file_path: Path, lint_results) -> int:
+def print_file_results(file_path: Path, lint_results) -> tuple[int, int]:
 	"""
-	Print warnings and errors for a file and return the total number of errors.
-	
+	Print warnings and errors for a file and return the counts.
+
 	Args:
 		file_path: Path to the file with results
 		lint_results: LintResults object containing warnings and errors
-	
+
 	Returns:
-		int: Total number of errors found (warnings don't count)
+		tuple[int, int]: (warning_count, error_count)
 	"""
 	warning_count = sum(len(warning_list) for warning_list in lint_results.warnings.values())
 	error_count = sum(len(error_list) for error_list in lint_results.errors.values())
@@ -135,7 +135,7 @@ def print_file_results(file_path: Path, lint_results) -> int:
 				for error in error_list:
 					print(f"    • {error}")
 
-	return error_count
+	return warning_count, error_count
 
 
 def print_statistics(file_path: Path, stats: Dict[str, Any], verbose: bool = False):
@@ -224,17 +224,17 @@ def setup_linter(args) -> LintEngine:
 	return lint_engine
 
 
-def process_single_file(file_path: Path, lint_engine: LintEngine, args) -> int:
-	"""Process a single view file and return the number of errors found."""
+def process_single_file(file_path: Path, lint_engine: LintEngine, args) -> tuple[int, int]:
+	"""Process a single view file and return the warning and error counts."""
 	if not file_path.exists():
 		print(f"⚠️  File {file_path} does not exist, skipping")
-		return 0
+		return 0, 0
 
 	# Read and flatten the JSON file
 	flattened_json = get_view_file(file_path)
 	if not flattened_json:
 		print(f"❌ Failed to read or parse {file_path}, skipping")
-		return 0
+		return 0, 0
 
 	# Get statistics
 	stats = lint_engine.get_model_statistics(flattened_json)
@@ -251,32 +251,44 @@ def process_single_file(file_path: Path, lint_engine: LintEngine, args) -> int:
 	# Run linting (unless stats-only mode)
 	if not args.stats_only:
 		lint_results = lint_engine.process(flattened_json, source_file_path=str(file_path))
-		file_errors = print_file_results(file_path, lint_results)
+		file_warnings, file_errors = print_file_results(file_path, lint_results)
 
-		if file_errors == 0 and not lint_results.warnings:
+		if file_errors == 0 and file_warnings == 0:
 			print(f"✅ No issues found in {file_path}")
-		elif file_errors == 0 and lint_results.warnings:
+		elif file_errors == 0 and file_warnings > 0:
 			print(f"✅ No errors found in {file_path} (warnings only)")
 
-		return file_errors
+		return file_warnings, file_errors
 
-	return 0
+	return 0, 0
 
 
-def print_final_summary(processed_files: int, total_errors: int, files_with_errors: int, stats_only: bool):
+def print_final_summary(processed_files: int, total_warnings: int, total_errors: int, files_with_issues: int, stats_only: bool, warnings_only_mode: bool = False):
 	"""Print the final summary of the linting process."""
 	print("\n📈 Summary:")
 	print(f"  Files processed: {processed_files}")
 
 	if not stats_only:
-		if total_errors == 0:
+		total_issues = total_warnings + total_errors
+		if total_issues == 0:
 			print("  ✅ No style inconsistencies found!")
 			sys.exit(0)
 		else:
-			print(f"  ❌ Total issues: {total_errors}")
-			print(f"  📁 Files with issues: {files_with_errors}")
-			print(f"  📁 Clean files: {processed_files - files_with_errors}")
-			sys.exit(1)
+			if total_warnings > 0:
+				print(f"  ⚠️  Total warnings: {total_warnings}")
+			if total_errors > 0:
+				print(f"  ❌ Total errors: {total_errors}")
+			print(f"  📁 Files with issues: {files_with_issues}")
+			print(f"  📁 Clean files: {processed_files - files_with_issues}")
+
+			# Exit with appropriate code based on warnings-only mode
+			if warnings_only_mode and total_errors == 0:
+				print("  ✅ No errors found (warnings only - allowing commit)")
+				sys.exit(0)
+			elif total_errors > 0:
+				sys.exit(1)
+			else:
+				sys.exit(0)
 	else:
 		print("  📊 Statistics analysis complete")
 		sys.exit(0)
@@ -321,6 +333,11 @@ def main():
 		help="Directory to save debug files (flattened JSON, model state, statistics)",
 	)
 	parser.add_argument(
+		"--warnings-only",
+		action="store_true",
+		help="Exit with code 0 when only warnings are found (useful for pre-commit hooks)",
+	)
+	parser.add_argument(
 		"filenames",
 		nargs="*",
 		help="Filenames to check (from pre-commit)",
@@ -340,23 +357,23 @@ def main():
 		print(f"📁 Processing {len(file_paths)} files")
 
 	# Process each file
+	total_warnings = 0
 	total_errors = 0
-	files_with_errors = 0
+	files_with_issues = 0
 	processed_files = 0
 
 	for file_path in file_paths:
-		file_errors = process_single_file(file_path, lint_engine, args)
+		file_warnings, file_errors = process_single_file(file_path, lint_engine, args)
 
-		if file_errors == -1:  # File was skipped
-			continue
-
+		# All functions now return tuples, no need to check for -1
 		processed_files += 1
+		total_warnings += file_warnings
 		total_errors += file_errors
-		if file_errors > 0:
-			files_with_errors += 1
+		if file_warnings > 0 or file_errors > 0:
+			files_with_issues += 1
 
 	# Print final summary
-	print_final_summary(processed_files, total_errors, files_with_errors, args.stats_only)
+	print_final_summary(processed_files, total_warnings, total_errors, files_with_issues, args.stats_only, args.warnings_only)
 
 
 if __name__ == "__main__":

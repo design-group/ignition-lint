@@ -376,8 +376,9 @@ class NamePatternRule(LintingRule):
 		if name:
 			validation_errors = self._validate_name(node, name)
 			for error in validation_errors:
-				# Use configurable severity for naming convention violations
-				if self.severity == "error":
+				# Use node-specific severity if available, otherwise fall back to global severity
+				node_severity = self._get_node_specific_config(node.node_type, 'severity', self.severity)
+				if node_severity == "error":
 					self.errors.append(f"{node.path}: {error}")
 				else:
 					self.warnings.append(f"{node.path}: {error}")

@@ -1,12 +1,21 @@
 {
-  "_comment": "Pre-commit configuration - focuses on warnings to avoid blocking commits unnecessarily",
+  "_comment": "Pre-commit configuration - provides helpful feedback without blocking commits",
   "NamePatternRule": {
     "enabled": true,
     "kwargs": {
-      "convention": "PascalCase",
-      "allow_numbers": true,
-      "min_length": 1,
-      "severity": "warning"
+      "target_node_types": ["component", "property"],
+      "node_type_specific_rules": {
+        "component": {
+          "convention": "PascalCase",
+          "severity": "warning",
+          "min_length": 3
+        },
+        "property": {
+          "convention": "camelCase",
+          "severity": "warning",
+          "min_length": 2
+        }
+      }
     }
   },
   "PollingIntervalRule": {
@@ -14,5 +23,9 @@
     "kwargs": {
       "minimum_interval": 5000
     }
+  },
+  "UnusedCustomPropertiesRule": {
+    "enabled": false,
+    "_comment": "Disabled for pre-commit to avoid blocking commits on test properties"
   }
 }

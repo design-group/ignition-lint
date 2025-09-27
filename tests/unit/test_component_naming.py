@@ -397,6 +397,72 @@ class TestStandardNamingConventions(BaseRuleTest):
 		errors = self.run_lint_on_file(view_file, rule_config)
 		self.assertIsInstance(errors.get("NamePatternRule", []), list)
 
+	def test_pascal_case_components_camel_case_properties(self):
+		"""Test that components follow PascalCase and properties follow camelCase."""
+		rule_config = get_test_config(
+			"NamePatternRule",
+			target_node_types=["component", "property"],
+			node_type_specific_rules={
+				"component": {
+					"convention": "PascalCase",
+					"severity": "error"
+				},
+				"property": {
+					"convention": "camelCase",
+					"severity": "warning"
+				}
+			}
+		)
+
+		# Test with PascalCase view - components should pass, properties should fail
+		view_file = load_test_view(self.test_cases_dir, "PascalCase")
+
+		# Should have warnings for properties not following camelCase
+		self.assert_rule_warnings(
+			view_file, rule_config, "NamePatternRule",
+			expected_warning_count=4,  # All custom properties are PascalCase
+			warning_patterns=["doesn't follow camelCase", "property"]
+		)
+
+		# Should have no errors for components (they follow PascalCase)
+		self.assert_rule_errors(
+			view_file, rule_config, "NamePatternRule",
+			expected_error_count=0
+		)
+
+	def test_camel_case_components_pascal_case_properties_fails(self):
+		"""Test camelCase components with PascalCase properties - should produce errors and warnings."""
+		rule_config = get_test_config(
+			"NamePatternRule",
+			target_node_types=["component", "property"],
+			node_type_specific_rules={
+				"component": {
+					"convention": "PascalCase",
+					"severity": "error"
+				},
+				"property": {
+					"convention": "camelCase",
+					"severity": "warning"
+				}
+			}
+		)
+
+		# Test with camelCase view - components should fail PascalCase, properties should fail camelCase
+		view_file = load_test_view(self.test_cases_dir, "camelCase")
+
+		# Should have errors for components not following PascalCase
+		self.assert_rule_errors(
+			view_file, rule_config, "NamePatternRule",
+			expected_error_count=1,  # The iconCamelCase component
+			error_patterns=["doesn't follow PascalCase", "component"]
+		)
+
+		# Should have no warnings since properties are already camelCase
+		# The camelCase view has camelCase properties, so they should pass the camelCase rule
+		results = self.run_lint_on_file_detailed(view_file, rule_config)
+		rule_warnings = results.warnings.get("NamePatternRule", [])
+		self.assertEqual(len(rule_warnings), 0)
+
 
 if __name__ == "__main__":
 	unittest.main()
