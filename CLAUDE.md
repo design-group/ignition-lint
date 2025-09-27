@@ -96,7 +96,7 @@ python scripts/generate_debug_files.py --clean
 Each test case's debug directory contains:
 - **`flattened.json`**: Path-value pairs from JSON flattening
 - **`model.json`**: Serialized object model with all nodes
-- **`stats.json`**: Statistics and rule coverage analysis  
+- **`stats.json`**: Statistics and rule coverage analysis
 - **`README.md`**: Documentation explaining the debug files
 
 ### Golden File Testing
@@ -113,7 +113,7 @@ cd tests
 python -m unittest unit.test_golden_files -v
 
 # Tests validate:
-# - JSON flattening consistency 
+# - JSON flattening consistency
 # - Model building reproducibility
 # - Statistics generation accuracy
 ```
@@ -143,7 +143,7 @@ scripts/test-actions.sh
 
 # Test specific workflow
 scripts/test-actions.sh ci               # Run CI pipeline locally
-scripts/test-actions.sh unittest         # Run unit tests in CI environment  
+scripts/test-actions.sh unittest         # Run unit tests in CI environment
 
 # List available workflows
 scripts/test-actions.sh list
@@ -164,7 +164,7 @@ scripts/test-actions.sh unittest pull_request
 
 **Before any code changes, check current baseline:**
 ```bash
-# Check current linting status 
+# Check current linting status
 poetry run pylint src/ tests/ scripts/
 
 # Current baseline: ~9.24/10 rating with 139 errors
@@ -173,7 +173,7 @@ poetry run pylint src/ tests/ scripts/
 
 **After making any code changes:**
 ```bash
-# Run full linting check (MUST pass with 0 errors)  
+# Run full linting check (MUST pass with 0 errors)
 poetry run pylint src/ tests/ scripts/
 
 # Format code with yapf (uses .style.yapf configuration)
@@ -185,7 +185,7 @@ poetry run yapf -dr src/ tests/ scripts/
 
 **Linting Rules and Standards:**
 - **Zero tolerance for errors**: All code must pass pylint with 0 errors
-- **Import organization**: Standard library → Third-party → Local imports  
+- **Import organization**: Standard library → Third-party → Local imports
 - **Exception handling**: Use specific exceptions, not bare `except:` or `Exception`
 - **File operations**: Always specify encoding: `open(file, 'r', encoding='utf-8')`
 - **F-strings**: Only use f-strings when interpolating variables
@@ -201,7 +201,7 @@ poetry run yapf -dr src/ tests/ scripts/
 
 **Error Categories to Address (in order of priority):**
 - **E0401**: Import errors (dependencies missing from pyproject.toml)
-- **W0718**: Broad exception catching (use specific exceptions)  
+- **W0718**: Broad exception catching (use specific exceptions)
 - **C0413/C0415**: Import positioning (organize imports properly)
 - **W0611**: Unused imports (remove unused imports)
 - **R0801**: Duplicate code (refactor common patterns)
@@ -284,7 +284,7 @@ src/ignition_lint/
 ### Object Model Node Types
 - **Component**: UI components with properties and metadata
 - **ExpressionBinding**: Expression-based bindings
-- **PropertyBinding**: Property-to-property bindings  
+- **PropertyBinding**: Property-to-property bindings
 - **TagBinding**: Tag-based bindings
 - **MessageHandlerScript**: Message handler scripts
 - **CustomMethodScript**: Custom component methods
@@ -303,11 +303,11 @@ from ..model.node_types import NodeType
 class MyRule(LintingRule):
     def __init__(self, **kwargs):
         super().__init__({NodeType.COMPONENT})
-    
+
     @property
     def error_message(self) -> str:
         return "Description of what this rule checks"
-    
+
     def visit_component(self, component):
         # Rule logic here
         if some_condition:
@@ -387,11 +387,11 @@ from ..model.node_types import NodeType
 class MyCustomRule(LintingRule):
     def __init__(self):
         super().__init__({NodeType.COMPONENT})
-    
+
     @property
     def error_message(self) -> str:
         return "Custom rule description"
-    
+
     def visit_component(self, component):
         # Rule logic here
         pass
@@ -402,7 +402,7 @@ class MyCustomRule(LintingRule):
 📚 **[Complete Documentation Index](docs/README.md)** - Organized guide to all documentation
 
 **Quick Access:**
-- **New Developer?** → [Tutorial: Creating Your First Rule](docs/tutorial-creating-your-first-rule.md) 
+- **New Developer?** → [Tutorial: Creating Your First Rule](docs/tutorial-creating-your-first-rule.md)
 - **Need Reference?** → [Developer Guide](docs/developer-guide-rule-creation.md)
 - **API Questions?** → [API Reference](docs/api-reference-rule-registration.md)
 - **Having Issues?** → [Troubleshooting Guide](docs/troubleshooting-rule-development.md)
@@ -454,7 +454,7 @@ Following PEP 8 and enforced by `.pylintrc`:
 # ✅ Correct naming
 class ComponentNameRule(LintingRule):
 	MAX_NAME_LENGTH = 50
-	
+
 	def __init__(self):
 		self.error_count = 0
 		self._processed_components = []
@@ -470,10 +470,10 @@ class ComponentNameRule(LintingRule):
 def validate_component_name(self, name: str) -> bool:
 	"""
 	Validate that a component name follows naming conventions.
-	
+
 	Args:
 		name: The component name to validate
-		
+
 	Returns:
 		True if valid, False otherwise
 	"""
@@ -563,7 +563,7 @@ poetry run yapf -i src/ignition_lint/cli.py
 ### Pre-commit Hooks
 **Directory**: Repository root (`.`)
 
-The project uses pre-commit hooks for code quality:
+The project uses pre-commit hooks for code quality and includes ignition-lint integration:
 
 ```bash
 # Verify you're in the repository root (should show .pre-commit-config.yaml)
@@ -572,9 +572,114 @@ ls .pre-commit-config.yaml
 # Install pre-commit hooks
 poetry run pre-commit install
 
-# Run hooks manually
+# Run hooks manually on all files
 poetry run pre-commit run --all-files
+
+# Run only ignition-lint hook
+poetry run pre-commit run ignition-lint
+
+# Run hooks on specific files
+poetry run pre-commit run ignition-lint --files path/to/view.json
 ```
+
+#### Ignition-Lint Pre-commit Integration
+
+The repository includes an ignition-lint pre-commit hook that automatically runs on `view.json` files. The hook:
+
+- **Runs automatically** on staged `view.json` files during `git commit`
+- **Uses warning-only configuration** (`pre-commit-config.json`) to avoid blocking commits
+- **Excludes test files** that intentionally contain violations
+- **Provides immediate feedback** on Ignition Perspective view quality
+
+**Configuration Files:**
+- `.pre-commit-config.yaml`: Pre-commit hook definitions
+- `pre-commit-config.json`: Ignition-lint configuration optimized for pre-commit use
+- `rule_config.json`: Full configuration with errors (for CI/CD and manual runs)
+
+**Setting up ignition-lint pre-commit hook in your project:**
+
+**Option 1: Remote Repository (Recommended)**
+```yaml
+# Add to your .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/your-org/ignition-lint
+    rev: v1.0.0  # Use specific tag or 'main' for latest
+    hooks:
+      - id: ignition-lint
+        exclude: '^tests/.*|.*test.*\.json$'  # Exclude test files
+```
+
+**Benefits of Remote Repository Approach:**
+- ✅ **No local installation required** - pre-commit handles everything
+- ✅ **Automatic dependency management** - pre-commit installs ignition-lint automatically
+- ✅ **Version consistency** - all team members use the same version
+- ✅ **Easy updates** - change `rev` to update to newer versions
+- ✅ **Isolation** - doesn't interfere with project dependencies
+
+**Option 2: Local Installation**
+```yaml
+# Add to your .pre-commit-config.yaml (requires local ignition-lint installation)
+repos:
+  - repo: local
+    hooks:
+      - id: ignition-lint
+        name: ignition-lint
+        entry: poetry run python -m ignition_lint
+        language: system
+        args:
+          - "--config=.ignition-lint.json"
+          - "--files"
+        files: '.*view\.json$'
+        types: [json]
+        exclude: '^tests/.*|.*test.*\.json$'  # Exclude test files
+```
+
+**Configuration for Remote Repository Usage:**
+
+The remote repository includes a default configuration (`.ignition-lint-precommit.json`) optimized for pre-commit use. You can override this by creating your own configuration file:
+
+**Option A: Use default configuration (no additional setup required)**
+- The hook automatically uses the included `.ignition-lint-precommit.json`
+- Focuses on warnings to avoid blocking commits
+- Includes basic naming and performance rules
+
+**Option B: Custom configuration**
+```yaml
+# In your .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/your-org/ignition-lint
+    rev: v1.0.0
+    hooks:
+      - id: ignition-lint
+        args: ['--config=my-custom-config.json', '--files']
+        exclude: '^tests/.*|.*test.*\.json$'
+```
+
+**Sample custom configuration file (`my-custom-config.json`):**
+```json
+{
+  "NamePatternRule": {
+    "enabled": true,
+    "kwargs": {
+      "convention": "PascalCase",
+      "severity": "warning"
+    }
+  },
+  "PollingIntervalRule": {
+    "enabled": true,
+    "kwargs": {
+      "minimum_interval": 5000
+    }
+  }
+}
+```
+
+**Best Practices for Pre-commit Integration:**
+- Use **warning severity** for style rules to avoid blocking commits
+- Use **error severity** for functional issues (performance, security)
+- **Exclude test files** that intentionally contain violations
+- **Set reasonable thresholds** (e.g., polling intervals) for pre-commit vs CI environments
+- **Document the configuration** so team members understand the rules
 
 ### Style Validation
 **Directory**: Repository root (`.`)
