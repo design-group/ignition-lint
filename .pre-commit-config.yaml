@@ -10,6 +10,17 @@ repos:
         types: [python]
         files: ^src/ignition_lint/.*\.py$
 
+      - id: ignition-lint
+        name: ignition-lint
+        entry: poetry run python src/ignition_lint
+        language: system
+        args:
+          - "--config=.ignition-lint-precommit.json"
+          - "--files"
+        files: '.*view\.json$'
+        types: [json]
+        exclude: '^tests/cases/.*'  # Exclude test files that intentionally have violations
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:

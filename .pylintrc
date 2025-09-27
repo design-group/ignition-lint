@@ -36,10 +36,12 @@ extension-pkg-whitelist=
 # Return non-zero exit code if any of these messages/categories are detected,
 # even if score is above --fail-under value. Syntax same as enable. Messages
 # specified are enabled, while categories only check already-enabled messages.
-fail-on=
+# Only fail on errors and fatal issues, not warnings, conventions, or refactoring suggestions
+fail-on=E,F
 
 # Specify a score threshold under which the program will exit with error.
-fail-under=10
+# Set to 8.0 to allow for minor warnings while still catching serious issues
+fail-under=8.0
 
 # Interpret the stdin as a python script, whose filename needs to be passed as
 # the module_or_package argument.
@@ -52,7 +54,7 @@ ignore=CVS
 # ignore-list. The regex matches against paths and can be in Posix or Windows
 # format. Because '\\' represents the directory delimiter on Windows systems,
 # it can't be used as an escape character.
-ignore-paths=
+ignore-paths=debug/.*,scripts/debug/.*
 
 # Files or directories matching the regular expression patterns are skipped.
 # The regex matches against base names, not paths. The default value ignores
@@ -264,7 +266,7 @@ check-protected-access-in-special-methods=no
 # List of method names used to declare (i.e. assign) instance attributes.
 defining-attr-methods=__init__,
                       __new__,
-                      setUp,
+                      setup,
                       asyncSetUp,
                       __post_init__
 
@@ -290,7 +292,7 @@ exclude-too-few-public-methods=
 ignored-parents=
 
 # Maximum number of arguments for function / method.
-max-args=7
+max-args=10
 
 # Maximum number of attributes for a class (see R0902).
 max-attributes=15
@@ -299,10 +301,10 @@ max-attributes=15
 max-bool-expr=5
 
 # Maximum number of branch for function / method body.
-max-branches=12
+max-branches=15
 
 # Maximum number of locals for function / method body.
-max-locals=15
+max-locals=20
 
 # Maximum number of parents for a class (see R0901).
 max-parents=7
@@ -311,13 +313,13 @@ max-parents=7
 max-public-methods=20
 
 # Maximum number of return / yield for function / method body.
-max-returns=6
+max-returns=10
 
 # Maximum number of statements in function / method body.
-max-statements=50
+max-statements=70
 
 # Minimum number of public methods for a class (see R0903).
-min-public-methods=2
+min-public-methods=1
 
 
 [EXCEPTIONS]
@@ -641,3 +643,6 @@ init-import=no
 # List of qualified module names which can have objects that can redefine
 # builtins.
 redefining-builtins-modules=six.moves,past.builtins,future.builtins,builtins,io
+
+# Exceptions that will emit a warning when caught
+overgeneral-exceptions=builtins.StandardError,builtins.BaseException

@@ -9,7 +9,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Union
+from typing import Dict, List, Any
 from dataclasses import dataclass
 
 # Add the src directory to the PYTHONPATH
@@ -24,14 +24,19 @@ from ignition_lint.common.flatten_json import flatten_file
 class TestExpectation:
 	"""Represents expected results for a test case."""
 	rule_name: str
-	error_count: int
+	error_count: int = 0
+	warning_count: int = 0
 	error_patterns: List[str] = None
+	warning_patterns: List[str] = None
 	should_pass: bool = None
 
 	def __post_init__(self):
 		if self.error_patterns is None:
 			self.error_patterns = []
+		if self.warning_patterns is None:
+			self.warning_patterns = []
 		if self.should_pass is None:
+			# Rule passes if no errors (warnings are allowed for "pass")
 			self.should_pass = self.error_count == 0
 
 
@@ -67,7 +72,7 @@ class ConfigurableTestFramework:
 		tests_dir = Path(__file__).parent.parent
 
 		if config_dir is None:
-			config_dir = tests_dir / "configs"
+			config_dir = tests_dir / "fixtures" / "configs"
 		if test_cases_dir is None:
 			test_cases_dir = tests_dir / "cases"
 
@@ -89,7 +94,7 @@ class ConfigurableTestFramework:
 
 		for config_file in self.config_dir.glob("*.json"):
 			try:
-				with open(config_file, 'r') as f:
+				with open(config_file, 'r', encoding='utf-8') as f:
 					config_data = json.load(f)
 
 				# Parse test cases from configuration
@@ -100,7 +105,9 @@ class ConfigurableTestFramework:
 							TestExpectation(
 								rule_name=exp_data['rule_name'],
 								error_count=exp_data.get('error_count', 0),
+								warning_count=exp_data.get('warning_count', 0),
 								error_patterns=exp_data.get('error_patterns', []),
+								warning_patterns=exp_data.get('warning_patterns', []),
 								should_pass=exp_data.get('should_pass')
 							)
 						)
@@ -166,7 +173,7 @@ class ConfigurableTestFramework:
 				kwargs = rule_config.get('kwargs', {})
 
 				try:
-					rules.append(rule_class(**kwargs))
+					rules.append(rule_class.create_from_config(kwargs))
 				except Exception as e:
 					print(f"Error creating rule {rule_name}: {e}")
 					continue
@@ -174,43 +181,76 @@ class ConfigurableTestFramework:
 			# Run linting
 			lint_engine = LintEngine(rules)
 			flattened_json = flatten_file(view_file_path)
-			actual_errors = lint_engine.process(flattened_json)
+			lint_results = lint_engine.process(flattened_json)
+
+			# Combine warnings and errors for backward compatibility
+			actual_errors = {}
+			actual_errors.update(lint_results.warnings)
+			actual_errors.update(lint_results.errors)
 
 			# Check expectations
 			expectations_met = True
 			expectation_details = []
 
 			for expectation in test_case.expectations:
-				rule_errors = actual_errors.get(expectation.rule_name, [])
-				actual_count = len(rule_errors)
+				rule_warnings = lint_results.warnings.get(expectation.rule_name, [])
+				rule_errors = lint_results.errors.get(expectation.rule_name, [])
 
-				count_match = actual_count == expectation.error_count
-				pass_match = (actual_count == 0) == expectation.should_pass
+				actual_warning_count = len(rule_warnings)
+				actual_error_count = len(rule_errors)
 
-				pattern_matches = []
+				# Check counts
+				warning_count_match = actual_warning_count == expectation.warning_count
+				error_count_match = actual_error_count == expectation.error_count
+				pass_match = (actual_error_count == 0) == expectation.should_pass
+
+				# Check error patterns
+				error_pattern_matches = []
 				if expectation.error_patterns:
 					for pattern in expectation.error_patterns:
 						matches = [error for error in rule_errors if pattern in error]
-						pattern_matches.append({
+						error_pattern_matches.append({
 							'pattern': pattern,
 							'matches': len(matches),
 							'found': len(matches) > 0
 						})
 
-				expectation_met = count_match and pass_match
+				# Check warning patterns
+				warning_pattern_matches = []
+				if expectation.warning_patterns:
+					for pattern in expectation.warning_patterns:
+						matches = [warning for warning in rule_warnings if pattern in warning]
+						warning_pattern_matches.append({
+							'pattern': pattern,
+							'matches': len(matches),
+							'found': len(matches) > 0
+						})
+
+				# Overall expectation check
+				expectation_met = warning_count_match and error_count_match and pass_match
 				if expectation.error_patterns:
-					expectation_met = expectation_met and all(pm['found'] for pm in pattern_matches)
+					expectation_met = expectation_met and all(
+						pm['found'] for pm in error_pattern_matches
+					)
+				if expectation.warning_patterns:
+					expectation_met = expectation_met and all(
+						pm['found'] for pm in warning_pattern_matches
+					)
 
 				expectations_met = expectations_met and expectation_met
 
 				expectation_details.append({
 					'rule_name': expectation.rule_name,
-					'expected_count': expectation.error_count,
-					'actual_count': actual_count,
+					'expected_warnings': expectation.warning_count,
+					'actual_warnings': actual_warning_count,
+					'expected_errors': expectation.error_count,
+					'actual_errors': actual_error_count,
 					'should_pass': expectation.should_pass,
-					'count_match': count_match,
+					'warning_count_match': warning_count_match,
+					'error_count_match': error_count_match,
 					'pass_match': pass_match,
-					'pattern_matches': pattern_matches,
+					'error_pattern_matches': error_pattern_matches,
+					'warning_pattern_matches': warning_pattern_matches,
 					'met': expectation_met
 				})
 
@@ -338,7 +378,7 @@ class ConfigurableTestFramework:
 		output_path = self.config_dir / output_file
 		output_path.parent.mkdir(parents=True, exist_ok=True)
 
-		with open(output_path, 'w') as f:
+		with open(output_path, 'w', encoding='utf-8') as f:
 			json.dump(template, f, indent=2)
 
 		print(f"Generated template configuration: {output_path}")
@@ -353,42 +393,42 @@ class ConfigurableTestRunner(unittest.TestCase):
 
 	def test_run_configured_tests(self):
 		"""Run all configured test cases."""
-		results = self.framework.run_all_tests()
+		test_results = self.framework.run_all_tests()
 
 		# Print detailed results
-		print(f"\nTest Results Summary:")
-		print(f"Total: {results['total']}")
-		print(f"Passed: {results['passed']}")
-		print(f"Failed: {results['failed']}")
-		print(f"Skipped: {results['skipped']}")
-		print(f"Errors: {results['errors']}")
+		print("\nTest Results Summary:")
+		print(f"Total: {test_results['total']}")
+		print(f"Passed: {test_results['passed']}")
+		print(f"Failed: {test_results['failed']}")
+		print(f"Skipped: {test_results['skipped']}")
+		print(f"Errors: {test_results['errors']}")
 
 		# Print details for failed tests
-		for result in results['results']:
-			if result['status'] == 'failed':
-				print(f"\nFAILED: {result['name']}")
-				if 'expectation_details' in result:
-					for detail in result['expectation_details']:
+		for test_result in test_results['results']:
+			if test_result['status'] == 'failed':
+				print(f"\nFAILED: {test_result['name']}")
+				if 'expectation_details' in test_result:
+					for detail in test_result['expectation_details']:
 						if not detail['met']:
 							print(f"  Rule: {detail['rule_name']}")
 							print(
 								f"    Expected count: {detail['expected_count']}, Got: {detail['actual_count']}"
 							)
 							print(f"    Should pass: {detail['should_pass']}")
-			elif result['status'] == 'error':
-				print(f"\nERROR: {result['name']} - {result['reason']}")
+			elif test_result['status'] == 'error':
+				print(f"\nERROR: {test_result['name']} - {test_result['reason']}")
 
 		# Assert that all tests passed (no failures or errors)
-		self.assertEqual(results['failed'], 0, f"Some tests failed. See details above.")
-		self.assertEqual(results['errors'], 0, f"Some tests had errors. See details above.")
+		self.assertEqual(results['failed'], 0, "Some tests failed. See details above.")
+		self.assertEqual(results['errors'], 0, "Some tests had errors. See details above.")
 
 
 def create_sample_test_configs():
 	"""Create sample test configuration files for each rule."""
-	framework = ConfigurableTestFramework()
+	test_frame = ConfigurableTestFramework()
 
 	# Ensure config directory exists
-	framework.config_dir.mkdir(parents=True, exist_ok=True)
+	test_frame.config_dir.mkdir(parents=True, exist_ok=True)
 
 	# Component naming rule tests
 	component_name_config = {
@@ -554,8 +594,8 @@ def create_sample_test_configs():
 			("script_linting_tests.json", script_linting_config)]
 
 	for filename, config in configs:
-		config_path = framework.config_dir / filename
-		with open(config_path, 'w') as f:
+		config_path = test_frame.config_dir / filename
+		with open(config_path, 'w', encoding='utf-8') as f:
 			json.dump(config, f, indent=2)
 		print(f"Created configuration file: {config_path}")
 
@@ -580,7 +620,7 @@ if __name__ == "__main__":
 		framework = ConfigurableTestFramework()
 		results = framework.run_all_tests(tags=args.tags)
 
-		print(f"\nTest Results Summary:")
+		print("\nTest Results Summary:")
 		print(f"Total: {results['total']}")
 		print(f"Passed: {results['passed']}")
 		print(f"Failed: {results['failed']}")
@@ -588,7 +628,7 @@ if __name__ == "__main__":
 		print(f"Errors: {results['errors']}")
 
 		if results['failed'] > 0 or results['errors'] > 0:
-			print(f"\nDetailed Results:")
+			print("\nDetailed Results:")
 			for result in results['results']:
 				if result['status'] in ['failed', 'error']:
 					print(f"\n{result['status'].upper()}: {result['name']}")

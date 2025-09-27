@@ -47,9 +47,8 @@ class ViewNode(ABC):
 		visit_method = getattr(visitor, method_name, None)
 		if visit_method:
 			return visit_method(self)
-		else:
-			# Fallback to generic visit method
-			return visitor.visit_generic(self)
+		# Fallback to generic visit method
+		return visitor.visit_generic(self)
 
 	def serialize(self):
 		"""Serialize node data for debugging/inspection."""
@@ -178,7 +177,7 @@ class TransformScript(ScriptNode):
 class EventHandlerScript(ScriptNode):
 	"""Represents an event handler script."""
 
-	def __init__(self, path: str, event_domain: str, event_type: str, script: str, scope: str = None):
+	def __init__(self, path: str, event_domain: str, event_type: str, script: str, *, scope: str = None):
 		super().__init__(path, NodeType.EVENT_HANDLER, script)
 		self.event_domain = event_domain
 		self.event_type = event_type

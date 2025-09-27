@@ -17,8 +17,8 @@
       "expectations": [
         {
           "rule_name": "PollingIntervalRule",
-          "error_count": 0,
-          "should_pass": true
+          "error_count": 4,
+          "should_pass": false
         }
       ],
       "tags": [

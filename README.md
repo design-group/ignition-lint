@@ -7,11 +7,21 @@ Ignition Lint is a Python framework designed to analyze and lint Ignition Perspe
 ## Getting Started with Poetry
 
 ### Prerequisites
-- Python 3.8 or higher
+- Python 3.9 or higher
 - Poetry >= 2.0 (install from [python-poetry.org](https://python-poetry.org/docs/#installation))
 
-### Installation
+### Installation Methods
 
+#### Option 1: Install from PyPI (Recommended for Users)
+```bash
+# Install the package
+pip install ignition-lint
+
+# Verify installation
+ignition-lint --help
+```
+
+#### Option 2: Development Setup with Poetry
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/design-group/ignition-lint.git
@@ -30,7 +40,7 @@ Ignition Lint is a Python framework designed to analyze and lint Ignition Perspe
 
 4. **Verify installation:**
    ```bash
-   poetry run python -m ignition_lint.main --help
+   poetry run python -m ignition_lint --help
    ```
 
 ### Development Setup
@@ -42,13 +52,14 @@ For development work, install with development dependencies:
 poetry install --with dev
 
 # Run tests
-poetry run pytest
+cd tests
+poetry run python test_runner.py --run-all
 
 # Run linting
 poetry run pylint ignition_lint/
 
 # Format code
-poetry run black ignition_lint/
+poetry run yapf -ir ignition_lint/
 ```
 
 ### Running Without Activating Shell
@@ -57,10 +68,13 @@ You can run commands directly through Poetry without activating the shell:
 
 ```bash
 # Run linting on a view file
-poetry run python -m ignition_lint.main path/to/view.json
+poetry run python -m ignition_lint path/to/view.json
 
 # Run with custom configuration
-poetry run python -m ignition_lint.main --config my_rules.json --files "views/**/view.json"
+poetry run python -m ignition_lint --config my_rules.json --files "views/**/view.json"
+
+# Using the CLI entry point
+poetry run ignition-lint path/to/view.json
 ```
 
 ### Building and Distribution
@@ -210,7 +224,7 @@ def accept(self, visitor):
     return visitor.visit_component(self)  # for a Component node
 
 # 3. The visitor's method processes the node
-def visit_component(self, component):
+def visit_component(self, node):
     # Your rule logic here
     pass
 ```
@@ -232,20 +246,20 @@ When writing a custom rule, you have access to extensive information about each 
 
 ```python
 class MyComponentRule(LintingRule):
-    def visit_component(self, component):
+    def visit_component(self, node):
         # Available properties:
-        component.path      # Full path in the view: "root.children[0].components.Label"
-        component.name      # Component name: "Label_1"
-        component.type      # Component type: "ia.display.label"
-        component.properties # Dict of all component properties
+        node.path      # Full path in the view: "root.children[0].components.Label"
+        node.name      # Component name: "Label_1"
+        node.type      # Component type: "ia.display.label"
+        node.properties # Dict of all component properties
         
         # Example: Check component positioning
-        x_position = component.properties.get('position.x', 0)
-        y_position = component.properties.get('position.y', 0)
+        x_position = node.properties.get('position.x', 0)
+        y_position = node.properties.get('position.y', 0)
         
         if x_position < 0 or y_position < 0:
             self.errors.append(
-                f"{component.path}: Component '{component.name}' has negative position"
+                f"{node.path}: Component '{node.name}' has negative position"
             )
 ```
 
@@ -253,29 +267,29 @@ class MyComponentRule(LintingRule):
 
 ```python
 class MyBindingRule(LintingRule):
-    def visit_expression_binding(self, binding):
+    def visit_expression_binding(self, node):
         # Available for all bindings:
-        binding.path         # Path to the bound property
-        binding.binding_type # Type of binding: "expr", "property", "tag"
-        binding.config       # Full binding configuration dict
+        node.path         # Path to the bound property
+        node.binding_type # Type of binding: "expr", "property", "tag"
+        node.config       # Full binding configuration dict
         
         # Specific to expression bindings:
-        binding.expression   # The expression string
+        node.expression   # The expression string
         
         # Example: Check for hardcoded values in expressions
-        if '"localhost"' in binding.expression or "'localhost'" in binding.expression:
+        if '"localhost"' in node.expression or "'localhost'" in node.expression:
             self.errors.append(
-                f"{binding.path}: Expression contains hardcoded localhost"
+                f"{node.path}: Expression contains hardcoded localhost"
             )
     
-    def visit_tag_binding(self, binding):
+    def visit_tag_binding(self, node):
         # Specific to tag bindings:
-        binding.tag_path    # The tag path string
+        node.tag_path    # The tag path string
         
         # Example: Ensure tags follow naming convention
-        if not binding.tag_path.startswith("[default]"):
+        if not node.tag_path.startswith("[default]"):
             self.errors.append(
-                f"{binding.path}: Tag binding should use [default] provider"
+                f"{node.path}: Tag binding should use [default] provider"
             )
 ```
 
@@ -283,33 +297,33 @@ class MyBindingRule(LintingRule):
 
 ```python
 class MyScriptRule(LintingRule):
-    def visit_custom_method(self, method):
+    def visit_custom_method(self, node):
         # Available properties:
-        method.path         # Path to the method
-        method.name         # Method name: "refreshData"
-        method.script         # Raw script code
-        method.params       # List of parameter names
+        node.path         # Path to the method
+        node.name         # Method name: "refreshData"
+        node.script         # Raw script code
+        node.params       # List of parameter names
         
         # Special method:
-        formatted_script = method.get_formatted_script()
+        formatted_script = node.get_formatted_script()
         # Returns properly formatted Python with function definition
         
         # Example: Check for print statements
-        if 'print(' in method.script:
+        if 'print(' in node.script:
             self.errors.append(
-                f"{method.path}: Method '{method.name}' contains print statement"
+                f"{node.path}: Method '{node.name}' contains print statement"
             )
     
-    def visit_message_handler(self, handler):
+    def visit_message_handler(self, node):
         # Additional properties:
-        handler.message_type # The message type this handles
-        handler.scope        # Dict with scope settings:
+        node.message_type # The message type this handles
+        node.scope        # Dict with scope settings:
                             # {'page': False, 'session': True, 'view': False}
         
         # Example: Warn about session-scoped handlers
-        if handler.scope.get('session', False):
+        if node.scope.get('session', False):
             self.errors.append(
-                f"{handler.path}: Message handler '{handler.message_type}' "
+                f"{node.path}: Message handler '{node.message_type}' "
                 f"uses session scope - ensure this is intentional"
             )
 ```
@@ -325,13 +339,13 @@ class CrossReferenceRule(LintingRule):
         self.component_paths = set()
         self.binding_targets = []
     
-    def visit_component(self, component):
+    def visit_component(self, node):
         # Collect all component paths
-        self.component_paths.add(component.path)
+        self.component_paths.add(node.path)
     
-    def visit_property_binding(self, binding):
+    def visit_property_binding(self, node):
         # Store binding for later validation
-        self.binding_targets.append((binding.path, binding.target_path))
+        self.binding_targets.append((node.path, node.target_path))
     
     def process_collected_scripts(self):
         # This method is called after all nodes are visited
@@ -351,17 +365,17 @@ class ContextAwareRule(LintingRule):
         self.current_component = None
         self.component_stack = []
     
-    def visit_component(self, component):
+    def visit_component(self, node):
         # Track component context
-        self.component_stack.append(component)
-        self.current_component = component
+        self.component_stack.append(node)
+        self.current_component = node
     
-    def visit_script(self, script_obj):
+    def visit_script(self, node):
         # Use component context
         if self.current_component and self.current_component.type == "ia.display.table":
-            if "selectedRow" in script_obj.script and "rowData" not in script_obj.script:
+            if "selectedRow" in node.script and "rowData" not in node.script:
                 self.errors.append(
-                    f"{script_obj.path}: Table script uses selectedRow without rowData check"
+                    f"{node.path}: Table script uses selectedRow without rowData check"
                 )
 ```
 
@@ -374,22 +388,22 @@ class ComplexityAnalysisRule(LintingRule):
         self.max_complexity = max_complexity_score
         self.complexity_scores = {}
     
-    def visit_component(self, component):
+    def visit_component(self, node):
         score = 0
         
         # Calculate complexity based on various factors
-        score += len(component.properties) * 2  # Property count
+        score += len(node.properties) * 2  # Property count
         
         # Check for deeply nested properties
-        for prop_name in component.properties:
+        for prop_name in node.properties:
             score += prop_name.count('.') * 3  # Nesting depth
         
         # Store score
-        self.complexity_scores[component.path] = score
+        self.complexity_scores[node.path] = score
         
         if score > self.max_complexity:
             self.errors.append(
-                f"{component.path}: Component complexity score {score} "
+                f"{node.path}: Component complexity score {score} "
                 f"exceeds maximum {self.max_complexity}"
             )
 ```
@@ -409,16 +423,16 @@ class RawDataRule(LintingRule):
         self.flattened_json = flattened_json
         return super().lint(flattened_json)
     
-    def visit_component(self, component):
+    def visit_component(self, node):
         # Access any part of the flattened JSON
         style_classes = self.flattened_json.get(
-            f"{component.path}.props.style.classes", 
+            f"{node.path}.props.style.classes", 
             ""
         )
         
         if style_classes and "/" in style_classes:
             self.errors.append(
-                f"{component.path}: Style classes contain invalid '/' character"
+                f"{node.path}: Style classes contain invalid '/' character"
             )
 ```
 
@@ -435,7 +449,7 @@ class LifecycleAwareRule(LintingRule):
         self.setup_complete = True
         self.errors = []  # Reset errors
     
-    def visit_component(self, component):
+    def visit_component(self, node):
         """Process each component."""
         # Your logic here
         pass
@@ -505,42 +519,131 @@ class LifecycleAwareRule(LintingRule):
 - `scope`: Scope setting ("L", "P", "S")
 - `get_formatted_script()`: Returns formatted Python code
 
-## Built-in Rules
+## Available Rules
 
-### PylintScriptRule
-Runs Pylint on all scripts in the view to check for:
+The following rules are currently implemented and available for use:
+
+| Rule | Type | Description | Configuration Options | Default Enabled |
+|------|------|-------------|----------------------|-----------------|
+| `NamePatternRule` | Warning | Validates naming conventions for components and other elements | `convention`, `target_node_types`, `custom_pattern`, `node_type_specific_rules` | ✅ |
+| `PollingIntervalRule` | Error | Ensures polling intervals meet minimum thresholds to prevent performance issues | `minimum_interval` (default: 10000ms) | ✅ |
+| `PylintScriptRule` | Error | Runs Pylint analysis on all scripts to detect syntax errors, undefined variables, and code quality issues | None (uses default Pylint configuration) | ✅ |
+| `UnusedCustomPropertiesRule` | Warning | Detects custom properties and view parameters that are defined but never referenced | None | ✅ |
+| `BadComponentReferenceRule` | Error | Identifies brittle component object traversal patterns (getSibling, getParent, etc.) | `forbidden_patterns`, `case_sensitive` | ✅ |
+
+### Rule Details
+
+#### NamePatternRule
+Validates naming conventions across different node types with flexible configuration options.
+
+**Supported Conventions:**
+- `PascalCase` (default)
+- `camelCase` 
+- `snake_case`
+- `kebab-case`
+- `SCREAMING_SNAKE_CASE`
+- `Title Case`
+- `lower case`
+
+**Configuration Example:**
+```json
+{
+  "NamePatternRule": {
+    "enabled": true,
+    "kwargs": {
+      "convention": "PascalCase",
+      "target_node_types": ["component"],
+      "node_type_specific_rules": {
+        "custom_method": {
+          "convention": "camelCase"
+        }
+      }
+    }
+  }
+}
+```
+
+#### PollingIntervalRule
+Prevents performance issues by enforcing minimum polling intervals in `now()` expressions.
+
+**What it checks:**
+- Expression bindings containing `now()` calls
+- Property and tag bindings with polling configurations
+- Validates interval values are above minimum threshold
+
+#### PylintScriptRule
+Comprehensive Python code analysis using Pylint for all script types:
+- Custom method scripts
+- Event handler scripts  
+- Message handler scripts
+- Transform scripts
+
+**Detected Issues:**
+- Syntax errors
 - Undefined variables
 - Unused imports
-- Syntax errors
+- Code style violations
+- Logical errors
 
-### PollingIntervalRule
-Ensures that polling intervals in expressions meet minimum requirements:
-- Checks `now()` function calls
-- Validates interval values
-- Default minimum: 10,000ms
+#### UnusedCustomPropertiesRule
+Identifies unused custom properties and view parameters to reduce view complexity.
 
-## CLI Usage
+**Detection Coverage:**
+- View-level custom properties (`custom.*`)
+- View parameters (`params.*`)
+- Component-level custom properties (`*.custom.*`)
+- References in expressions, bindings, and scripts
 
-### Basic Usage
+#### BadComponentReferenceRule
+Prevents brittle view dependencies by detecting object traversal patterns.
 
+**Forbidden Patterns:**
+- `.getSibling()`, `.getParent()`, `.getChild()`, `.getChildren()`
+- `self.parent`, `self.children` property access
+- Any direct component tree navigation
+
+**Recommended Alternatives:**
+- Use `view.custom` properties for data sharing
+- Implement message handling for component communication
+- Design views with explicit data flow patterns
+
+## Usage Methods
+
+This package can be utilized in several ways to fit different development workflows:
+
+### 1. Command Line Interface (CLI)
+
+#### Using the Installed Package
 ```bash
-# Using Poetry (recommended)
-poetry run python -m ignition_lint.main path/to/view.json
+# After pip install ignition-lint
+ignition-lint path/to/view.json
 
 # Lint multiple files with glob pattern
-poetry run python -m ignition_lint.main --files "**/view.json"
+ignition-lint --files "**/view.json"
 
 # Use custom configuration
-poetry run python -m ignition_lint.main --config my_rules.json --files "views/**/view.json"
+ignition-lint --config my_rules.json --files "views/**/view.json"
+
+# Show help
+ignition-lint --help
+```
+
+#### Using Poetry (Development)
+```bash
+# Using the CLI entry point
+poetry run ignition-lint path/to/view.json
+
+# Using the module directly
+poetry run python -m ignition_lint path/to/view.json
 
 # If you've activated the Poetry shell
 poetry shell
-python -m ignition_lint.main path/to/view.json
+ignition-lint path/to/view.json
 ```
 
-### Pre-commit Integration
+### 2. Pre-commit Hook Integration
 
-Add to `.pre-commit-config.yaml`:
+Add to your `.pre-commit-config.yaml`:
 
 ```yaml
 repos:
@@ -549,11 +652,160 @@ repos:
     hooks:
       - id: ignition-lint
         args: [
-          "--component-style", "PascalCase",
-          "--parameter-style", "camelCase",
-          "--allow-acronyms",
+          "--config", "rule_config.json",
+          "--files", "**/*.json"
         ]
         files: view\.json$
+```
+
+Install and run:
+```bash
+# Install pre-commit hooks
+pre-commit install
+
+# Run on all files
+pre-commit run --all-files
+
+# Run on staged files only
+pre-commit run
+```
+
+### 3. GitHub Actions Workflow
+
+Create `.github/workflows/ignition-lint.yml`:
+
+```yaml
+name: Ignition Lint
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ignition-lint
+        run: pip install ignition-lint
+
+      - name: Run ignition-lint
+        run: |
+          # Lint all view.json files in the repository
+          find . -name "view.json" -type f | while read file; do
+            echo "Linting $file"
+            ignition-lint "$file"
+          done
+```
+
+### 4. Development Mode with Poetry
+
+For contributors and package developers:
+
+```bash
+# Clone and set up development environment
+git clone https://github.com/design-group/ignition-lint.git
+cd ignition-lint
+
+# Install with Poetry
+poetry install
+
+# Test the package locally
+poetry run ignition-lint tests/cases/PreferredStyle/view.json
+
+# Run the full test suite
+cd tests
+poetry run python test_runner.py --run-all
+
+# Test GitHub Actions workflows locally
+./test-actions.sh
+
+# Format and lint code before committing
+poetry run yapf -ir src/ tests/
+poetry run pylint src/ignition_lint/
+```
+
+## Configuration System
+
+### Rule Configuration
+
+Rules are configured via JSON files (default: `rule_config.json`):
+
+```json
+{
+  "NamePatternRule": {
+    "enabled": true,
+    "kwargs": {
+      "convention": "PascalCase",
+      "target_node_types": ["component"]
+    }
+  },
+  "PollingIntervalRule": {
+    "enabled": true,
+    "kwargs": {
+      "minimum_interval": 10000
+    }
+  }
+}
+```
+
+### Severity Levels
+
+Severity levels are determined by rule developers based on what each rule checks. Users cannot configure severity levels.
+
+- **Warnings**: Style and preference issues that don't prevent functionality
+- **Errors**: Critical issues that can cause functional problems or break systems
+
+#### Built-in Rule Severities
+
+| Rule | Severity | Reason |
+|------|----------|---------|
+| `NamePatternRule` | Warning | Naming conventions are style preferences |
+| `PollingIntervalRule` | Error | Performance issues can cause system problems |
+| `PylintScriptRule` | Error | Syntax errors, undefined variables break functionality |
+
+#### Output Examples
+
+**Warnings (exit code 0):**
+```
+⚠️  Found 3 warnings in view.json:
+  📋 NamePatternRule (warning):
+    • component: Name doesn't follow PascalCase convention
+
+✅ No errors found (warnings only)
+```
+
+**Errors (exit code 1):**
+```
+❌ Found 2 errors in view.json:
+  📋 PollingIntervalRule (error):
+    • binding: Polling interval 5000ms below minimum 10000ms
+
+📈 Summary:
+  ❌ Total issues: 2
+```
+
+### Developer Guidelines for Rule Severity
+
+When creating custom rules, set the severity based on the impact:
+
+```python
+class MyCustomRule(LintingRule):
+    # Use "warning" for style/preference issues
+    severity = "warning"
+    
+    # Use "error" for functional/performance issues  
+    # severity = "error"
 ```
 
 ## Best Practices

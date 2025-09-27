@@ -1,12 +1,11 @@
+# pylint: disable=import-error
 """
 Unit tests for test discovery and framework functionality.
 Tests the test infrastructure itself.
 """
 
-import unittest
 import json
-import tempfile
-from pathlib import Path
+import unittest
 
 from fixtures.base_test import BaseRuleTest
 from fixtures.test_helpers import (
@@ -79,7 +78,7 @@ class TestDiscoveryFunctionality(BaseRuleTest):
 			self.assertTrue(temp_file.name.endswith('.json'))
 
 			# Should be able to read it back
-			with open(temp_file, 'r') as f:
+			with open(temp_file, 'r', encoding='utf-8') as f:
 				loaded_content = f.read()
 
 			self.assertEqual(view_content, loaded_content)

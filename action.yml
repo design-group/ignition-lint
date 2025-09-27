@@ -4,22 +4,15 @@ author: "Eric Knorr"
 
 inputs:
   files:
-    description: "Comma-separated list of ignition files to lint"
+    description: "Comma-separated list of files or glob patterns to lint"
     required: false
-  component_style:
-    description: "Naming convention style for components"
+    default: "**/view.json"
+  config:
+    description: "Path to configuration JSON file"
     required: false
-  parameter_style:
-    description: "Naming convention style for parameters"
-    required: false
-  component_style_rgx:
-    description: "Regex pattern for naming convention style of components"
-    required: false
-  parameter_style_rgx:
-    description: "Regex pattern for naming convention style of parameters"
-    required: false
-  allow_acronyms:
-    description: "Allow acronyms in component and parameter names"
+    default: "rule_config.json"
+  verbose:
+    description: "Show detailed statistics and information"
     required: false
     default: "false"
 
@@ -30,20 +23,27 @@ branding:
 runs:
   using: "composite"
   steps:
+    - name: Install Poetry
+      run: |
+        pip install poetry
+        poetry config virtualenvs.create false
+      shell: bash
+    
+    - name: Install dependencies
+      run: |
+        cd "${{ github.action_path }}"
+        poetry install --no-dev
+      shell: bash
+    
     - name: Lint ignition view.json files
       run: |
-        python ${{ github.action_path }}/src/ignition_lint.py \
+        cd "${{ github.action_path }}"
+        poetry run ignition-lint \
+          --config "${{ inputs.config }}" \
           --files "${{ inputs.files }}" \
-          --component-style "${{ inputs.component_style }}" \
-          --parameter-style "${{ inputs.parameter_style }}" \
-          --component-style-rgx "${{ inputs.component_style_rgx }}" \
-          --parameter-style-rgx "${{ inputs.parameter_style_rgx }}"
-          --allow-acronyms "${{ inputs.allow_acronyms }}"
+          ${{ inputs.verbose == 'true' && '--verbose' || '' }}
       shell: bash
       env:
         INPUT_FILES: ${{ inputs.files }}
-        INPUT_COMPONENT_STYLE: ${{ inputs.component_style }}
-        INPUT_PARAMETER_STYLE: ${{ inputs.parameter_style }}
-        INPUT_COMPONENT_STYLE_RGX: ${{ inputs.component_style_rgx }}
-        INPUT_PARAMETER_STYLE_RGX: ${{ inputs.parameter_style_rgx }}
-        INPUT_ALLOW_ACRONYMS: ${{ inputs.allow_acronyms }}
+        INPUT_CONFIG: ${{ inputs.config }}
+        INPUT_VERBOSE: ${{ inputs.verbose }}

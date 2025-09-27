@@ -3,8 +3,11 @@ This module contains common and base node types for rule implementation
 """
 
 from abc import ABC, abstractmethod
-from typing import Set, List, Dict, Any
+from typing import Set, List, Dict, Any, Literal
 from ..model.node_types import ViewNode, NodeType, ScriptNode, ALL_BINDINGS, ALL_SCRIPTS
+
+# Type definition for severity levels
+Severity = Literal["warning", "error"]
 
 
 class NodeVisitor(ABC):
@@ -55,6 +58,7 @@ class LintingRule(NodeVisitor):
 		"""
 		self.target_node_types = target_node_types or set()
 		self.errors = []
+		self.warnings = []
 
 	@classmethod
 	def preprocess_config(cls, config: Dict[str, Any]) -> Dict[str, Any]:
@@ -91,6 +95,7 @@ class LintingRule(NodeVisitor):
 	def process_nodes(self, nodes: List[ViewNode]):
 		"""Process a list of nodes, applying the rule to applicable ones."""
 		self.errors = []  # Reset errors
+		self.warnings = []  # Reset warnings
 
 		# Filter nodes that this rule applies to
 		applicable_nodes = [node for node in nodes if self.applies_to(node)]
@@ -133,6 +138,22 @@ class ScriptRule(LintingRule):
 			target_node_types = ALL_SCRIPTS
 		super().__init__(target_node_types)
 		self.collected_scripts = {}
+
+	def process_nodes(self, nodes: List[ViewNode]):
+		"""Process a list of nodes, applying the rule to applicable ones."""
+		self.errors = []  # Reset errors
+		self.warnings = []  # Reset warnings
+		self.collected_scripts = {}  # Reset collected scripts
+
+		# Filter nodes that this rule applies to
+		applicable_nodes = [node for node in nodes if self.applies_to(node)]
+
+		# Visit each applicable node
+		for node in applicable_nodes:
+			node.accept(self)
+
+		# Allow for batch processing if needed
+		self.post_process()
 
 	def visit_message_handler(self, node: ViewNode):
 		self._collect_script(node)

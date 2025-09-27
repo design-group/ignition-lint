@@ -1,3 +1,4 @@
+# pylint: disable=import-error
 """
 Integration tests for the CLI tool.
 Tests the command-line interface functionality.
@@ -15,29 +16,30 @@ from fixtures.base_test import BaseIntegrationTest
 
 class TestCLIIntegration(BaseIntegrationTest):
 	"""Test CLI tool integration."""
+	def __init__(self, method_name = "runTest"):
+		super().__init__(method_name)
+		self.cli_path = None
+		self.use_poetry = False
+		self.use_module = False
 
-	def setUp(self):
+	def setUp(self):  # pylint: disable=invalid-name
+		""" Set up CLI integration test, including locating the CLI executable, overloading from base."""
 		super().setUp()
 		# Try different possible CLI paths
 		possible_paths = [
 			Path(__file__).parent.parent.parent / "src" / "ignition_lint" / "__main__.py",
 		]
 
-		self.cli_path = None
 		for path in possible_paths:
 			if path.exists():
 				self.cli_path = path
 				break
 
-		# Also try using poetry/module execution
-		self.use_poetry = False
-		self.use_module = False
-
 		if self.cli_path is None:
 			# Try to see if we can run via poetry
 			try:
 				result = subprocess.run(["poetry", "run", "ignition-lint", "--help"],
-							capture_output=True, timeout=10,
+							capture_output=True, timeout=10, check=False,
 							cwd=Path(__file__).parent.parent.parent)
 				if result.returncode == 0:
 					self.use_poetry = True
@@ -45,7 +47,7 @@ class TestCLIIntegration(BaseIntegrationTest):
 				# Try module execution
 				try:
 					result = subprocess.run([sys.executable, "-m", "ignition_lint", "--help"],
-								capture_output=True, timeout=10,
+								capture_output=True, timeout=10, check=False,
 								cwd=Path(__file__).parent.parent.parent)
 					if result.returncode == 0:
 						self.use_module = True
@@ -66,7 +68,7 @@ class TestCLIIntegration(BaseIntegrationTest):
 		else:
 			raise unittest.SkipTest("No viable CLI execution method found")
 
-		return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, cwd=cwd)
+		return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, check=False, cwd=cwd)
 
 	def test_cli_help(self):
 		"""Test CLI help command."""
@@ -134,7 +136,7 @@ class TestCLIIntegration(BaseIntegrationTest):
 			# Clean up
 			try:
 				Path(config_file).unlink(missing_ok=True)
-			except:
+			except Exception as e:
 				pass
 
 	def test_cli_stats_only(self):

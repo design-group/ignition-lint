@@ -1,10 +1,10 @@
+# pylint: disable=import-error
 """
 Unit tests for the NamePatternRule.
 Tests various naming conventions and edge cases for different node types.
 """
 
 import unittest
-from pathlib import Path
 
 from fixtures.base_test import BaseRuleTest
 from fixtures.test_helpers import get_test_config, load_test_view
@@ -13,7 +13,7 @@ from fixtures.test_helpers import get_test_config, load_test_view
 class TestNamePatternPascalCase(BaseRuleTest):
 	"""Test PascalCase naming convention for components."""
 
-	def setUp(self):
+	def setUp(self): # pylint: disable=invalid-name
 		super().setUp()
 		self.rule_config = get_test_config(
 			"NamePatternRule", target_node_types=["component"], convention="PascalCase", allow_numbers=True,
@@ -43,8 +43,7 @@ class TestNamePatternPascalCase(BaseRuleTest):
 
 class TestNamePatternCamelCase(BaseRuleTest):
 	"""Test camelCase naming convention for components."""
-
-	def setUp(self):
+	def setUp(self): # pylint: disable=invalid-name
 		super().setUp()
 		self.rule_config = get_test_config(
 			"NamePatternRule", target_node_types=["component"], convention="camelCase", allow_numbers=True,
@@ -70,7 +69,7 @@ class TestNamePatternCamelCase(BaseRuleTest):
 class TestNamePatternSnakeCase(BaseRuleTest):
 	"""Test snake_case naming convention for components."""
 
-	def setUp(self):
+	def setUp(self): # pylint: disable=invalid-name
 		super().setUp()
 		self.rule_config = get_test_config(
 			"NamePatternRule", target_node_types=["component"], convention="snake_case", allow_numbers=True,
@@ -96,7 +95,7 @@ class TestNamePatternSnakeCase(BaseRuleTest):
 class TestNamePatternKebabCase(BaseRuleTest):
 	"""Test kebab-case naming convention for components."""
 
-	def setUp(self):
+	def setUp(self): # pylint: disable=invalid-name
 		super().setUp()
 		self.rule_config = get_test_config(
 			"NamePatternRule", target_node_types=["component"], convention="kebab-case", allow_numbers=True,

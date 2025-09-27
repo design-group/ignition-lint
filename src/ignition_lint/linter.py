@@ -4,58 +4,97 @@ It provides functionality to apply linting rules, collect errors, and analyze th
 It also includes methods for debugging nodes and analyzing rule impact on the view model.
 """
 
-from typing import Dict, List, Any
+import json
+from pathlib import Path
+from typing import Dict, List, Any, NamedTuple, Optional
 from .rules.common import LintingRule
 from .model.builder import ViewModelBuilder
 from .model.node_types import NodeType, NodeUtils
 
 
+class LintResults(NamedTuple):
+	"""Results from linting process."""
+	warnings: Dict[str, List[str]]
+	errors: Dict[str, List[str]]
+	has_errors: bool
+
+
 class LintEngine:
 	"""Simplified linter engine that processes nodes more efficiently."""
 
-	def __init__(self, rules: List[LintingRule]):
+	def __init__(self, rules: List[LintingRule], debug_output_dir: Optional[str] = None):
 		self.rules = rules
 		self.model_builder = ViewModelBuilder()
 		self.flattened_json = {}
 		self.view_model = {}
+		self.debug_output_dir = debug_output_dir
 
-	def _get_view_model(self) -> Dict[str, List[Any]]:
+		# Create debug output directory if specified
+		if self.debug_output_dir:
+			Path(self.debug_output_dir).mkdir(parents=True, exist_ok=True)
+
+	def get_view_model(self) -> Dict[str, List[Any]]:
 		"""Return the structured view model."""
 		return self.model_builder.build_model(self.flattened_json)
 
-	def process(self, flattened_json: Dict[str, Any]) -> Dict[str, List[str]]:
-		"""Lint the given flattened JSON and return errors."""
+	def process(self, flattened_json: Dict[str, Any], source_file_path: Optional[str] = None) -> LintResults:
+		"""Lint the given flattened JSON and return warnings and errors."""
 		# Build the object model
 		self.flattened_json = flattened_json
-		self.view_model = self._get_view_model()
+		self.view_model = self.get_view_model()
 
-		# Collect all nodes in a flat list
+		# Save debug information if debug output directory is configured
+		if self.debug_output_dir and source_file_path:
+			self._save_debug_files(source_file_path)
+
+		# Collect all nodes in a flat list, excluding generic collections to avoid duplicates
+		# Generic collections ('bindings', 'scripts', 'event_handlers') are convenience collections
+		# that contain the same nodes as specific collections, causing duplicates
+		specific_collections = [
+			'components', 'message_handlers', 'custom_methods', 'expression_bindings',
+			'property_bindings', 'tag_bindings', 'script_transforms', 'event_handlers', 'properties'
+		]
 		all_nodes = []
-		for node_list in self.view_model.values():
-			all_nodes.extend(node_list)
+		for collection_name in specific_collections:
+			if collection_name in self.view_model:
+				all_nodes.extend(self.view_model[collection_name])
 
+		warnings = {}
 		errors = {}
 
 		# Apply each rule to the nodes
 		for rule in self.rules:
+			# Give rules access to flattened JSON if they need it
+			if hasattr(rule, 'set_flattened_json'):
+				rule.set_flattened_json(self.flattened_json)
+
 			# Let the rule process all nodes it's interested in
 			rule.process_nodes(all_nodes)
 
-			# Collect any errors from this rule
+			# Collect warnings from this rule
+			if rule.warnings:
+				warnings[rule.error_key] = rule.warnings
+
+			# Collect errors from this rule
 			if rule.errors:
 				errors[rule.error_key] = rule.errors
 
-		return errors
+		return LintResults(warnings=warnings, errors=errors, has_errors=bool(errors))
 
 	def get_model_statistics(self, flattened_json: Dict[str, Any]) -> Dict[str, Any]:
 		"""Get statistics about the parsed model for debugging/analysis."""
 		self.flattened_json = flattened_json
-		self.view_model = self._get_view_model()
+		self.view_model = self.get_view_model()
 
-		# Get all nodes for analysis
+		# Get all nodes for analysis, excluding generic collections to avoid duplicates
+		specific_collections = [
+			'components', 'message_handlers', 'custom_methods', 'expression_bindings',
+			'property_bindings', 'tag_bindings', 'script_transforms', 'event_handlers', 'properties'
+		]
 		all_nodes = []
-		for node_list in self.view_model.values():
-			all_nodes.extend(node_list)
+		for collection_name in specific_collections:
+			if collection_name in self.view_model:
+				all_nodes.extend(self.view_model[collection_name])
 
 		# Count by individual node types
 		node_type_counts = {}
@@ -106,7 +145,7 @@ class LintEngine:
 	def debug_nodes(self, flattened_json: Dict[str, Any], node_types: List[str] = None) -> List[Dict]:
 		"""Get detailed information about nodes for debugging."""
 		self.flattened_json = flattened_json
-		self.view_model = self._get_view_model()
+		self.view_model = self.get_view_model()
 
 		all_nodes = []
 		for node_list in self.view_model.values():
@@ -133,7 +172,7 @@ class LintEngine:
 	def analyze_rule_impact(self, flattened_json: Dict[str, Any]) -> Dict[str, Dict]:
 		"""Analyze which nodes each rule would target."""
 		self.flattened_json = flattened_json
-		self.view_model = self._get_view_model()
+		self.view_model = self.get_view_model()
 
 		all_nodes = []
 		for node_list in self.view_model.values():
@@ -173,15 +212,67 @@ class LintEngine:
 		"""Get a brief summary of what a node represents."""
 		if node.node_type == NodeType.COMPONENT:
 			return f"Component '{node.name}' of type '{getattr(node, 'type', 'unknown')}'"
-		elif node.node_type == NodeType.EXPRESSION_BINDING:
+		if node.node_type == NodeType.EXPRESSION_BINDING:
 			expr_preview = node.expression[:50] + '...' if len(node.expression) > 50 else node.expression
 			return f"Expression: {expr_preview}"
-		elif node.node_type == NodeType.TAG_BINDING:
+		if node.node_type == NodeType.TAG_BINDING:
 			return f"Tag path: {getattr(node, 'tag_path', 'unknown')}"
-		elif node.node_type == NodeType.PROPERTY_BINDING:
+		if node.node_type == NodeType.PROPERTY_BINDING:
 			return f"Property path: {getattr(node, 'target_path', 'unknown')}"
-		elif hasattr(node, 'script'):
+		if hasattr(node, 'script'):
 			script_preview = node.script[:30] + '...' if len(node.script) > 30 else node.script
 			return f"Script: {script_preview}"
-		else:
-			return f"{node.node_type.value} node"
+		return f"{node.node_type.value} node"
+
+	def _save_debug_files(self, source_file_path: str):
+		"""Save debug information (flattened JSON and model state) to files."""
+		try:
+			# Get a safe filename from the source path
+			source_name = Path(source_file_path).stem
+
+			# Save flattened JSON
+			flattened_file = Path(self.debug_output_dir) / f"{source_name}_flattened.json"
+			with open(flattened_file, 'w', encoding='utf-8') as f:
+				json.dump(self.flattened_json, f, indent=2, sort_keys=True)
+
+			# Serialize the view model
+			serialized_model = self.serialize_view_model()
+
+			# Save serialized model
+			model_file = Path(self.debug_output_dir) / f"{source_name}_model.json"
+			with open(model_file, 'w', encoding='utf-8') as f:
+				json.dump(serialized_model, f, indent=2, sort_keys=True)
+
+			# Save model statistics
+			stats = self.get_model_statistics(self.flattened_json)
+			stats_file = Path(self.debug_output_dir) / f"{source_name}_stats.json"
+			with open(stats_file, 'w', encoding='utf-8') as f:
+				json.dump(stats, f, indent=2, sort_keys=True)
+
+			print("✅ Debug files saved:")
+			print(f"   - Flattened JSON: {flattened_file}")
+			print(f"   - Model state: {model_file}")
+			print(f"   - Statistics: {stats_file}")
+
+		except (OSError, PermissionError, TypeError, ValueError) as e:
+			print(f"⚠️  Warning: Could not save debug files: {e}")
+
+	def serialize_view_model(self) -> Dict[str, Any]:
+		"""Serialize the view model to a JSON-compatible format."""
+		serialized = {}
+
+		for model_key, nodes in self.view_model.items():
+			if nodes:  # Only include non-empty node lists
+				serialized[model_key] = {
+					'count': len(nodes),
+					'nodes': [node.serialize() for node in nodes]
+				}
+			else:
+				serialized[model_key] = {'count': 0, 'nodes': []}
+
+		return serialized
+
+	def enable_debug_output(self, debug_output_dir: str):
+		"""Enable debug output to the specified directory."""
+		self.debug_output_dir = debug_output_dir
+		Path(self.debug_output_dir).mkdir(parents=True, exist_ok=True)

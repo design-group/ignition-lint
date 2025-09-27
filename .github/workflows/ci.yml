@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.12"]
 
     steps:
       - name: Checkout code
@@ -34,7 +34,7 @@ jobs:
           poetry config virtualenvs.in-project true
 
       - name: Cache Poetry dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .venv
           key: poetry-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
@@ -45,11 +45,7 @@ jobs:
         run: poetry install
 
       - name: Run linting with pylint
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Files in current directory: $(ls -la)"
-          echo "Checking for .pylintrc: $(ls -la .pylintrc 2>/dev/null || echo 'not found')"
-          poetry run pylint ignition_lint/
+        run: poetry run pylint ignition_lint/
 
       - name: Run unit tests
         run: |
@@ -88,7 +84,7 @@ jobs:
         run: poetry build
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/

@@ -5,7 +5,7 @@ Helper functions and utilities for ignition-lint tests.
 import json
 import tempfile
 from pathlib import Path
-from typing import Dict, Any, List, Union
+from typing import Dict, Any, List
 
 
 def create_mock_view(components: List[Dict[str, Any]], custom_properties: Dict[str, Any] = None) -> str:
@@ -77,14 +77,14 @@ def assert_rule_errors(
 	rule_errors = errors.get(rule_name, [])
 
 	if expected_count is not None:
-		assert len(rule_errors) == expected_count, \
-					f"Rule {rule_name} should have {expected_count} errors but found {len(rule_errors)}: {rule_errors}"
+		error_msg = f"Rule {rule_name} should have {expected_count} errors but found {len(rule_errors)}: {rule_errors}"
+		assert len(rule_errors) == expected_count, error_msg
 
 	if error_patterns:
 		for pattern in error_patterns:
 			matching_errors = [error for error in rule_errors if pattern in error]
-			assert len(matching_errors) > 0, \
-							f"Rule {rule_name} should have error containing '{pattern}'. Found errors: {rule_errors}"
+			error_msg = f"Rule {rule_name} should have error containing '{pattern}'. Found errors: {rule_errors}"
+			assert len(matching_errors) > 0, error_msg
 
 
 def assert_no_errors(errors: Dict[str, List[str]], rule_name: str = None):
@@ -137,3 +137,140 @@ def load_test_view(test_cases_dir: Path, case_name: str) -> Path:
 			print(f"Contents of test_cases_dir: {list(test_cases_dir.iterdir())}")
 		raise FileNotFoundError(f"Test view file not found: {view_file}")
 	return view_file
+
+
+def create_mock_script(script_type: str, source_code: str, component_name: str = "TestComponent") -> str:
+	"""
+	Create a mock view.json with a script for testing script-based rules.
+	
+	Args:
+		script_type: Type of script ("message_handler", "custom_method", "transform", "event_handler")
+		source_code: Python source code for the script
+		component_name: Name of the component containing the script
+		
+	Returns:
+		JSON string representing the view with the script
+	"""
+	
+	if script_type == "message_handler":
+		# Message handlers are at root level scripts.messageHandlers
+		view_data = {
+			"custom": {},
+			"params": {},
+			"propConfig": {},
+			"props": {},
+			"root": {
+				"children": [
+					{
+						"meta": {"name": component_name},
+						"type": "ia.input.button",
+						"props": {"text": "Test Button"}
+					}
+				],
+				"meta": {"name": "root"},
+				"type": "ia.container.coord",
+				"scripts": {
+					"messageHandlers": [
+						{
+							"messageType": "test_message",
+							"script": source_code,
+							"pageScope": False,
+							"sessionScope": False,
+							"viewScope": True
+						}
+					]
+				}
+			}
+		}
+		
+	elif script_type == "custom_method":
+		# Custom methods are at component level scripts.customMethods
+		view_data = {
+			"custom": {},
+			"params": {},
+			"propConfig": {},
+			"props": {},
+			"root": {
+				"children": [
+					{
+						"meta": {"name": component_name},
+						"type": "ia.input.button",
+						"props": {"text": "Test Button"},
+						"scripts": {
+							"customMethods": [
+								{
+									"name": "testMethod",
+									"params": [],
+									"script": source_code
+								}
+							]
+						}
+					}
+				],
+				"meta": {"name": "root"},
+				"type": "ia.container.coord"
+			}
+		}
+		
+	elif script_type == "transform":
+		# Transform scripts are in binding transforms
+		view_data = {
+			"custom": {},
+			"params": {},
+			"propConfig": {
+				f"root.children[0].props.text": {
+					"binding": {
+						"type": "property",
+						"config": {"path": "view.params.inputValue"},
+						"transforms": [
+							{
+								"type": "script",
+								"script": source_code
+							}
+						]
+					}
+				}
+			},
+			"props": {},
+			"root": {
+				"children": [
+					{
+						"meta": {"name": component_name},
+						"type": "ia.display.label",
+						"props": {"text": "Initial Text"}
+					}
+				],
+				"meta": {"name": "root"},
+				"type": "ia.container.coord"
+			}
+		}
+		
+	elif script_type == "event_handler":
+		# Event handlers are at component level events
+		view_data = {
+			"custom": {},
+			"params": {},
+			"propConfig": {},
+			"props": {},
+			"root": {
+				"children": [
+					{
+						"meta": {"name": component_name},
+						"type": "ia.input.button",
+						"props": {"text": "Test Button"},
+						"events": {
+							"onActionPerformed": {
+								"script": source_code,
+								"scope": "L"
+							}
+						}
+					}
+				],
+				"meta": {"name": "root"},
+				"type": "ia.container.coord"
+			}
+		}
+	else:
+		raise ValueError(f"Unknown script type: {script_type}. Available: message_handler, custom_method, transform, event_handler")
+	
+	return json.dumps(view_data, indent=2)

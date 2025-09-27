@@ -1,13 +1,13 @@
+# pylint: disable=import-error
 """
 Integration tests for multiple rules working together.
 Tests interactions between different linting rules.
 """
 
 import unittest
-from pathlib import Path
 
 from fixtures.base_test import BaseIntegrationTest
-from fixtures.test_helpers import get_test_config, load_test_view
+from fixtures.test_helpers import load_test_view
 
 
 class TestMultipleRules(BaseIntegrationTest):
@@ -75,10 +75,9 @@ class TestMultipleRules(BaseIntegrationTest):
 					self.assertIsInstance(errors, dict)
 
 					# Verify each rule either passed or failed gracefully
-					for rule_name in rule_configs.keys():
+					for rule_name, _ in rule_configs.items():
 						if rule_name in errors:
-							rule_errors = errors[rule_name]
-							self.assertIsInstance(rule_errors, list)
+							self.assertIsInstance(errors[rule_name], list)
 
 				except FileNotFoundError:
 					self.skipTest(f"Test case {case} not found")
@@ -200,7 +199,7 @@ class TestMultipleRules(BaseIntegrationTest):
 					self.assertIsInstance(errors, dict)
 
 					# Verify structure of results
-					for rule_name, rule_errors in errors.items():
+					for _, rule_errors in errors.items():
 						self.assertIsInstance(rule_errors, list)
 
 				except FileNotFoundError:
@@ -215,7 +214,7 @@ class TestMultipleRules(BaseIntegrationTest):
 					"target_node_types": [
 						"component", "property", "custom_method", "event_handler"
 					],
-					"convention": "PascalCase",  # Default
+					"convention": "PascalCase",
 					"node_type_specific_rules": {
 						"component": {
 							"convention": "PascalCase",
@@ -256,11 +255,10 @@ class TestMultipleRules(BaseIntegrationTest):
 		self.assertIsInstance(errors, dict)
 
 		# Verify each configured rule either passed or failed gracefully
-		for rule_name in rule_configs.keys():
+		for rule_name, _ in rule_configs.items():
 			if rule_name in errors:
-				rule_errors = errors[rule_name]
 				self.assertIsInstance(
-					rule_errors, list, f"Rule {rule_name} should return a list of errors"
+					errors[rule_name], list, f"Rule {rule_name} should return a list of errors"
 				)
 
 

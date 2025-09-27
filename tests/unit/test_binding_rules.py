@@ -1,10 +1,10 @@
+# pylint: disable=import-error
 """
 Unit tests for binding-related rules.
 Tests various binding validation rules.
 """
 
 import unittest
-from pathlib import Path
 
 from fixtures.base_test import BaseRuleTest
 from fixtures.test_helpers import get_test_config, load_test_view

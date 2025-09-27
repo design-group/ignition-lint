@@ -1,10 +1,10 @@
+# pylint: disable=import-error
 """
 Unit tests for the PylintScriptRule.
 Tests script linting functionality.
 """
 
 import unittest
-from pathlib import Path
 
 from fixtures.base_test import BaseRuleTest
 from fixtures.test_helpers import get_test_config, load_test_view
@@ -13,7 +13,7 @@ from fixtures.test_helpers import get_test_config, load_test_view
 class TestPylintScriptRule(BaseRuleTest):
 	"""Test script linting with pylint."""
 
-	def setUp(self):
+	def setUp(self):  # pylint: disable=invalid-name
 		super().setUp()
 		self.rule_config = get_test_config("PylintScriptRule")
 

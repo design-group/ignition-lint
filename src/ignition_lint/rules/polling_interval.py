@@ -1,3 +1,10 @@
+"""
+Polling interval validation rule for tag bindings.
+
+This rule checks that tag bindings have appropriate polling intervals
+to prevent performance issues in Ignition Perspective views.
+"""
+
 import re
 from .common import BindingRule
 from ..model.node_types import NodeType
@@ -18,6 +25,7 @@ class PollingIntervalRule(BindingRule):
 		"""Check expression bindings for polling issues."""
 		if 'now' in node.expression:
 			if not self._is_valid_polling(node.expression):
+				# Performance issues are errors, not warnings
 				self.errors.append(f"{node.path}: '{node.expression}'")
 
 	def _is_valid_polling(self, expression):
@@ -30,17 +38,14 @@ class PollingIntervalRule(BindingRule):
 
 		if not matches:
 			alt_pattern = r'now\s*\('
-			if re.search(alt_pattern, expression):
-				return False
-			else:
-				return True
+			return not bool(re.search(alt_pattern, expression))
 
 		for interval_str in matches:
 			if not interval_str.strip():
 				return False
 			try:
 				interval = int(interval_str)
-				if interval > 0 and interval < self.minimum_interval:
+				if 0 < interval < self.minimum_interval:
 					return False
 			except ValueError:
 				return False

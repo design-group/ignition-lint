@@ -4,12 +4,25 @@ from a flattened JSON representation of an Ignition Perspective view. It include
 component types, bindings, event handlers, and other elements from the JSON data.
 """
 import re
-from .node_types import *
 from typing import Dict, List, Any
+
+from .node_types import (
+	ViewNode,
+	Component,
+	ExpressionBinding,
+	PropertyBinding,
+	TagBinding,
+	MessageHandlerScript,
+	CustomMethodScript,
+	TransformScript,
+	EventHandlerScript,
+	Property,
+)
 
 
 class ViewModelBuilder:
 	"""Builds a structured view model from flattened JSON."""
+
 	def __init__(self):
 		self.flattened_json = {}
 		self.model = {
@@ -25,7 +38,7 @@ class ViewModelBuilder:
 			'script_transforms': [],
 			'properties': []
 		}
-	
+
 	def _search_for_path_value(self, path: str, suffix: str = None, fallback: Any = None) -> Any:
 		"""Search for a value in the flattened JSON by path, optionally with a suffix."""
 		full_path = f"{path}.{suffix}" if suffix else path
@@ -37,15 +50,15 @@ class ViewModelBuilder:
 
 	def _get_expression(self, binding_path: str) -> str:
 		"""Get the expression from an expression binding."""
-		return self._search_for_path_value(binding_path, "config.expression", "unknown")
+		return self._search_for_path_value(binding_path, "binding.config.expression", "unknown")
 
 	def _get_property_path(self, binding_path: str) -> str:
 		"""Get the target path from a property binding."""
-		return self._search_for_path_value(binding_path, "config.path", "unknown")
+		return self._search_for_path_value(binding_path, "binding.config.path", "unknown")
 
 	def _get_tag_path(self, binding_path: str) -> str:
 		"""Get the tag path from a tag binding."""
-		return self._search_for_path_value(binding_path, "config.tagPath", "unknown")
+		return self._search_for_path_value(binding_path, "binding.config.tagPath", "unknown")
 
 	def _get_script_transforms(self, binding_path: str) -> List[tuple]:
 		"""Get script transforms from a binding."""
@@ -54,7 +67,8 @@ class ViewModelBuilder:
 
 		# Find transform paths
 		for path, value in self.flattened_json.items():
-			if path.startswith(f"{binding_path}.transforms") and path.endswith('.type') and value == 'script':
+			if path.startswith(f"{binding_path}.transforms"
+						) and path.endswith('.type') and value == 'script':
 				transform_base = path.rsplit('.type', 1)[0]
 				transform_paths.append(transform_base)
 
@@ -63,6 +77,26 @@ class ViewModelBuilder:
 			script_path = f"{transform_path}.script"
 			if script_path in self.flattened_json:
 				transforms.append((transform_path, self.flattened_json[script_path]))
+
+		return transforms
+
+	def _get_expression_transforms(self, binding_path: str) -> List[tuple]:
+		"""Get expression transforms from a binding."""
+		transforms = []
+		transform_paths = []
+
+		# Find transform paths for expression type transforms
+		for path, value in self.flattened_json.items():
+			if path.startswith(f"{binding_path}.transforms"
+						) and path.endswith('.type') and value == 'expression':
+				transform_base = path.rsplit('.type', 1)[0]
+				transform_paths.append(transform_base)
+
+		# Get transform expression for each path
+		for transform_path in transform_paths:
+			expression_path = f"{transform_path}.expression"
+			if expression_path in self.flattened_json:
+				transforms.append((transform_path, self.flattened_json[expression_path]))
 
 		return transforms
 
@@ -85,6 +119,40 @@ class ViewModelBuilder:
 				config[key] = value
 		return config
 
+	def _is_property_persistent(self, property_path: str) -> bool:
+		"""
+		Check if a property is persistent (exists at startup) or non-persistent (created by bindings).
+		
+		Properties are considered persistent if:
+		1. They have no propConfig entry (default behavior)
+		2. They have propConfig.{property_path}.persistent = True
+		
+		Args:
+			property_path: The path to the property (e.g., "custom.myProp" or "root.root.children[0].Button.custom.myProp")
+		
+		Returns:
+			True if the property should be persistent, False if it's created by bindings at runtime
+		"""
+		# Check for explicit persistence configuration
+		config_path = f"propConfig.{property_path}.persistent"
+		persistent_value = self.flattened_json.get(config_path)
+
+		if persistent_value is not None:
+			# Explicit configuration found
+			return persistent_value
+
+		# No explicit configuration - check if there's any propConfig for this property
+		config_prefix = f"propConfig.{property_path}."
+		has_any_config = any(path.startswith(config_prefix) for path in self.flattened_json.keys())
+
+		if has_any_config:
+			# Property has configuration but no explicit persistent setting
+			# Default to True (persistent) unless proven otherwise
+			return True
+
+		# No configuration at all - default to persistent
+		return True
+
 	def _collect_components(self):
 		# First, identify components by looking for meta.name entries
 		for path, value in self.flattened_json.items():
@@ -94,7 +162,7 @@ class ViewModelBuilder:
 			component_name = value
 			component_type = self._get_component_type(component_path)
 			self.model['components'].append(Component(component_path, component_name, component_type))
-	
+
 	def _collect_bindings(self):
 		"""Collect all bindings from the flattened JSON."""
 		visited_paths = []
@@ -105,7 +173,7 @@ class ViewModelBuilder:
 			if binding_path not in visited_paths:
 				visited_paths.append(binding_path)
 
-				if binding_type == 'expr':
+				if binding_type in ('expression', 'expr'):
 					expression = self._get_expression(binding_path)
 					binding = ExpressionBinding(binding_path, expression)
 					self.model['expression_bindings'].append(binding)
@@ -124,11 +192,20 @@ class ViewModelBuilder:
 					self.model['bindings'].append(binding)
 
 				# Look for script transforms in the binding
-				transforms = self._get_script_transforms(binding_path)
+				full_binding_path = f"{binding_path}.binding"
+				transforms = self._get_script_transforms(full_binding_path)
 				for transform_path, script in transforms:
 					transform = TransformScript(transform_path, script, binding_path)
 					self.model['script_transforms'].append(transform)
 					self.model['scripts'].append(transform)
+
+				# Look for expression transforms in the binding
+				expression_transforms = self._get_expression_transforms(full_binding_path)
+				for transform_path, expression in expression_transforms:
+					# Create ExpressionBinding nodes for each expression transform
+					expression_binding = ExpressionBinding(transform_path, expression)
+					self.model['expression_bindings'].append(expression_binding)
+					self.model['bindings'].append(expression_binding)
 
 	def _collect_message_handlers(self):
 		"""Collect all message handlers from the flattened JSON."""
@@ -147,7 +224,7 @@ class ViewModelBuilder:
 				handler = MessageHandlerScript(base_path, script_code, message_type, scope)
 				self.model['message_handlers'].append(handler)
 				self.model['scripts'].append(handler)
-	
+
 	def _collect_custom_methods(self):
 		"""Collect all custom methods from the flattened JSON."""
 		custom_method_data = {}
@@ -197,32 +274,52 @@ class ViewModelBuilder:
 		"""Collect all event handlers from the flattened JSON."""
 		for path, script in self.flattened_json.items():
 			# Look for event handler script configurations
-			if '.events.' in path and '.config.script' in path:
-				# Extract the event path components
-				event_path_parts = path.split('.config.script')[0]
+			# Check both .config.script (alternative format) and .script (standard format)
+			if '.events.' in path and ('.config.script' in path or path.endswith('.script')):
+				if '.config.script' in path:
+					# Alternative format: path.events.eventType.config.script
+					event_path_parts = path.split('.config.script')[0]
+				else:
+					# Standard format: path.events.eventType.script
+					event_path_parts = path.split('.script')[0]
+				
 				event_path = event_path_parts
 
-				# Extract event domain and type from path
-				domain_type_match = re.search(r'\.events\.([^.]+)\.([^.]+)', event_path_parts)
-				if domain_type_match:
-					event_domain = domain_type_match.group(1)  # e.g., 'dom', 'system'
-					event_type = domain_type_match.group(2)  # e.g., 'onClick', 'onStartup'
-
-					# Get the scope if available, otherwise default to local scope
-					scope = self._search_for_path_value(path, "scope", "L")
+				# Extract event type from path (e.g., 'onActionPerformed', 'onStartup')
+				# Standard Ignition events don't use domains, just event types
+				event_type_match = re.search(r'\.events\.([^.]+)$', event_path_parts)
+				if event_type_match:
+					event_type = event_type_match.group(1)  # e.g., 'onActionPerformed', 'onStartup'
+					
+					# Get the scope from the same event path
+					scope_path = f"{event_path_parts}.scope"
+					scope = self.flattened_json.get(scope_path, "L")
 
 					# Create a script event handler
 					handler = EventHandlerScript(
-						event_path, event_domain, event_type, script, scope
+						event_path, "component", event_type, script, scope=scope
 					)
 					self.model['event_handlers'].append(handler)
 					self.model['scripts'].append(handler)
-	
+
 	def _collect_properties(self):
 		for path, value in self.flattened_json.items():
-			# Skip meta properties, bindings, scripts - we already processed those
+			# Skip meta properties, bindings, scripts, events - we already processed those
 			processed_props = ['meta', 'binding', 'scripts', 'events']
 			if any(f".{prop}." in path for prop in processed_props) or path.endswith('.type'):
+				continue
+
+			# Skip propConfig properties - these are configuration, not actual properties
+			if path.startswith('propConfig.'):
+				continue
+
+			# Handle view-level properties (custom.* and params.*)
+			if path.startswith('custom.') or path.startswith('params.'):
+				# Check if this is a persistent property
+				if self._is_property_persistent(path):
+					property_name = path.split(".")[-1]
+					prop = Property(path, property_name, value)
+					self.model['properties'].append(prop)
 				continue
 
 			# Find the component this property belongs to
@@ -234,6 +331,10 @@ class ViewModelBuilder:
 						component_path = comp_obj.path
 
 			if component_path:
+				# For component properties, also check persistence for custom properties
+				if '.custom.' in path and not self._is_property_persistent(path):
+					continue
+
 				property_name = path.split(".")[-1]
 
 				prop = Property(path, property_name, value)
@@ -241,7 +342,7 @@ class ViewModelBuilder:
 				# Add the property to the component
 				if component_path in self.model['components']:
 					self.model['components'][component_path].properties[property_name] = value
-	
+
 	def get_view_model(self) -> Dict[str, List[ViewNode]]:
 		"""Return the structured view model."""
 		return self.model
@@ -249,13 +350,14 @@ class ViewModelBuilder:
 	def build_model(self, flattened_json: Dict[str, Any]) -> Dict[str, List[ViewNode]]:
 		"""
 		Parse the flattened JSON and build a structured model.
-		
+
 		Returns:
 			Dict mapping node types to lists of those nodes
 		"""
 		self.flattened_json = flattened_json
-		# Initialize collections for each node type
-		model = {
+
+		# Reset model to avoid accumulation from multiple calls
+		self.model = {
 			'components': [],
 			'bindings': [],
 			'scripts': [],
@@ -271,13 +373,13 @@ class ViewModelBuilder:
 
 		# First, identify components
 		self._collect_components()
-		
+
 		# Process bindings
 		self._collect_bindings()
 
 		# Process message handlers
 		self._collect_message_handlers()
-		
+
 		# Process custom methods
 		self._collect_custom_methods()
 

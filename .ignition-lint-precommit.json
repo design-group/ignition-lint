@@ -1,0 +1,18 @@
+{
+  "_comment": "Pre-commit configuration - focuses on warnings to avoid blocking commits unnecessarily",
+  "NamePatternRule": {
+    "enabled": true,
+    "kwargs": {
+      "convention": "PascalCase",
+      "allow_numbers": true,
+      "min_length": 1,
+      "severity": "warning"
+    }
+  },
+  "PollingIntervalRule": {
+    "enabled": true,
+    "kwargs": {
+      "minimum_interval": 5000
+    }
+  }
+}
