@@ -13,8 +13,8 @@ from ...model.node_types import NodeType
 class PollingIntervalRule(BindingRule):
 	"""Rule to check polling intervals in expressions."""
 
-	def __init__(self, minimum_interval=10000):
-		super().__init__({NodeType.EXPRESSION_BINDING, NodeType.PROPERTY_BINDING, NodeType.TAG_BINDING})
+	def __init__(self, minimum_interval=10000, severity="error"):
+		super().__init__({NodeType.EXPRESSION_BINDING, NodeType.PROPERTY_BINDING, NodeType.TAG_BINDING}, severity)
 		self.minimum_interval = minimum_interval
 
 	@property
@@ -25,8 +25,8 @@ class PollingIntervalRule(BindingRule):
 		"""Check expression bindings for polling issues."""
 		if 'now' in node.expression:
 			if not self._is_valid_polling(node.expression):
-				# Performance issues are errors, not warnings
-				self.errors.append(f"{node.path}: '{node.expression}'")
+				# Performance issues - use configured severity
+				self.add_violation(f"{node.path}: '{node.expression}'")
 
 	def _is_valid_polling(self, expression):
 		"""Check if the polling interval in an expression is valid."""

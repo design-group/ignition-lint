@@ -19,10 +19,10 @@ class TestPollingIntervalRule(BaseRuleTest):
 	def test_expression_bindings_validation(self):
 		"""Test polling interval validation in expression bindings."""
 		view_file = load_test_view(self.test_cases_dir, "ExpressionBindings")
-		errors = self.run_lint_on_file(view_file, self.rule_config)
+		self.run_lint_on_file(view_file, self.rule_config)
 
 		# Check if there are any polling interval errors
-		polling_errors = errors.get("PollingIntervalRule", [])
+		polling_errors = self.get_errors_for_rule("PollingIntervalRule")
 		# This test depends on the actual content of the ExpressionBindings view.json
 		# For now, we just verify the rule runs without crashing
 		self.assertIsInstance(polling_errors, list)
@@ -37,8 +37,8 @@ class TestPollingIntervalRule(BaseRuleTest):
 			with self.subTest(minimum_interval=minimum_interval):
 				rule_config = get_test_config("PollingIntervalRule", minimum_interval=minimum_interval)
 
-				errors = self.run_lint_on_file(view_file, rule_config)
-				polling_errors = errors.get("PollingIntervalRule", [])
+				self.run_lint_on_file(view_file, rule_config)
+				polling_errors = self.get_errors_for_rule("PollingIntervalRule")
 				self.assertIsInstance(polling_errors, list)
 
 
@@ -50,9 +50,9 @@ class TestPollingIntervalValidation(BaseRuleTest):
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
 		rule_config = get_test_config("PollingIntervalRule", minimum_interval=10000)
 
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 		# Should have no polling errors since there are no polling expressions
-		self.assertEqual(errors.get("PollingIntervalRule", []), [])
+		self.assertEqual(self.get_errors_for_rule("PollingIntervalRule"), [])
 
 
 if __name__ == "__main__":

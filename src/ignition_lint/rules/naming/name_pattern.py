@@ -168,7 +168,9 @@ class NamePatternRule(LintingRule):
 		if target_node_types is None and node_type_specific_rules:
 			target_node_types = set(node_type_specific_rules.keys())
 
-		super().__init__(target_node_types or {NodeType.COMPONENT})
+		# Use the config severity if available, otherwise use the parameter
+		effective_severity = config.severity if config else severity
+		super().__init__(target_node_types or {NodeType.COMPONENT}, severity=effective_severity)
 
 		self.convention = convention
 		self.custom_pattern = custom_pattern
@@ -243,9 +245,6 @@ class NamePatternRule(LintingRule):
 	def auto_detect_abbreviations(self) -> bool:
 		return self.config.auto_detect_abbreviations
 
-	@property
-	def severity(self) -> str:
-		return self.config.severity
 
 	def _get_default_name_extractors(self) -> Dict[NodeType, Callable[[ViewNode], str]]:
 		"""Get default name extractors for different node types."""
@@ -383,10 +382,7 @@ class NamePatternRule(LintingRule):
 			for error in validation_errors:
 				# Use node-specific severity if available, otherwise fall back to global severity
 				node_severity = self._get_node_specific_config(node.node_type, 'severity', self.severity)
-				if node_severity == "error":
-					self.errors.append(f"{node.path}: {error}")
-				else:
-					self.warnings.append(f"{node.path}: {error}")
+				self.add_violation(f"{node.path}: {error}", node_severity)
 
 	# Specific visit methods that delegate to the generic method
 	def visit_component(self, node: ViewNode):

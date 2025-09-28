@@ -21,14 +21,15 @@ class TestBadComponentReferenceRule(BaseRuleTest):
 		"""Test detection of .getSibling() usage."""
 		try:
 			view_file = load_test_view(self.test_cases_dir, "BadComponentReferences")
-			errors = self.run_lint_on_file(view_file, self.rule_config)
 
-			rule_errors = errors.get("BadComponentReferenceRule", [])
+			self.run_lint_on_file(view_file, self.rule_config)
+			rule_errors = self.get_errors_for_rule("BadComponentReferenceRule")
+
 			self.assertGreater(len(rule_errors), 0, "Should detect bad component references")
 
 			# Should detect .getSibling( pattern
-			getSibling_found = any(".getSibling(" in error for error in rule_errors)
-			self.assertTrue(getSibling_found, f"Should detect .getSibling pattern. Found errors: {rule_errors}")
+			found_get_sibling = any(".getSibling(" in error for error in rule_errors)
+			self.assertTrue(found_get_sibling, f"Should detect .getSibling pattern. Found errors: {rule_errors}")
 		except FileNotFoundError:
 			self.skipTest("BadComponentReferences test case not found")
 
@@ -41,9 +42,9 @@ class TestBadComponentReferenceRule(BaseRuleTest):
 		"""
 
 		mock_view = create_mock_script("transform", script_content)
-		errors = self.run_lint_on_mock_view(mock_view, self.rule_config)
+		self.run_lint_on_mock_view(mock_view, self.rule_config)
 
-		rule_errors = errors.get("BadComponentReferenceRule", [])
+		rule_errors = self.get_errors_for_rule("BadComponentReferenceRule")
 		self.assertEqual(len(rule_errors), 1)
 		self.assertIn(".getParent(", rule_errors[0])
 
@@ -56,9 +57,9 @@ class TestBadComponentReferenceRule(BaseRuleTest):
 		"""
 
 		mock_view = create_mock_script("event_handler", script_content)
-		errors = self.run_lint_on_mock_view(mock_view, self.rule_config)
+		self.run_lint_on_mock_view(mock_view, self.rule_config)
 
-		rule_errors = errors.get("BadComponentReferenceRule", [])
+		rule_errors = self.get_errors_for_rule("BadComponentReferenceRule")
 		self.assertEqual(len(rule_errors), 1)
 		self.assertIn(".getChild(", rule_errors[0])
 
@@ -73,9 +74,9 @@ class TestBadComponentReferenceRule(BaseRuleTest):
 		"""
 
 		mock_view = create_mock_script("custom_method", script_content)
-		errors = self.run_lint_on_mock_view(mock_view, self.rule_config)
+		self.run_lint_on_mock_view(mock_view, self.rule_config)
 
-		rule_errors = errors.get("BadComponentReferenceRule", [])
+		rule_errors = self.get_errors_for_rule("BadComponentReferenceRule")
 		# Should only report once per script to avoid spam
 		self.assertEqual(len(rule_errors), 1)
 
@@ -95,9 +96,9 @@ class TestBadComponentReferenceRule(BaseRuleTest):
 		"""
 
 		mock_view = create_mock_script("message_handler", script_content)
-		errors = self.run_lint_on_mock_view(mock_view, self.rule_config)
+		self.run_lint_on_mock_view(mock_view, self.rule_config)
 
-		rule_errors = errors.get("BadComponentReferenceRule", [])
+		rule_errors = self.get_errors_for_rule("BadComponentReferenceRule")
 		self.assertEqual(len(rule_errors), 0)
 
 	def test_case_sensitivity_option(self):
@@ -113,9 +114,9 @@ class TestBadComponentReferenceRule(BaseRuleTest):
 		"""
 
 		mock_view = create_mock_script("message_handler", script_content)
-		errors = self.run_lint_on_mock_view(mock_view, case_insensitive_config)
+		self.run_lint_on_mock_view(mock_view, case_insensitive_config)
 
-		rule_errors = errors.get("BadComponentReferenceRule", [])
+		rule_errors = self.get_errors_for_rule("BadComponentReferenceRule")
 		self.assertEqual(len(rule_errors), 1)
 
 	def test_custom_forbidden_methods(self):
@@ -132,18 +133,18 @@ class TestBadComponentReferenceRule(BaseRuleTest):
 		"""
 
 		mock_view = create_mock_script("message_handler", script_content)
-		errors = self.run_lint_on_mock_view(mock_view, custom_config)
+		self.run_lint_on_mock_view(mock_view, custom_config)
 
-		rule_errors = errors.get("BadComponentReferenceRule", [])
+		rule_errors = self.get_errors_for_rule("BadComponentReferenceRule")
 		self.assertEqual(len(rule_errors), 1)
 		self.assertIn(".customBadMethod(", rule_errors[0])
 
 	def test_empty_script_content(self):
 		"""Test handling of empty or missing script content."""
 		mock_view = create_mock_script("message_handler", "")
-		errors = self.run_lint_on_mock_view(mock_view, self.rule_config)
+		self.run_lint_on_mock_view(mock_view, self.rule_config)
 
-		rule_errors = errors.get("BadComponentReferenceRule", [])
+		rule_errors = self.get_errors_for_rule("BadComponentReferenceRule")
 		self.assertEqual(len(rule_errors), 0)
 
 	def test_script_types_coverage(self):
@@ -158,9 +159,9 @@ class TestBadComponentReferenceRule(BaseRuleTest):
 		for script_type in script_types:
 			with self.subTest(script_type=script_type):
 				mock_view = create_mock_script(script_type, script_content)
-				errors = self.run_lint_on_mock_view(mock_view, self.rule_config)
+				self.run_lint_on_mock_view(mock_view, self.rule_config)
 
-				rule_errors = errors.get("BadComponentReferenceRule", [])
+				rule_errors = self.get_errors_for_rule("BadComponentReferenceRule")
 				self.assertEqual(len(rule_errors), 1,
 								f"Should detect bad reference in {script_type} scripts")
 
@@ -179,9 +180,9 @@ class TestBadComponentReferenceEdgeCases(BaseRuleTest):
 
 		rule_config = get_test_config("BadComponentReferenceRule")
 		mock_view = create_mock_script("message_handler", script_content)
-		errors = self.run_lint_on_mock_view(mock_view, rule_config)
+		self.run_lint_on_mock_view(mock_view, rule_config)
 
-		rule_errors = errors.get("BadComponentReferenceRule", [])
+		rule_errors = self.get_errors_for_rule("BadComponentReferenceRule")
 		# This will currently flag comments too, which is acceptable for now
 		# In a real implementation, you might want to parse Python AST to ignore comments
 		self.assertEqual(len(rule_errors), 1)  # Expected behavior for now
@@ -196,9 +197,9 @@ class TestBadComponentReferenceEdgeCases(BaseRuleTest):
 
 		rule_config = get_test_config("BadComponentReferenceRule")
 		mock_view = create_mock_script("message_handler", script_content)
-		errors = self.run_lint_on_mock_view(mock_view, rule_config)
+		self.run_lint_on_mock_view(mock_view, rule_config)
 
-		rule_errors = errors.get("BadComponentReferenceRule", [])
+		rule_errors = self.get_errors_for_rule("BadComponentReferenceRule")
 		# This will currently flag string literals too, which is acceptable
 		# for a simple string-based check
 		self.assertEqual(len(rule_errors), 1)

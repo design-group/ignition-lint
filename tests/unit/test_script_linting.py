@@ -20,10 +20,10 @@ class TestPylintScriptRule(BaseRuleTest):
 	def test_basic_script_linting(self):
 		"""Test basic script linting functionality."""
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, self.rule_config)
+		self.run_lint_on_file(view_file, self.rule_config)
 
 		# Just verify the rule runs without crashing
-		script_errors = errors.get("PylintScriptRule", [])
+		script_errors = self.get_errors_for_rule("PylintScriptRule")
 		self.assertIsInstance(script_errors, list)
 
 	def test_multiple_view_files(self):
@@ -34,8 +34,8 @@ class TestPylintScriptRule(BaseRuleTest):
 			with self.subTest(case=case):
 				try:
 					view_file = load_test_view(self.test_cases_dir, case)
-					errors = self.run_lint_on_file(view_file, self.rule_config)
-					script_errors = errors.get("PylintScriptRule", [])
+					self.run_lint_on_file(view_file, self.rule_config)
+					script_errors = self.get_errors_for_rule("PylintScriptRule")
 					self.assertIsInstance(script_errors, list)
 				except FileNotFoundError:
 					self.skipTest(f"Test case {case} not found")

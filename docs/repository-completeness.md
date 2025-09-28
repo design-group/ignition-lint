@@ -392,7 +392,7 @@ Test infrastructure was combining warnings and errors, losing the distinction be
 - `tests/configs/warnings_vs_errors_demo.json` - Example configuration showing capabilities
 
 **New Test Methods Available:**
-- `run_lint_on_file_detailed()` - Returns LintResults with separate warnings/errors
+- `run_lint_on_file()` - Returns LintResults with separate warnings/errors
 - `assert_rule_warnings()` - Assert specific warning count and patterns
 - `assert_rule_errors()` - Assert specific error count and patterns
 - `assert_rule_passes_completely()` - Assert no warnings or errors

@@ -48,15 +48,17 @@ class NodeVisitor(ABC):
 class LintingRule(NodeVisitor):
 	"""Base class for linting rules with simplified interface and self-processing capability."""
 
-	def __init__(self, target_node_types: Set[NodeType] = None):
+	def __init__(self, target_node_types: Set[NodeType] = None, severity: str = "error"):
 		"""
 		Initialize the rule.
 
 		Args:
 			target_node_types: Set of node types this rule applies to.
 							  If None, applies to all nodes.
+			severity: Default severity level for violations ("warning" or "error")
 		"""
 		self.target_node_types = target_node_types or set()
+		self.severity = severity if severity in ["warning", "error"] else "error"
 		self.errors = []
 		self.warnings = []
 
@@ -110,6 +112,20 @@ class LintingRule(NodeVisitor):
 	def post_process(self):
 		"""Override this method if you need to do batch processing after visiting all nodes."""
 
+	def add_violation(self, message: str, severity: str = None):
+		"""
+		Add a violation with the specified severity.
+
+		Args:
+			message: The violation message
+			severity: Override the default severity ("warning" or "error")
+		"""
+		actual_severity = severity if severity in ["warning", "error"] else self.severity
+		if actual_severity == "error":
+			self.errors.append(message)
+		else:
+			self.warnings.append(message)
+
 	@property
 	@abstractmethod
 	def error_message(self) -> str:
@@ -124,19 +140,19 @@ class LintingRule(NodeVisitor):
 class BindingRule(LintingRule):
 	"""Base class for binding-specific rules."""
 
-	def __init__(self, target_node_types: Set[NodeType] = None):
+	def __init__(self, target_node_types: Set[NodeType] = None, severity: str = "error"):
 		if target_node_types is None:
 			target_node_types = ALL_BINDINGS
-		super().__init__(target_node_types)
+		super().__init__(target_node_types, severity)
 
 
 class ScriptRule(LintingRule):
 	"""Base class for script-specific rules with built-in script collection."""
 
-	def __init__(self, target_node_types: Set[NodeType] = None):
+	def __init__(self, target_node_types: Set[NodeType] = None, severity: str = "error"):
 		if target_node_types is None:
 			target_node_types = ALL_SCRIPTS
-		super().__init__(target_node_types)
+		super().__init__(target_node_types, severity)
 		self.collected_scripts = {}
 
 	def process_nodes(self, nodes: List[ViewNode]):

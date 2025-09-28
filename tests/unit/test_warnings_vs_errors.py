@@ -44,7 +44,7 @@ class TestWarningsVsErrorsInfrastructure(BaseRuleTest):
 		view_file = load_test_view(self.test_cases_dir, "ExpressionBindings")
 
 		# Act: Get detailed results to check error vs warning classification
-		results = self.run_lint_on_file_detailed(view_file, rule_config)
+		results = self.run_lint_on_file(view_file, rule_config)
 
 		# Assert: If any issues found, they should be errors, not warnings
 		rule_warnings = results.warnings.get("PollingIntervalRule", [])
@@ -76,7 +76,7 @@ class TestWarningsVsErrorsInfrastructure(BaseRuleTest):
 		polling_rule_config = get_test_config("PollingIntervalRule", minimum_interval=5000)
 
 		# Check that PollingIntervalRule only produces errors, never warnings
-		results = self.run_lint_on_file_detailed(view_file, polling_rule_config)
+		results = self.run_lint_on_file(view_file, polling_rule_config)
 		polling_warnings = results.warnings.get("PollingIntervalRule", [])
 		self.assertEqual(polling_warnings, [], "PollingIntervalRule should not produce warnings")
 
@@ -93,7 +93,7 @@ class TestWarningsVsErrorsInfrastructure(BaseRuleTest):
 	def test_backward_compatibility_still_works(self):
 		"""Test that existing test methods still work for backward compatibility."""
 		rule_config = get_test_config(
-			"NamePatternRule", target_node_types=["component"], convention="PascalCase", min_length=1
+			"NamePatternRule", target_node_types=["component"], convention="PascalCase", min_length=1, severity="error"
 		)
 
 		# Test that old methods still work

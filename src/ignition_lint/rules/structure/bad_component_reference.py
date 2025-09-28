@@ -24,11 +24,11 @@ class BadComponentReferenceRule(LintingRule):
 	or message handling instead for better maintainability.
 	"""
 
-	def __init__(self, forbidden_patterns=None, case_sensitive=True):
+	def __init__(self, forbidden_patterns=None, case_sensitive=True, severity="error"):
 		"""Initialize the rule targeting scripts and expression bindings."""
 		# Target both script types and expression bindings
 		target_types = ALL_SCRIPTS | {NodeType.EXPRESSION_BINDING}
-		super().__init__(target_types)
+		super().__init__(target_types, severity)
 		# Configure patterns to detect (methods and properties)
 		self.forbidden_patterns = forbidden_patterns or [
 			# Method calls (with parentheses)
@@ -111,7 +111,7 @@ class BadComponentReferenceRule(LintingRule):
 			else:
 				pattern_msg = f"'{main_pattern}'"
 
-			self.errors.append(
+			self.add_violation(
 				f"{path}: {content_type.title()} contains {pattern_msg} which creates "
 				f"brittle view structure dependencies. Consider using view.custom "
 				f"properties or message handling for component communication instead."

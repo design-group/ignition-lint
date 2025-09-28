@@ -36,13 +36,13 @@ from ...model.node_types import NodeType
 class UnusedCustomPropertiesRule(LintingRule):
 	"""Detects custom properties and view parameters that are defined but never referenced."""
 
-	def __init__(self):
+	def __init__(self, severity="error"):
 		# We need to examine all node types to find property definitions and references
 		super().__init__({
 			NodeType.PROPERTY, NodeType.COMPONENT, NodeType.EXPRESSION_BINDING, NodeType.PROPERTY_BINDING,
 			NodeType.TAG_BINDING, NodeType.EVENT_HANDLER, NodeType.MESSAGE_HANDLER, NodeType.CUSTOM_METHOD,
 			NodeType.TRANSFORM
-		})
+		}, severity)
 
 		# Track defined properties and where they're used
 		self.defined_properties: Dict[str, str] = {}  # prop_path -> definition_location
@@ -208,7 +208,7 @@ class UnusedCustomPropertiesRule(LintingRule):
 		# Report unused properties
 		for prop_path, definition_location in unused_properties:
 			prop_type = "view parameter" if ".params." in prop_path else "custom property"
-			self.errors.append(
+			self.add_violation(
 				f"{definition_location}: {prop_type} '{prop_path.split('.')[-1]}' is defined but never referenced"
 			)
 

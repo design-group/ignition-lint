@@ -21,8 +21,8 @@ from ...model.node_types import ScriptNode
 class PylintScriptRule(ScriptRule):
 	"""Rule to run pylint on all script types using the simplified interface."""
 
-	def __init__(self):
-		super().__init__()  # Targets all script types by default
+	def __init__(self, severity="error"):
+		super().__init__(severity=severity)  # Targets all script types by default
 		self.debug = True
 
 	@property
@@ -40,8 +40,8 @@ class PylintScriptRule(ScriptRule):
 		# Add issues to our errors list
 		for path, issues in path_to_issues.items():
 			for issue in issues:
-				# Pylint issues (syntax errors, undefined variables, etc.) are errors
-				self.errors.append(f"{path}: {issue}")
+				# Pylint issues (syntax errors, undefined variables, etc.) - use configured severity
+				self.add_violation(f"{path}: {issue}")
 
 	def _run_pylint_batch(self, scripts: Dict[str, ScriptNode]) -> Dict[str, List[str]]:
 		"""Run pylint on multiple scripts at once."""
