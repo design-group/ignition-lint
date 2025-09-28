@@ -21,14 +21,14 @@ from ..model.node_types import ViewNode, NodeType
 @register_rule
 class MyCustomRule(LintingRule):
     """My custom linting rule description."""
-    
+
     def __init__(self, target_node_types: Set[NodeType] = None):
         super().__init__(target_node_types or {NodeType.COMPONENT})
-    
+
     @property
     def error_message(self) -> str:
         return "Description of what this rule checks"
-    
+
     def visit_component(self, component: ViewNode):
         # Your rule logic here
         if some_condition:
@@ -66,7 +66,7 @@ ignition-lint uses the **visitor pattern** to process different types of nodes i
 
 - **`NodeType.COMPONENT`** - UI components (buttons, labels, containers, etc.)
 - **`NodeType.EXPRESSION_BINDING`** - Expression-based bindings
-- **`NodeType.PROPERTY_BINDING`** - Property-to-property bindings  
+- **`NodeType.PROPERTY_BINDING`** - Property-to-property bindings
 - **`NodeType.TAG_BINDING`** - Tag-based bindings
 - **`NodeType.MESSAGE_HANDLER`** - Message handler scripts
 - **`NodeType.CUSTOM_METHOD`** - Custom component methods
@@ -129,19 +129,19 @@ from ..model.node_types import ViewNode, NodeType
 @register_rule
 class ComponentNameLengthRule(LintingRule):
     """Ensures component names meet minimum length requirements."""
-    
+
     def __init__(self, min_length: int = 3, max_length: int = 50, target_node_types: Set[NodeType] = None):
         super().__init__(target_node_types or {NodeType.COMPONENT})
         self.min_length = min_length
         self.max_length = max_length
-    
+
     @property
     def error_message(self) -> str:
         return f"Component names must be between {self.min_length} and {self.max_length} characters"
-    
+
     def visit_component(self, component: ViewNode):
         name = component.path.split('.')[-1]
-        
+
         if len(name) < self.min_length:
             self.errors.append(f"{component.path}: Name too short ({len(name)} < {self.min_length})")
         elif len(name) > self.max_length:
@@ -158,28 +158,28 @@ from ..model.node_types import ViewNode, NodeType, ALL_SCRIPTS
 @register_rule
 class ScriptComplexityRule(LintingRule):
     """Checks script complexity across all script types."""
-    
+
     def __init__(self, max_lines: int = 50):
         super().__init__(ALL_SCRIPTS)  # Target all script types
         self.max_lines = max_lines
         self.script_count = 0
-    
+
     @property
     def error_message(self) -> str:
         return f"Scripts should not exceed {self.max_lines} lines"
-    
+
     def visit_message_handler(self, script: ViewNode):
         self._check_script_complexity(script)
-    
+
     def visit_custom_method(self, script: ViewNode):
         self._check_script_complexity(script)
-    
+
     def visit_transform(self, script: ViewNode):
         self._check_script_complexity(script)
-    
+
     def visit_event_handler(self, script: ViewNode):
         self._check_script_complexity(script)
-    
+
     def _check_script_complexity(self, script: ViewNode):
         self.script_count += 1
         if hasattr(script, 'script_content'):
@@ -188,7 +188,7 @@ class ScriptComplexityRule(LintingRule):
                 self.errors.append(
                     f"{script.path}: Script too long ({lines} lines > {self.max_lines})"
                 )
-    
+
     def post_process(self):
         """Called after processing all nodes."""
         print(f"Analyzed {self.script_count} scripts")
@@ -197,37 +197,37 @@ class ScriptComplexityRule(LintingRule):
 ### Example 3: Configuration Preprocessing
 
 ```python
-@register_rule  
+@register_rule
 class AdvancedNamingRule(LintingRule):
     """Advanced naming rule with configuration preprocessing."""
-    
+
     @classmethod
     def preprocess_config(cls, config):
         """Convert string configurations to proper types."""
         processed = config.copy()
-        
+
         # Convert string node types to NodeType enums
         if 'target_node_types' in processed:
             node_types = processed['target_node_types']
             if isinstance(node_types, str):
                 processed['target_node_types'] = [node_types]
-            
+
         # Convert string patterns to compiled regex
         if 'forbidden_patterns' in processed:
             import re
             patterns = processed['forbidden_patterns']
             processed['compiled_patterns'] = [re.compile(p) for p in patterns]
-            
+
         return processed
-    
+
     def __init__(self, forbidden_patterns=None, **kwargs):
         super().__init__()
         self.compiled_patterns = kwargs.get('compiled_patterns', [])
-    
+
     @property
     def error_message(self) -> str:
         return "Component names must not match forbidden patterns"
-    
+
     def visit_component(self, component: ViewNode):
         name = component.path.split('.')[-1]
         for pattern in self.compiled_patterns:
@@ -281,13 +281,13 @@ class TestYourRule(BaseRuleTest):
     def setUp(self):
         super().setUp()
         self.rule_config = get_test_config("YourRule", param1="value1")
-    
+
     def test_rule_passes_valid_case(self):
         view_file = self.test_cases_dir / "ValidCase" / "view.json"
         self.assert_rule_passes(view_file, self.rule_config, "YourRule")
-    
+
     def test_rule_fails_invalid_case(self):
-        view_file = self.test_cases_dir / "InvalidCase" / "view.json" 
+        view_file = self.test_cases_dir / "InvalidCase" / "view.json"
         self.assert_rule_fails(view_file, self.rule_config, "YourRule")
 ```
 
@@ -324,7 +324,7 @@ Good error messages include:
 # Good
 self.errors.append(f"{component.path}: Name 'myButton' should use PascalCase (suggestion: 'MyButton')")
 
-# Bad  
+# Bad
 self.errors.append("Invalid name")
 ```
 
@@ -347,7 +347,7 @@ from ..model.node_types import ALL_BINDINGS
 super().__init__(ALL_BINDINGS)
 
 # All scripts
-from ..model.node_types import ALL_SCRIPTS  
+from ..model.node_types import ALL_SCRIPTS
 super().__init__(ALL_SCRIPTS)
 
 # Multiple specific types
@@ -362,10 +362,10 @@ super().__init__({NodeType.COMPONENT, NodeType.PROPERTY})
 def visit_component(self, component: ViewNode):
     # Get component name
     name = component.path.split('.')[-1]
-    
+
     # Get parent path
     parent_path = '.'.join(component.path.split('.')[:-1])
-    
+
     # Check if it's a root component
     is_root = component.path.count('.') == 1
 ```
@@ -398,14 +398,14 @@ def __init__(self):
 
 def visit_component(self, component: ViewNode):
     self.components[component.path] = component
-    
+
 def visit_tag_binding(self, binding: ViewNode):
     self.bindings[binding.path] = binding
-    
+
 def post_process(self):
     # Analyze relationships between components and their bindings
     for component_path, component in self.components.items():
-        related_bindings = [b for b_path, b in self.bindings.items() 
+        related_bindings = [b for b_path, b in self.bindings.items()
                           if b_path.startswith(component_path)]
         # Analysis here
 ```

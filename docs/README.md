@@ -100,7 +100,7 @@ ignition-lint is built on a modular architecture with these key components:
 
 **Key Concepts:**
 - **JSON Flattening**: Converts hierarchical JSON to path-value pairs
-- **Object Model**: Builds structured ViewNode representations  
+- **Object Model**: Builds structured ViewNode representations
 - **Visitor Pattern**: Rules process specific node types via visitor methods
 - **Rule Registry**: Automatic discovery and validation of custom rules
 
@@ -117,11 +117,11 @@ class MyRule(LintingRule):
     def __init__(self, param="default"):
         super().__init__({NodeType.COMPONENT})
         self.param = param
-    
+
     @property
     def error_message(self) -> str:
         return "Description of what this rule checks"
-    
+
     def visit_component(self, component):
         if some_condition:
             self.errors.append(f"{component.path}: Error message")

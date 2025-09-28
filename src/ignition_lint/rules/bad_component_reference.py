@@ -2,7 +2,7 @@
 """
 Rule to detect bad Perspective component references.
 
-This rule identifies usage of object traversal methods and properties that create 
+This rule identifies usage of object traversal methods and properties that create
 brittle dependencies on view structure. Based on Ignition documentation, these patterns
 should be avoided in favor of view.custom properties or message handling.
 """
@@ -14,13 +14,13 @@ from ..model.node_types import NodeType, ALL_SCRIPTS
 class BadComponentReferenceRule(LintingRule):
 	"""
 	Detects bad component object traversal patterns in scripts and expressions.
-	
+
 	Flags usage of:
-	- .getSibling() / .getSibling(string)  
+	- .getSibling() / .getSibling(string)
 	- .getParent() / .parent
 	- .getChild(string) / .children / .getChildren()
-	
-	These create tight coupling to view structure. Use view.custom properties 
+
+	These create tight coupling to view structure. Use view.custom properties
 	or message handling instead for better maintainability.
 	"""
 

@@ -241,7 +241,7 @@ class TestMyNewRule(BaseRuleTest):
         # Arrange
         rule_config = get_test_config("MyNewRule", param="value")
         view_file = load_test_view(self.test_cases_dir, "ValidCase")
-        
+
         # Act & Assert
         self.assert_rule_passes(view_file, rule_config, "MyNewRule")
 ```
@@ -265,11 +265,11 @@ class MyNewRule(LintingRule):
     def __init__(self, param="default"):
         super().__init__({NodeType.COMPONENT})
         self.param = param
-    
+
     @property
     def error_message(self):
         return "My new rule validation failed"
-    
+
     def visit_component(self, node):
         # Minimal implementation to pass the test
         pass  # For now, just don't add any errors
@@ -318,7 +318,7 @@ def test_my_new_rule_fails_invalid_case(self):
     """Test that MyNewRule catches invalid cases."""
     rule_config = get_test_config("MyNewRule", param="strict")
     view_file = load_test_view(self.test_cases_dir, "InvalidCase")
-    
+
     self.assert_rule_fails(view_file, rule_config, "MyNewRule", expected_error_count=1)
 
 def test_my_new_rule_with_different_parameters(self):
@@ -366,7 +366,7 @@ from fixtures.test_helpers import get_test_config, create_temp_view_file, create
 
 class TestComponentDescriptionRule(BaseRuleTest):
     """Test component description validation."""
-    
+
     def test_component_with_description_passes(self):
         """Components with descriptions should pass validation."""
         # Create a mock view with components that have descriptions
@@ -379,21 +379,21 @@ class TestComponentDescriptionRule(BaseRuleTest):
                 }
             }
         ]
-        
+
         view_content = create_mock_view(components)
         view_file = create_temp_view_file(view_content)
-        
+
         try:
             rule_config = get_test_config(
                 "ComponentDescriptionRule",
                 require_description=True,
                 min_length=10
             )
-            
+
             self.assert_rule_passes(view_file, rule_config, "ComponentDescriptionRule")
         finally:
             view_file.unlink()  # Clean up temp file
-    
+
     def test_component_without_description_fails(self):
         """Components without descriptions should fail validation."""
         components = [
@@ -405,18 +405,18 @@ class TestComponentDescriptionRule(BaseRuleTest):
                 }
             }
         ]
-        
+
         view_content = create_mock_view(components)
         view_file = create_temp_view_file(view_content)
-        
+
         try:
             rule_config = get_test_config(
                 "ComponentDescriptionRule",
                 require_description=True
             )
-            
+
             self.assert_rule_fails(view_file, rule_config, "ComponentDescriptionRule")
-            
+
             # Also test error message content
             errors = self.run_lint_on_file(view_file, rule_config)
             error_messages = errors.get("ComponentDescriptionRule", [])
@@ -426,29 +426,29 @@ class TestComponentDescriptionRule(BaseRuleTest):
             )
         finally:
             view_file.unlink()
-    
+
     def test_description_too_short_fails(self):
         """Components with too-short descriptions should fail."""
         components = [
             {
-                "name": "MyButton", 
+                "name": "MyButton",
                 "type": "ia.input.button",
                 "props": {
                     "description": "Short"  # Too short
                 }
             }
         ]
-        
+
         view_content = create_mock_view(components)
         view_file = create_temp_view_file(view_content)
-        
+
         try:
             rule_config = get_test_config(
                 "ComponentDescriptionRule",
                 require_description=True,
                 min_length=10
             )
-            
+
             self.assert_rule_fails(view_file, rule_config, "ComponentDescriptionRule")
         finally:
             view_file.unlink()
@@ -480,11 +480,11 @@ from ..model.node_types import NodeType
 
 class ComponentDescriptionRule(LintingRule):
     """Rule to validate component descriptions."""
-    
+
     def __init__(self, require_description=True, min_length=0, max_length=None):
         """
         Initialize the component description rule.
-        
+
         Args:
             require_description: Whether descriptions are required
             min_length: Minimum description length
@@ -494,31 +494,31 @@ class ComponentDescriptionRule(LintingRule):
         self.require_description = require_description
         self.min_length = min_length
         self.max_length = max_length
-    
+
     @property
     def error_message(self):
         return "Component description validation failed"
-    
+
     def visit_component(self, node):
         """Check component description."""
         # Skip root component
         if node.name == "root":
             return
-        
+
         # Get description from component properties
         description = node.properties.get("description", "")
-        
+
         if self.require_description and not description:
             self.errors.append(f"{node.path}: Component missing description")
             return
-        
+
         if description:
             if len(description) < self.min_length:
                 self.errors.append(
                     f"{node.path}: Description too short "
                     f"(minimum {self.min_length} characters)"
                 )
-            
+
             if self.max_length and len(description) > self.max_length:
                 self.errors.append(
                     f"{node.path}: Description too long "
@@ -547,7 +547,7 @@ python test_runner.py --test component_description
 **Expected output:**
 ```
 test_component_with_description_passes ... ok
-test_component_without_description_fails ... ok  
+test_component_without_description_fails ... ok
 test_description_too_short_fails ... ok
 ----------------------------------------------------------------------
 Ran 3 tests in 0.045s
@@ -649,14 +649,14 @@ class TestRuleInteractions(BaseIntegrationTest):
                 "kwargs": {"convention": "PascalCase"}
             },
             "PollingIntervalRule": {
-                "enabled": True, 
+                "enabled": True,
                 "kwargs": {"minimum_interval": 5000}
             }
         }
-        
+
         view_file = load_test_view(self.test_cases_dir, "PascalCase")
         errors = self.run_multiple_rules(view_file, rule_configs)
-        
+
         # Both rules should run without conflicts
         self.assertIsInstance(errors, dict)
 ```
@@ -669,11 +669,11 @@ class TestComponentNamingConventions(BaseRuleTest):
         """Test all supported naming conventions."""
         conventions = [
             ("PascalCase", "PascalCase"),
-            ("camelCase", "camelCase"), 
+            ("camelCase", "camelCase"),
             ("snake_case", "snake_case"),
             ("kebab-case", "kebab-case")
         ]
-        
+
         for convention, test_case in conventions:
             with self.subTest(convention=convention):
                 rule_config = get_test_config("NamePatternRule", convention=convention)
@@ -688,10 +688,10 @@ def test_error_message_content(self):
     """Test that error messages are helpful and specific."""
     rule_config = get_test_config("NamePatternRule", convention="PascalCase")
     view_file = load_test_view(self.test_cases_dir, "camelCase")
-    
+
     errors = self.run_lint_on_file(view_file, rule_config)
     error_messages = errors.get("NamePatternRule", [])
-    
+
     # Check error message contains useful information
     self.assertTrue(any("PascalCase" in error for error in error_messages))
     self.assertTrue(any("doesn't follow" in error for error in error_messages))
@@ -703,26 +703,26 @@ def test_error_message_content(self):
 def test_rule_performance(self):
     """Test that rule processes large files efficiently."""
     import time
-    
+
     # Create a large mock view
     large_components = [
         {"name": f"Component{i}", "type": "ia.display.label"}
         for i in range(1000)
     ]
-    
+
     view_content = create_mock_view(large_components)
     view_file = create_temp_view_file(view_content)
-    
+
     try:
         rule_config = get_test_config("NamePatternRule", convention="PascalCase")
-        
+
         start_time = time.time()
         errors = self.run_lint_on_file(view_file, rule_config)
         elapsed_time = time.time() - start_time
-        
+
         # Should complete within reasonable time
         self.assertLess(elapsed_time, 5.0, "Rule should process 1000 components in under 5 seconds")
-        
+
         # Should handle all components
         self.assertIsInstance(errors.get("NamePatternRule", []), list)
     finally:
@@ -820,7 +820,7 @@ The project includes GitHub Actions workflow that:
 
 1. **Tests multiple Python versions** (3.8-3.11)
 2. **Runs all test categories**
-3. **Checks code quality** 
+3. **Checks code quality**
 4. **Reports test coverage**
 
 ### Pre-commit Hooks
@@ -867,7 +867,7 @@ test-watch:
 **For every new feature:**
 
 1. **📋 Plan** - Understand what you're building
-2. **🔴 Red** - Write failing test first  
+2. **🔴 Red** - Write failing test first
 3. **🟢 Green** - Write minimal code to pass
 4. **🔵 Refactor** - Improve code quality
 5. **🧪 Expand** - Add edge cases and error handling
@@ -880,7 +880,7 @@ test-watch:
 # Start of day - make sure everything works
 python test_runner.py --run-unit --quiet
 
-# While developing - run specific tests frequently  
+# While developing - run specific tests frequently
 python test_runner.py --test my_feature
 
 # Before committing - run full test suite

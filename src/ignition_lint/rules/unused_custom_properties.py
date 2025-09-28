@@ -11,7 +11,7 @@ Custom properties can be located at:
 
 SUPPORTED DETECTION:
 - ✅ View-level custom properties (custom.*)
-- ✅ View parameters (params.*)  
+- ✅ View parameters (params.*)
 - ✅ Component-level custom properties (*.custom.*)
 - ✅ References in expression bindings ({view.custom.prop}, {this.custom.prop})
 - ✅ Persistent vs non-persistent property handling

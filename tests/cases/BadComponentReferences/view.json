@@ -121,7 +121,7 @@
               "script": "\n# Bad pattern in custom method\ntarget = self.getSibling('StatusLabel')\ntarget.props.text = 'Updated by custom method'\nreturn target.props.text\n"
             },
             {
-              "name": "navigateHierarchy", 
+              "name": "navigateHierarchy",
               "parameters": ["direction"],
               "script": "\n# Multiple bad patterns in one method\nif direction == 'up':\n    return self.getParent().props.name\nelif direction == 'down':\n    children = self.getChildren()\n    return [child.props.name for child in children]\nelse:\n    sibling = self.getSibling('StatusLabel')\n    return sibling.props.text\n"
             }

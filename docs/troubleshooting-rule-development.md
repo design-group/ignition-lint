@@ -107,7 +107,7 @@ class MyRule(LintingRule):
 class MyRule(LintingRule):
     def __init__(self):
         super().__init__({NodeType.COMPONENT})
-    
+
     @property
     def error_message(self) -> str:
         return "Description of what this rule checks"
@@ -208,7 +208,7 @@ class MyRule(LintingRule):
 class MyRule(LintingRule):
     def __init__(self):
         super().__init__({NodeType.COMPONENT})
-    
+
     def some_method(self):
         from .my_other_rule import MyOtherRule  # Import when needed
         other_rule = MyOtherRule()
@@ -253,14 +253,14 @@ class MyRule(LintingRule):
 @classmethod
 def preprocess_config(cls, config):
     processed = config.copy()
-    
+
     # Convert string numbers to integers
     if 'max_count' in processed and isinstance(processed['max_count'], str):
         try:
             processed['max_count'] = int(processed['max_count'])
         except ValueError:
             raise ValueError(f"max_count must be a number, got: {processed['max_count']}")
-    
+
     return processed
 ```
 
@@ -270,9 +270,9 @@ def preprocess_config(cls, config):
 @classmethod
 def preprocess_config(cls, config):
     from ..model.node_types import NodeType
-    
+
     processed = config.copy()
-    
+
     if 'target_node_types' in processed:
         node_types = processed['target_node_types']
         if isinstance(node_types, str):
@@ -283,7 +283,7 @@ def preprocess_config(cls, config):
             processed['target_node_types'] = {
                 getattr(NodeType, nt.upper()) for nt in node_types
             }
-    
+
     return processed
 ```
 
@@ -610,7 +610,7 @@ class MyRule(LintingRule):
     def __init__(self):
         super().__init__({NodeType.COMPONENT})
         self.logger = logging.getLogger(__name__)
-    
+
     def visit_component(self, component: ViewNode):
         self.logger.debug(f"Processing component: {component.path}")
         # Your logic here
@@ -653,7 +653,7 @@ poetry run python -c "from ignition_lint.rules import get_all_rules; rule = get_
 
 If you're still experiencing issues:
 
-1. **Check documentation**: 
+1. **Check documentation**:
    - [Tutorial](tutorial-creating-your-first-rule.md) - Step-by-step guidance
    - [Developer Guide](developer-guide-rule-creation.md) - Comprehensive patterns and examples
    - [API Reference](api-reference-rule-registration.md) - Complete API specifications
@@ -682,7 +682,7 @@ class BadRule(LintingRule):
 # ❌ Importing inside class definition
 class BadRule(LintingRule):
     from ..model.node_types import NodeType  # Wrong place
-    
+
 # ❌ Complex logic in __init__
 class BadRule(LintingRule):
     def __init__(self):
@@ -708,7 +708,7 @@ class GoodRule(LintingRule):
     def __init__(self):
         super().__init__({NodeType.COMPONENT})
         self.component_count = 0  # Instance state
-        
+
     def visit_component(self, component):
         self.component_count += 1
         if some_condition:

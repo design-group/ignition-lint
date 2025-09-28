@@ -1,4 +1,4 @@
-# pylint: disable=wrong-import-position,import-error
+# pylint: disable=wrong-import-position,import-error,attribute-defined-outside-init
 """
 Base test classes providing common functionality for ignition-lint tests.
 """
@@ -7,7 +7,6 @@ import unittest
 import os
 import sys
 import tempfile
-import json
 from pathlib import Path
 from typing import Dict, List, Any
 
@@ -37,10 +36,10 @@ class BaseRuleTest(unittest.TestCase):
 	def create_lint_engine(self, rule_configs: Dict[str, Dict[str, Any]]) -> LintEngine:
 		"""
 		Create a lint engine with the specified rules.
-		
+
 		Args:
 			rule_configs: Dictionary mapping rule names to their configurations
-			
+
 		Returns:
 			Configured LintEngine instance
 		"""
@@ -63,11 +62,11 @@ class BaseRuleTest(unittest.TestCase):
 	def run_lint_on_file(self, view_file: Path, rule_configs: Dict[str, Dict[str, Any]]) -> Dict[str, List[str]]:
 		"""
 		Run linting on a view file with the given rule configuration.
-		
+
 		Args:
 			view_file: Path to the view.json file
 			rule_configs: Rule configurations
-			
+
 		Returns:
 			Dictionary of errors found by rule (combined warnings and errors for backward compatibility)
 		"""
@@ -88,11 +87,11 @@ class BaseRuleTest(unittest.TestCase):
 	def run_lint_on_file_detailed(self, view_file: Path, rule_configs: Dict[str, Dict[str, Any]]):
 		"""
 		Run linting on a view file and return detailed results with warnings and errors separated.
-		
+
 		Args:
 			view_file: Path to the view.json file
 			rule_configs: Rule configurations
-			
+
 		Returns:
 			LintResults object with separate warnings and errors
 		"""
@@ -106,11 +105,11 @@ class BaseRuleTest(unittest.TestCase):
 	def run_lint_on_mock_view(self, mock_view_content: str, rule_configs: Dict[str, Dict[str, Any]]) -> Dict[str, List[str]]:
 		"""
 		Run linting on mock view JSON content with the given rule configuration.
-		
+
 		Args:
 			mock_view_content: JSON string content for the mock view
 			rule_configs: Rule configurations
-			
+
 		Returns:
 			Dictionary of errors found by rule (combined warnings and errors for backward compatibility)
 		"""
@@ -118,7 +117,7 @@ class BaseRuleTest(unittest.TestCase):
 		with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
 			f.write(mock_view_content)
 			temp_file = Path(f.name)
-		
+
 		try:
 			return self.run_lint_on_file(temp_file, rule_configs)
 		finally:
@@ -249,11 +248,11 @@ class BaseIntegrationTest(unittest.TestCase):
 	def run_multiple_rules(self, view_file: Path, rule_configs: Dict[str, Dict[str, Any]]) -> Dict[str, List[str]]:
 		"""
 		Run multiple rules on a view file.
-		
+
 		Args:
 			view_file: Path to the view.json file
 			rule_configs: Dictionary of rule configurations
-			
+
 		Returns:
 			Dictionary of errors by rule name (combined warnings and errors for backward compatibility)
 		"""
@@ -290,11 +289,11 @@ class BaseIntegrationTest(unittest.TestCase):
 	def run_multiple_rules_detailed(self, view_file: Path, rule_configs: Dict[str, Dict[str, Any]]):
 		"""
 		Run multiple rules on a view file and return detailed results.
-		
+
 		Args:
 			view_file: Path to the view.json file
 			rule_configs: Dictionary of rule configurations
-			
+
 		Returns:
 			LintResults object with separate warnings and errors
 		"""

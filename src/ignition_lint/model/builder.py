@@ -122,14 +122,14 @@ class ViewModelBuilder:
 	def _is_property_persistent(self, property_path: str) -> bool:
 		"""
 		Check if a property is persistent (exists at startup) or non-persistent (created by bindings).
-		
+
 		Properties are considered persistent if:
 		1. They have no propConfig entry (default behavior)
 		2. They have propConfig.{property_path}.persistent = True
-		
+
 		Args:
 			property_path: The path to the property (e.g., "custom.myProp" or "root.root.children[0].Button.custom.myProp")
-		
+
 		Returns:
 			True if the property should be persistent, False if it's created by bindings at runtime
 		"""
@@ -282,7 +282,7 @@ class ViewModelBuilder:
 				else:
 					# Standard format: path.events.eventType.script
 					event_path_parts = path.split('.script')[0]
-				
+
 				event_path = event_path_parts
 
 				# Extract event type from path (e.g., 'onActionPerformed', 'onStartup')
@@ -290,7 +290,7 @@ class ViewModelBuilder:
 				event_type_match = re.search(r'\.events\.([^.]+)$', event_path_parts)
 				if event_type_match:
 					event_type = event_type_match.group(1)  # e.g., 'onActionPerformed', 'onStartup'
-					
+
 					# Get the scope from the same event path
 					scope_path = f"{event_path_parts}.scope"
 					scope = self.flattened_json.get(scope_path, "L")

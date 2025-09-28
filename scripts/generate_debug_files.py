@@ -106,7 +106,7 @@ This directory contains debug information generated from `{case_dir.name}/view.j
 ## Files
 
 - **`flattened.json`**: The flattened path-value representation of the original JSON
-- **`model.json`**: The serialized object model with all nodes organized by type  
+- **`model.json`**: The serialized object model with all nodes organized by type
 - **`stats.json`**: Comprehensive statistics including node counts and rule coverage
 
 ## Generation

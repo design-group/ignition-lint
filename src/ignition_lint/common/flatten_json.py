@@ -165,10 +165,10 @@ def flatten_json(data, path="", results=None):
 
 def flatten_file(file_path):
 	"""Flatten a JSON file and return sorted results.
-	
+
 	Args:
 		file_path: Path to the JSON file.
-		
+
 	Returns:
 		OrderedDict: Sorted flattened JSON data.
 	"""

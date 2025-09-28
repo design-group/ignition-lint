@@ -5,7 +5,7 @@ Golden file test for LintEngine model generation.
 This test validates that the LintEngine produces consistent model output by comparing
 generated models against golden reference files. This catches regressions in:
 - JSON flattening logic
-- Model building process  
+- Model building process
 - Node creation and serialization
 - Statistics generation
 

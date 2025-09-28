@@ -162,7 +162,7 @@ ViewNode (Abstract Base)
 
 - **Mixed Testing Approaches**: Uses both unittest (BaseRuleTest) and pytest (conftest.py) patterns
 - **Parameter Passing**: Custom test_runner.py may not pass parameters correctly to some test configurations
-- **Configuration Framework**: Complex config-driven testing system in `fixtures/config_framework.py` 
+- **Configuration Framework**: Complex config-driven testing system in `fixtures/config_framework.py`
 - **Path Dependencies**: Tests rely on relative path discovery which can be brittle
 
 ## Integration Points and External Dependencies
@@ -226,7 +226,7 @@ cd tests && python test_runner.py --test component_naming
 
 **CRITICAL ISSUE**: Mixed testing frameworks cause confusion
 - **Unittest Pattern**: `BaseRuleTest` and `BaseIntegrationTest` classes
-- **Pytest Pattern**: Fixtures in `conftest.py` 
+- **Pytest Pattern**: Fixtures in `conftest.py`
 - **Custom Framework**: Configuration-driven testing via `config_framework.py`
 
 ### Running Tests
@@ -305,7 +305,7 @@ The system converts hierarchical JSON to dot-notation paths:
 
 `ViewModelBuilder` (`src/ignition_lint/model/builder.py`) parses flattened JSON through specialized collectors:
 - `_collect_components()` - Finds meta.name entries
-- `_collect_bindings()` - Parses binding.type configurations  
+- `_collect_bindings()` - Parses binding.type configurations
 - `_collect_message_handlers()` - Extracts messageHandlers scripts
 - `_collect_custom_methods()` - Parses customMethods with parameters
 - `_collect_event_handlers()` - Processes event scripts
@@ -319,7 +319,7 @@ Rules implement the visitor pattern via `LintingRule` base class:
 class MyRule(LintingRule):
     def __init__(self, target_node_types=None):
         super().__init__(target_node_types or {NodeType.COMPONENT})
-    
+
     def visit_component(self, node):
         # Rule logic for components
         if some_validation_fails:
@@ -386,7 +386,7 @@ Rules are configured via JSON with preprocessing:
 
 **CRITICAL PATTERN**: Rules can preprocess their configuration via `preprocess_config()` class method:
 - **String to Enum**: Converts string node types to `NodeType` enums
-- **Validation**: Validates configuration before rule instantiation  
+- **Validation**: Validates configuration before rule instantiation
 - **Default Handling**: Applies default values and transformations
 
 ### Rule Registry
@@ -438,7 +438,7 @@ poetry export --output requirements.txt    # Export dependencies
 
 ### Common Issues and Solutions
 
-**"No files found"**: 
+**"No files found"**:
 - Check file patterns, system looks specifically for `view.json` files
 - Use absolute paths or verify current directory
 
@@ -471,7 +471,7 @@ The visitor pattern enables:
 
 The testing framework supports multiple approaches:
 - **Unit Testing**: Fast, isolated rule validation
-- **Integration Testing**: Multi-rule interaction validation  
+- **Integration Testing**: Multi-rule interaction validation
 - **Configuration Testing**: JSON-driven test case definitions
 - **Fixture Sharing**: Common test data and utilities
 

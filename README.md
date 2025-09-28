@@ -252,11 +252,11 @@ class MyComponentRule(LintingRule):
         node.name      # Component name: "Label_1"
         node.type      # Component type: "ia.display.label"
         node.properties # Dict of all component properties
-        
+
         # Example: Check component positioning
         x_position = node.properties.get('position.x', 0)
         y_position = node.properties.get('position.y', 0)
-        
+
         if x_position < 0 or y_position < 0:
             self.errors.append(
                 f"{node.path}: Component '{node.name}' has negative position"
@@ -272,20 +272,20 @@ class MyBindingRule(LintingRule):
         node.path         # Path to the bound property
         node.binding_type # Type of binding: "expr", "property", "tag"
         node.config       # Full binding configuration dict
-        
+
         # Specific to expression bindings:
         node.expression   # The expression string
-        
+
         # Example: Check for hardcoded values in expressions
         if '"localhost"' in node.expression or "'localhost'" in node.expression:
             self.errors.append(
                 f"{node.path}: Expression contains hardcoded localhost"
             )
-    
+
     def visit_tag_binding(self, node):
         # Specific to tag bindings:
         node.tag_path    # The tag path string
-        
+
         # Example: Ensure tags follow naming convention
         if not node.tag_path.startswith("[default]"):
             self.errors.append(
@@ -303,23 +303,23 @@ class MyScriptRule(LintingRule):
         node.name         # Method name: "refreshData"
         node.script         # Raw script code
         node.params       # List of parameter names
-        
+
         # Special method:
         formatted_script = node.get_formatted_script()
         # Returns properly formatted Python with function definition
-        
+
         # Example: Check for print statements
         if 'print(' in node.script:
             self.errors.append(
                 f"{node.path}: Method '{node.name}' contains print statement"
             )
-    
+
     def visit_message_handler(self, node):
         # Additional properties:
         node.message_type # The message type this handles
         node.scope        # Dict with scope settings:
                             # {'page': False, 'session': True, 'view': False}
-        
+
         # Example: Warn about session-scoped handlers
         if node.scope.get('session', False):
             self.errors.append(
@@ -338,15 +338,15 @@ class CrossReferenceRule(LintingRule):
         super().__init__(node_types=[Component, PropertyBinding])
         self.component_paths = set()
         self.binding_targets = []
-    
+
     def visit_component(self, node):
         # Collect all component paths
         self.component_paths.add(node.path)
-    
+
     def visit_property_binding(self, node):
         # Store binding for later validation
         self.binding_targets.append((node.path, node.target_path))
-    
+
     def process_collected_scripts(self):
         # This method is called after all nodes are visited
         for binding_path, target_path in self.binding_targets:
@@ -364,12 +364,12 @@ class ContextAwareRule(LintingRule):
         super().__init__(node_types=[Component, Script])
         self.current_component = None
         self.component_stack = []
-    
+
     def visit_component(self, node):
         # Track component context
         self.component_stack.append(node)
         self.current_component = node
-    
+
     def visit_script(self, node):
         # Use component context
         if self.current_component and self.current_component.type == "ia.display.table":
@@ -387,20 +387,20 @@ class ComplexityAnalysisRule(LintingRule):
         super().__init__(node_types=[Component])
         self.max_complexity = max_complexity_score
         self.complexity_scores = {}
-    
+
     def visit_component(self, node):
         score = 0
-        
+
         # Calculate complexity based on various factors
         score += len(node.properties) * 2  # Property count
-        
+
         # Check for deeply nested properties
         for prop_name in node.properties:
             score += prop_name.count('.') * 3  # Nesting depth
-        
+
         # Store score
         self.complexity_scores[node.path] = score
-        
+
         if score > self.max_complexity:
             self.errors.append(
                 f"{node.path}: Component complexity score {score} "
@@ -417,19 +417,19 @@ class RawDataRule(LintingRule):
     def __init__(self):
         super().__init__()
         self.flattened_json = None
-    
+
     def lint(self, flattened_json):
         # Store the flattened JSON for use in visit methods
         self.flattened_json = flattened_json
         return super().lint(flattened_json)
-    
+
     def visit_component(self, node):
         # Access any part of the flattened JSON
         style_classes = self.flattened_json.get(
-            f"{node.path}.props.style.classes", 
+            f"{node.path}.props.style.classes",
             ""
         )
-        
+
         if style_classes and "/" in style_classes:
             self.errors.append(
                 f"{node.path}: Style classes contain invalid '/' character"
@@ -443,22 +443,22 @@ class LifecycleAwareRule(LintingRule):
     def __init__(self):
         super().__init__()
         self.setup_complete = False
-    
+
     def before_visit(self):
         """Called before visiting any nodes."""
         self.setup_complete = True
         self.errors = []  # Reset errors
-    
+
     def visit_component(self, node):
         """Process each component."""
         # Your logic here
         pass
-    
+
     def process_collected_scripts(self):
         """Called after all nodes are visited."""
         # Batch processing, cross-validation, etc.
         pass
-    
+
     def after_visit(self):
         """Called after all processing is complete."""
         # Cleanup, summary generation, etc.
@@ -538,7 +538,7 @@ Validates naming conventions across different node types with flexible configura
 
 **Supported Conventions:**
 - `PascalCase` (default)
-- `camelCase` 
+- `camelCase`
 - `snake_case`
 - `kebab-case`
 - `SCREAMING_SNAKE_CASE`
@@ -574,7 +574,7 @@ Prevents performance issues by enforcing minimum polling intervals in `now()` ex
 #### PylintScriptRule
 Comprehensive Python code analysis using Pylint for all script types:
 - Custom method scripts
-- Event handler scripts  
+- Event handler scripts
 - Message handler scripts
 - Transform scripts
 
@@ -686,7 +686,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -803,8 +803,8 @@ When creating custom rules, set the severity based on the impact:
 class MyCustomRule(LintingRule):
     # Use "warning" for style/preference issues
     severity = "warning"
-    
-    # Use "error" for functional/performance issues  
+
+    # Use "error" for functional/performance issues
     # severity = "error"
 ```
 

@@ -51,9 +51,9 @@ class LintingRule(NodeVisitor):
 	def __init__(self, target_node_types: Set[NodeType] = None):
 		"""
 		Initialize the rule.
-		
+
 		Args:
-			target_node_types: Set of node types this rule applies to. 
+			target_node_types: Set of node types this rule applies to.
 							  If None, applies to all nodes.
 		"""
 		self.target_node_types = target_node_types or set()
@@ -65,10 +65,10 @@ class LintingRule(NodeVisitor):
 		"""
 		Preprocess configuration before rule instantiation.
 		Override this method in subclasses that need special config handling.
-		
+
 		Args:
 			config: Raw configuration dictionary from JSON
-			
+
 		Returns:
 			Processed configuration dictionary ready for __init__
 		"""
@@ -78,10 +78,10 @@ class LintingRule(NodeVisitor):
 	def create_from_config(cls, config: Dict[str, Any]):
 		"""
 		Create a rule instance from configuration, applying any necessary preprocessing.
-		
+
 		Args:
 			config: Raw configuration dictionary from JSON
-			
+
 		Returns:
 			Rule instance
 		"""

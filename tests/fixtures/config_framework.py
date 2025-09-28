@@ -1,3 +1,4 @@
+# pylint: disable=wrong-import-position,import-error
 """
 Configuration-driven test framework for ignition-lint.
 This module allows defining test cases in JSON configuration files
@@ -63,7 +64,7 @@ class ConfigurableTestFramework:
 	def __init__(self, config_dir: Path = None, test_cases_dir: Path = None):
 		"""
 		Initialize the framework.
-		
+
 		Args:
 			config_dir: Directory containing test configuration files
 			test_cases_dir: Directory containing test case view.json files
@@ -83,7 +84,7 @@ class ConfigurableTestFramework:
 	def load_test_configurations(self) -> List[ConfigurableTestCase]:
 		"""
 		Load test configurations from JSON files.
-		
+
 		Returns:
 			List of configured test cases
 		"""
@@ -129,10 +130,10 @@ class ConfigurableTestFramework:
 	def run_single_test(self, test_case: ConfigurableTestCase) -> Dict[str, Any]:
 		"""
 		Run a single test case and return results.
-		
+
 		Args:
 			test_case: The test case to run
-			
+
 		Returns:
 			Dictionary containing test results
 		"""
@@ -275,10 +276,10 @@ class ConfigurableTestFramework:
 	def run_all_tests(self, tags: List[str] = None) -> Dict[str, Any]:
 		"""
 		Run all loaded test cases, optionally filtered by tags.
-		
+
 		Args:
 			tags: Optional list of tags to filter tests
-			
+
 		Returns:
 			Dictionary containing overall test results
 		"""
@@ -319,7 +320,7 @@ class ConfigurableTestFramework:
 	def generate_test_config_template(self, rule_name: str, output_file: str = None):
 		"""
 		Generate a template configuration file for a specific rule.
-		
+
 		Args:
 			rule_name: Name of the rule to generate config for
 			output_file: Optional output file path

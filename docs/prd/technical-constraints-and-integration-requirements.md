@@ -31,7 +31,7 @@
 
 ## Risk Assessment and Mitigation
 
-**Technical Risks**: 
+**Technical Risks**:
 - Rule registration system could introduce performance overhead
 - Dynamic rule discovery might create security vulnerabilities
 - Poorly written developer rules could crash the framework
