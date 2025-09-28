@@ -66,7 +66,8 @@ class TestGoldenFiles(unittest.TestCase):
 		if missing_golden_files:
 			raise RuntimeError(
 				f"Missing golden files for {len(missing_golden_files)} test case(s): {missing_golden_files}\n"
-				f"Generate them with: python scripts/generate_debug_files.py {' '.join(missing_golden_files)}"
+				f"Generate them with: python scripts/generate_debug_files.py {' '.join(missing_golden_files)}\n"
+				"run `./scripts/generate_debug_files.py` to generate for all cases."
 			)
 
 	def _create_fresh_lint_engine(self) -> LintEngine:

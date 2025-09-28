@@ -66,7 +66,25 @@ class PylintScriptRule(ScriptRule):
 
 	def _setup_debug_directory(self) -> str:
 		"""Create and return debug directory path."""
-		debug_dir = os.path.join(os.getcwd(), "debug")
+		# Try to detect if we're in a test environment and use tests/debug
+		cwd = os.getcwd()
+		tests_debug_dir = None
+
+		# Look for tests directory in current working directory or parent directories
+		current_path = cwd
+		while current_path != os.path.dirname(current_path):  # Until we reach root
+			if os.path.basename(current_path) == 'tests':
+				# We're in tests directory
+				tests_debug_dir = os.path.join(current_path, "debug")
+				break
+			elif os.path.exists(os.path.join(current_path, 'tests')):
+				# Tests directory exists in current path
+				tests_debug_dir = os.path.join(current_path, "tests", "debug")
+				break
+			current_path = os.path.dirname(current_path)
+
+		# Use tests/debug if found, otherwise fall back to debug
+		debug_dir = tests_debug_dir if tests_debug_dir else os.path.join(cwd, "debug")
 		os.makedirs(debug_dir, exist_ok=True)
 		return debug_dir
 
