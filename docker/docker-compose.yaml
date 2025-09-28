@@ -1,0 +1,28 @@
+services:
+  # Ignition Gateway Service
+  ignition:
+    image: bwdesigngroup/ignition-docker:8.1.44
+    platform: linux/amd64
+    environment:
+      GATEWAY_MODULES_ENABLED: perspective,web-developer
+      DEVELOPER_MODE: "Y"
+    volumes:
+      - ./ignition-data:/workdir
+      - ./backups/gateway.gwbk:/restore.gwbk
+      - ../tests/cases:/workdir/projects/Testing/com.inductiveautomation.perspective/views/TestCases
+    labels:
+      traefik.enable: "true"
+      traefik.hostname: "ignition-lint"
+    command: >
+      -n ignition-lint-gateway
+      -r /restore.gwbk
+
+    networks:
+      - default
+      - proxy
+
+networks:
+  default:
+  proxy:
+    external: true
+    name: proxy

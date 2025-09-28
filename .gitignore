@@ -13,3 +13,6 @@ bin/
 
 # Build artifacts
 dist/
+
+# Ignition specific content
+.resources/
