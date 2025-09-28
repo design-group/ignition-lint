@@ -4,6 +4,7 @@
 
 # Debug directories (exclude golden test files)
 **/debug/*
+!scripts/debug/*
 !tests/debug/
 !tests/debug/cases/
 !tests/debug/cases/**
