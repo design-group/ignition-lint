@@ -1,0 +1,111 @@
+{
+  "bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "components": {
+    "count": 2,
+    "nodes": [
+      {
+        "name": "icon-kebab-case",
+        "node_type": "component",
+        "path": "root.root.children[0].icon-kebab-case",
+        "properties_count": 0,
+        "type": "ia.display.icon"
+      },
+      {
+        "name": "root",
+        "node_type": "component",
+        "path": "root.root",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      }
+    ]
+  },
+  "custom_methods": {
+    "count": 0,
+    "nodes": []
+  },
+  "event_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "expression_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "message_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "properties": {
+    "count": 7,
+    "nodes": [
+      {
+        "name": "custom-view-param",
+        "node_type": "property",
+        "path": "custom.custom-view-param",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "view-param",
+        "node_type": "property",
+        "path": "params.view-param",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "component-custom-param",
+        "node_type": "property",
+        "path": "root.root.children[0].icon-kebab-case.custom.component-custom-param",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[0].icon-kebab-case.position.basis",
+        "value": "30px",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[0].icon-kebab-case.props.path",
+        "value": "material/insert_emoticon",
+        "value_type": "str"
+      },
+      {
+        "name": "root-custom-param",
+        "node_type": "property",
+        "path": "root.root.custom.root-custom-param",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "direction",
+        "node_type": "property",
+        "path": "root.root.props.direction",
+        "value": "column",
+        "value_type": "str"
+      }
+    ]
+  },
+  "property_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "script_transforms": {
+    "count": 0,
+    "nodes": []
+  },
+  "scripts": {
+    "count": 0,
+    "nodes": []
+  },
+  "tag_bindings": {
+    "count": 0,
+    "nodes": []
+  }
+}

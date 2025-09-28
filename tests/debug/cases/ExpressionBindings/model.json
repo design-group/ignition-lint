@@ -1,0 +1,210 @@
+{
+  "bindings": {
+    "count": 6,
+    "nodes": [
+      {
+        "config": {},
+        "expression": "now()",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.expressionPolling"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "propConfig.custom.transformPolling",
+        "target_path": "view.params.inputProp"
+      },
+      {
+        "config": {},
+        "expression": "now()",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformPolling.binding.transforms[0]"
+      },
+      {
+        "config": {},
+        "expression": "now(5000)",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformPolling.binding.transforms[1]"
+      },
+      {
+        "config": {},
+        "expression": "now(11000)",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformPolling.binding.transforms[2]"
+      },
+      {
+        "config": {},
+        "expression": "now()",
+        "node_type": "expression_binding",
+        "path": "root.root.children[0].BadPollingDateTimeInput.propConfig.props.value"
+      }
+    ]
+  },
+  "components": {
+    "count": 3,
+    "nodes": [
+      {
+        "name": "BadPollingDateTimeInput",
+        "node_type": "component",
+        "path": "root.root.children[0].BadPollingDateTimeInput",
+        "properties_count": 0,
+        "type": "ia.input.date-time-input"
+      },
+      {
+        "name": "Button",
+        "node_type": "component",
+        "path": "root.root.children[1].Button",
+        "properties_count": 0,
+        "type": "ia.input.button"
+      },
+      {
+        "name": "root",
+        "node_type": "component",
+        "path": "root.root",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      }
+    ]
+  },
+  "custom_methods": {
+    "count": 1,
+    "nodes": [
+      {
+        "name": "customBindingRefresh",
+        "node_type": "custom_method",
+        "params": [
+          "var10",
+          "var11"
+        ],
+        "path": "root.root.children[1].Button.scripts.customMethods[0]",
+        "script_length": 51,
+        "script_preview": "\t# implement your method here\n\treturn var10 * var11"
+      }
+    ]
+  },
+  "event_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "expression_bindings": {
+    "count": 5,
+    "nodes": [
+      {
+        "config": {},
+        "expression": "now()",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.expressionPolling"
+      },
+      {
+        "config": {},
+        "expression": "now()",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformPolling.binding.transforms[0]"
+      },
+      {
+        "config": {},
+        "expression": "now(5000)",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformPolling.binding.transforms[1]"
+      },
+      {
+        "config": {},
+        "expression": "now(11000)",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformPolling.binding.transforms[2]"
+      },
+      {
+        "config": {},
+        "expression": "now()",
+        "node_type": "expression_binding",
+        "path": "root.root.children[0].BadPollingDateTimeInput.propConfig.props.value"
+      }
+    ]
+  },
+  "message_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "properties": {
+    "count": 6,
+    "nodes": [
+      {
+        "name": "test",
+        "node_type": "property",
+        "path": "custom.test",
+        "value": 4,
+        "value_type": "int"
+      },
+      {
+        "name": "inputProp",
+        "node_type": "property",
+        "path": "params.inputProp",
+        "value": false,
+        "value_type": "bool"
+      },
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[0].BadPollingDateTimeInput.position.basis",
+        "value": "32px",
+        "value_type": "str"
+      },
+      {
+        "name": "formattedValue",
+        "node_type": "property",
+        "path": "root.root.children[0].BadPollingDateTimeInput.props.formattedValue",
+        "value": "Sep 28, 2025 10:33 PM",
+        "value_type": "str"
+      },
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[1].Button.position.basis",
+        "value": "34px",
+        "value_type": "str"
+      },
+      {
+        "name": "direction",
+        "node_type": "property",
+        "path": "root.root.props.direction",
+        "value": "column",
+        "value_type": "str"
+      }
+    ]
+  },
+  "property_bindings": {
+    "count": 1,
+    "nodes": [
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "propConfig.custom.transformPolling",
+        "target_path": "view.params.inputProp"
+      }
+    ]
+  },
+  "script_transforms": {
+    "count": 0,
+    "nodes": []
+  },
+  "scripts": {
+    "count": 1,
+    "nodes": [
+      {
+        "name": "customBindingRefresh",
+        "node_type": "custom_method",
+        "params": [
+          "var10",
+          "var11"
+        ],
+        "path": "root.root.children[1].Button.scripts.customMethods[0]",
+        "script_length": 51,
+        "script_preview": "\t# implement your method here\n\treturn var10 * var11"
+      }
+    ]
+  },
+  "tag_bindings": {
+    "count": 0,
+    "nodes": []
+  }
+}

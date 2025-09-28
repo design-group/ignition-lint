@@ -2,8 +2,11 @@
 **/__pycache__/
 **/*.egg-info
 
-# Debug directories
+# Debug directories (exclude golden test files)
 **/debug/*
+!tests/debug/
+!tests/debug/cases/
+!tests/debug/cases/**
 
 # Local testing tools
 bin/

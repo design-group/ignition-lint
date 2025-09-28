@@ -4,7 +4,8 @@
 Generate debug files for test cases.
 
 This script processes all test cases in tests/cases/ and generates debug files
-(flattened JSON, model state, statistics) in a debug/ subdirectory within each test case.
+(flattened JSON, model state, statistics) in tests/debug/cases/{case_name}/ to avoid
+conflicts with Ignition gateway overwriting files in the mounted test cases directory.
 
 Usage:
   python scripts/generate_debug_files.py                    # Generate for all test cases
@@ -64,7 +65,9 @@ def create_lint_engine() -> LintEngine:
 def generate_debug_files_for_case(case_dir: Path, lint_engine: LintEngine) -> bool:
 	"""Generate debug files for a specific test case."""
 	view_file = case_dir / 'view.json'
-	debug_dir = case_dir / 'debug'
+	# Create debug files in tests/debug/cases/{case_name}/ instead of in the test case directory
+	repo_root = Path(__file__).parent.parent
+	debug_dir = repo_root / 'tests' / 'debug' / 'cases' / case_dir.name
 
 	if not view_file.exists():
 		print(f"❌ No view.json found in {case_dir.name}")
@@ -79,8 +82,8 @@ def generate_debug_files_for_case(case_dir: Path, lint_engine: LintEngine) -> bo
 		lint_engine.flattened_json = flattened_json
 		lint_engine.view_model = lint_engine.get_view_model()
 
-		# Create debug directory
-		debug_dir.mkdir(exist_ok=True)
+		# Create debug directory (including parent directories)
+		debug_dir.mkdir(parents=True, exist_ok=True)
 
 		# Save flattened JSON
 		with open(debug_dir / 'flattened.json', 'w', encoding='utf-8') as f:
@@ -101,7 +104,7 @@ def generate_debug_files_for_case(case_dir: Path, lint_engine: LintEngine) -> bo
 Regenerate these files whenever the view.json is updated or when model builder logic changes.
 These files help developers diagnose issues with the model building and rule application processes.
 
-This directory contains debug information generated from `{case_dir.name}/view.json`:
+This directory contains debug information generated from `tests/cases/{case_dir.name}/view.json`:
 
 ## Files
 
@@ -138,29 +141,26 @@ These files help developers understand:
 
 
 def clean_debug_directories():
-	"""Remove all debug directories from test cases."""
-	test_cases = get_test_cases()
-	removed_count = 0
+	"""Remove all debug directories."""
+	repo_root = Path(__file__).parent.parent
+	debug_cases_dir = repo_root / 'tests' / 'debug' / 'cases'
 
-	for case_dir in test_cases:
-		debug_dir = case_dir / 'debug'
-		if debug_dir.exists():
-			shutil.rmtree(debug_dir)
-			removed_count += 1
-			print(f"🗑️  Removed debug directory from {case_dir.name}")
-
-	if removed_count == 0:
-		print("No debug directories found to remove")
+	if debug_cases_dir.exists():
+		shutil.rmtree(debug_cases_dir)
+		print("🗑️  Removed tests/debug/cases directory")
 	else:
-		print(f"Removed {removed_count} debug directories")
+		print("No tests/debug/cases directory found to remove")
 
 
 def list_test_cases():
 	"""List all available test cases."""
 	test_cases = get_test_cases()
+	repo_root = Path(__file__).parent.parent
+	debug_cases_dir = repo_root / 'tests' / 'debug' / 'cases'
+
 	print(f"Available test cases ({len(test_cases)}):")
 	for case_dir in test_cases:
-		debug_exists = (case_dir / 'debug').exists()
+		debug_exists = (debug_cases_dir / case_dir.name).exists()
 		status = "🔍" if debug_exists else "  "
 		print(f"  {status} {case_dir.name}")
 

@@ -1,0 +1,16 @@
+{
+  "custom.CustomViewParam": "value",
+  "params.ViewParam": "value",
+  "propConfig.custom.CustomViewParam.persistent": true,
+  "propConfig.params.ViewParam.paramDirection": "input",
+  "propConfig.params.ViewParam.persistent": true,
+  "root.root.children[0].IconPascalCase.custom.ComponentCustomParam": "value",
+  "root.root.children[0].IconPascalCase.meta.name": "IconPascalCase",
+  "root.root.children[0].IconPascalCase.position.basis": "30px",
+  "root.root.children[0].IconPascalCase.props.path": "material/insert_emoticon",
+  "root.root.children[0].IconPascalCase.type": "ia.display.icon",
+  "root.root.custom.RootCustomParam": "value",
+  "root.root.meta.name": "root",
+  "root.root.props.direction": "column",
+  "root.root.type": "ia.container.flex"
+}

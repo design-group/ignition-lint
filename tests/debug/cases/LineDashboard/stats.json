@@ -1,0 +1,104 @@
+{
+  "components_by_type": {
+    "ia.container.flex": 7,
+    "ia.container.split": 1,
+    "ia.display.flex-repeater": 1,
+    "ia.display.label": 1,
+    "ia.display.view": 7,
+    "ia.input.button": 1,
+    "ia.navigation.horizontalmenu": 1
+  },
+  "model_keys": [
+    "components",
+    "bindings",
+    "scripts",
+    "event_handlers",
+    "message_handlers",
+    "custom_methods",
+    "expression_bindings",
+    "property_bindings",
+    "tag_bindings",
+    "script_transforms",
+    "properties"
+  ],
+  "node_type_counts": {
+    "component": 19,
+    "custom_method": 2,
+    "expression_binding": 9,
+    "message_handler": 1,
+    "property": 120,
+    "property_binding": 22,
+    "tag_binding": 5
+  },
+  "rule_coverage": {
+    "BadComponentReferenceRule": {
+      "applicable_node_count": 12,
+      "target_types": [
+        "custom_method",
+        "transform",
+        "event_handler",
+        "message_handler",
+        "expression_binding"
+      ]
+    },
+    "ExampleBindingCountRule": {
+      "applicable_node_count": 55,
+      "target_types": [
+        "property_binding",
+        "component",
+        "tag_binding",
+        "expression_binding"
+      ]
+    },
+    "ExampleMixedSeverityRule": {
+      "applicable_node_count": 19,
+      "target_types": [
+        "component"
+      ]
+    },
+    "ExampleNameLengthRule": {
+      "applicable_node_count": 19,
+      "target_types": [
+        "component"
+      ]
+    },
+    "NamePatternRule": {
+      "applicable_node_count": 19,
+      "target_types": [
+        "component"
+      ]
+    },
+    "PollingIntervalRule": {
+      "applicable_node_count": 36,
+      "target_types": [
+        "property_binding",
+        "tag_binding",
+        "expression_binding"
+      ]
+    },
+    "PylintScriptRule": {
+      "applicable_node_count": 3,
+      "target_types": [
+        "transform",
+        "custom_method",
+        "event_handler",
+        "message_handler"
+      ]
+    },
+    "UnusedCustomPropertiesRule": {
+      "applicable_node_count": 178,
+      "target_types": [
+        "transform",
+        "property_binding",
+        "event_handler",
+        "expression_binding",
+        "component",
+        "custom_method",
+        "property",
+        "tag_binding",
+        "message_handler"
+      ]
+    }
+  },
+  "total_nodes": 178
+}

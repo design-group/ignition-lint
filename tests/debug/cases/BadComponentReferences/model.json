@@ -1,0 +1,270 @@
+{
+  "bindings": {
+    "count": 2,
+    "nodes": [
+      {
+        "config": {},
+        "expression": "self.getSibling('OtherLabel').props.text + ' - Updated'",
+        "node_type": "expression_binding",
+        "path": "propConfig.props.root.children.0.props.text"
+      },
+      {
+        "config": {},
+        "expression": "self.parent.getChild('DataSource').props.data",
+        "node_type": "expression_binding",
+        "path": "root.root.children[2].ContainerWithBadScript.propConfig.props.children"
+      }
+    ]
+  },
+  "components": {
+    "count": 6,
+    "nodes": [
+      {
+        "name": "BadButton",
+        "node_type": "component",
+        "path": "root.root.children[0].BadButton",
+        "properties_count": 0,
+        "type": "ia.input.button"
+      },
+      {
+        "name": "StatusLabel",
+        "node_type": "component",
+        "path": "root.root.children[1].StatusLabel",
+        "properties_count": 0,
+        "type": "ia.display.label"
+      },
+      {
+        "name": "ContainerWithBadScript",
+        "node_type": "component",
+        "path": "root.root.children[2].ContainerWithBadScript",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      },
+      {
+        "name": "CustomMethodComponent",
+        "node_type": "component",
+        "path": "root.root.children[3].CustomMethodComponent",
+        "properties_count": 0,
+        "type": "ia.display.label"
+      },
+      {
+        "name": "MessageHandlerComponent",
+        "node_type": "component",
+        "path": "root.root.children[4].MessageHandlerComponent",
+        "properties_count": 0,
+        "type": "ia.display.label"
+      },
+      {
+        "name": "root",
+        "node_type": "component",
+        "path": "root.root",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      }
+    ]
+  },
+  "custom_methods": {
+    "count": 2,
+    "nodes": [
+      {
+        "name": "updateSibling",
+        "node_type": "custom_method",
+        "params": [],
+        "path": "root.root.children[3].CustomMethodComponent.scripts.customMethods[0]",
+        "script_length": 144,
+        "script_preview": "\n# Bad pattern in custom method\ntarget = self.getSibling('StatusLabel')\ntarget.props.text = 'Updated..."
+      },
+      {
+        "name": "navigateHierarchy",
+        "node_type": "custom_method",
+        "params": [
+          "direction"
+        ],
+        "path": "root.root.children[3].CustomMethodComponent.scripts.customMethods[1]",
+        "script_length": 293,
+        "script_preview": "\n# Multiple bad patterns in one method\nif direction == 'up':\n    return self.getParent().props.name\n..."
+      }
+    ]
+  },
+  "event_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "expression_bindings": {
+    "count": 2,
+    "nodes": [
+      {
+        "config": {},
+        "expression": "self.getSibling('OtherLabel').props.text + ' - Updated'",
+        "node_type": "expression_binding",
+        "path": "propConfig.props.root.children.0.props.text"
+      },
+      {
+        "config": {},
+        "expression": "self.parent.getChild('DataSource').props.data",
+        "node_type": "expression_binding",
+        "path": "root.root.children[2].ContainerWithBadScript.propConfig.props.children"
+      }
+    ]
+  },
+  "message_handlers": {
+    "count": 1,
+    "nodes": [
+      {
+        "message_type": "update-status",
+        "node_type": "message_handler",
+        "path": "root.root.children[4].MessageHandlerComponent.scripts.messageHandlers[0]",
+        "scope": {
+          "page": false,
+          "session": false,
+          "view": true
+        },
+        "script_length": 234,
+        "script_preview": "\n# Bad pattern in message handler\nstatusLabel = self.getSibling('StatusLabel')\nstatusLabel.props.tex..."
+      }
+    ]
+  },
+  "properties": {
+    "count": 13,
+    "nodes": [
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[0].BadButton.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "text",
+        "node_type": "property",
+        "path": "root.root.children[0].BadButton.props.text",
+        "value": "Click Me",
+        "value_type": "str"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[1].StatusLabel.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "textAlign",
+        "node_type": "property",
+        "path": "root.root.children[1].StatusLabel.props.style.textAlign",
+        "value": "center",
+        "value_type": "str"
+      },
+      {
+        "name": "text",
+        "node_type": "property",
+        "path": "root.root.children[1].StatusLabel.props.text",
+        "value": "Ready",
+        "value_type": "str"
+      },
+      {
+        "name": "grow",
+        "node_type": "property",
+        "path": "root.root.children[2].ContainerWithBadScript.position.grow",
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[3].CustomMethodComponent.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "text",
+        "node_type": "property",
+        "path": "root.root.children[3].CustomMethodComponent.props.text",
+        "value": "Custom Methods",
+        "value_type": "str"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[4].MessageHandlerComponent.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "text",
+        "node_type": "property",
+        "path": "root.root.children[4].MessageHandlerComponent.props.text",
+        "value": "Message Handler",
+        "value_type": "str"
+      },
+      {
+        "name": "direction",
+        "node_type": "property",
+        "path": "root.root.props.direction",
+        "value": "column",
+        "value_type": "str"
+      },
+      {
+        "name": "gap",
+        "node_type": "property",
+        "path": "root.root.props.style.gap",
+        "value": "var(--m)",
+        "value_type": "str"
+      },
+      {
+        "name": "padding",
+        "node_type": "property",
+        "path": "root.root.props.style.padding",
+        "value": "var(--m)",
+        "value_type": "str"
+      }
+    ]
+  },
+  "property_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "script_transforms": {
+    "count": 0,
+    "nodes": []
+  },
+  "scripts": {
+    "count": 3,
+    "nodes": [
+      {
+        "message_type": "update-status",
+        "node_type": "message_handler",
+        "path": "root.root.children[4].MessageHandlerComponent.scripts.messageHandlers[0]",
+        "scope": {
+          "page": false,
+          "session": false,
+          "view": true
+        },
+        "script_length": 234,
+        "script_preview": "\n# Bad pattern in message handler\nstatusLabel = self.getSibling('StatusLabel')\nstatusLabel.props.tex..."
+      },
+      {
+        "name": "updateSibling",
+        "node_type": "custom_method",
+        "params": [],
+        "path": "root.root.children[3].CustomMethodComponent.scripts.customMethods[0]",
+        "script_length": 144,
+        "script_preview": "\n# Bad pattern in custom method\ntarget = self.getSibling('StatusLabel')\ntarget.props.text = 'Updated..."
+      },
+      {
+        "name": "navigateHierarchy",
+        "node_type": "custom_method",
+        "params": [
+          "direction"
+        ],
+        "path": "root.root.children[3].CustomMethodComponent.scripts.customMethods[1]",
+        "script_length": 293,
+        "script_preview": "\n# Multiple bad patterns in one method\nif direction == 'up':\n    return self.getParent().props.name\n..."
+      }
+    ]
+  },
+  "tag_bindings": {
+    "count": 0,
+    "nodes": []
+  }
+}

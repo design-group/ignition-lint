@@ -1,0 +1,1526 @@
+{
+  "bindings": {
+    "count": 36,
+    "nodes": [
+      {
+        "config": {},
+        "expression": "runScript(\"DanPT.Model.get_eq_path_from_url\", 0, {view.params.eq_path_url})",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.eq_path"
+      },
+      {
+        "config": {},
+        "expression": "False",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.is_nav_expanded"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "propConfig.custom.kpiData",
+        "target_path": "view.custom.kpiHourlyData"
+      },
+      {
+        "config": {},
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.kpiTagData",
+        "tag_path": "[DanPT]{tag_path}/AnalysisCache/{time}/KPI Data"
+      },
+      {
+        "config": {},
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.mode_name",
+        "tag_path": "{tag}/Live Analysis/Current State/Equipment Mode Name"
+      },
+      {
+        "config": {},
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.mode_type",
+        "tag_path": "{tag}/Live Analysis/Current State/Equipment Mode Type"
+      },
+      {
+        "config": {},
+        "expression": "runScript(\"DanPT.Model.get_tag_path_from_equip_path\", 0, {view.custom.eq_path})",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.partial_tag_path"
+      },
+      {
+        "config": {},
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.state_name",
+        "tag_path": "{tag}/Live Analysis/Current State/Line State Name"
+      },
+      {
+        "config": {},
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.state_type",
+        "tag_path": "{tag}/Live Analysis/Current State/Line State Type"
+      },
+      {
+        "config": {},
+        "expression": "None",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.time"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "expression": "{view.params.eq_path_url}",
+        "node_type": "expression_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.img_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.mode_name",
+        "target_path": "view.custom.mode_name"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.mode_type",
+        "target_path": "view.custom.mode_type"
+      },
+      {
+        "config": {},
+        "expression": "{view.params.timePeriod} + \" \" + {view.params.timeFrame}",
+        "node_type": "expression_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.period"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.state_name",
+        "target_path": "view.custom.state_name"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.state_type",
+        "target_path": "view.custom.state_type"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[0].Line Name.propConfig.props.text",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[1].Production Picker.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[1].Production Picker.propConfig.props.params.time",
+        "target_path": "view.custom.time"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[1].Production Picker.propConfig.props.params.timeFrame",
+        "target_path": "view.params.timeFrame"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[1].Production Picker.propConfig.props.params.timePeriod",
+        "target_path": "view.params.timePeriod"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[0].Production Orders.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "expression": "False",
+        "node_type": "expression_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[0].Production Orders.propConfig.props.params.read_only"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.propConfig.props.params.eq_path_url",
+        "target_path": "view.params.eq_path_url"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.propConfig.props.params.kpiData",
+        "target_path": "view.custom.kpiData"
+      },
+      {
+        "config": {},
+        "expression": "{view.params.timePeriod} + \" \" + {view.params.timeFrame}",
+        "node_type": "expression_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.propConfig.props.params.period"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.propConfig.props.params.time",
+        "target_path": "view.custom.time"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "expression": "False",
+        "node_type": "expression_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.propConfig.props.params.is_equipment"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.propConfig.props.params.kpiData",
+        "target_path": "view.custom.kpiHourlyData"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.propConfig.props.params.time",
+        "target_path": "view.custom.time"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[0].Notifications.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[1].Top Drivers.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[1].Top Drivers.propConfig.props.params.time",
+        "target_path": "view.custom.time"
+      }
+    ]
+  },
+  "components": {
+    "count": 19,
+    "nodes": [
+      {
+        "name": "Line Image",
+        "node_type": "component",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image",
+        "properties_count": 0,
+        "type": "ia.display.view"
+      },
+      {
+        "name": "Line Name",
+        "node_type": "component",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[0].Line Name",
+        "properties_count": 0,
+        "type": "ia.display.label"
+      },
+      {
+        "name": "Custom Dashboard Button",
+        "node_type": "component",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button",
+        "properties_count": 0,
+        "type": "ia.input.button"
+      },
+      {
+        "name": "Name",
+        "node_type": "component",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      },
+      {
+        "name": "Breadcrumb",
+        "node_type": "component",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb",
+        "properties_count": 0,
+        "type": "ia.navigation.horizontalmenu"
+      },
+      {
+        "name": "Left Labels",
+        "node_type": "component",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      },
+      {
+        "name": "KPI Repeater Static",
+        "node_type": "component",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static",
+        "properties_count": 0,
+        "type": "ia.display.flex-repeater"
+      },
+      {
+        "name": "FlexContainer",
+        "node_type": "component",
+        "path": "root.root.children[0].Header.children[0].FlexContainer",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      },
+      {
+        "name": "Production Picker",
+        "node_type": "component",
+        "path": "root.root.children[0].Header.children[1].Production Picker",
+        "properties_count": 0,
+        "type": "ia.display.view"
+      },
+      {
+        "name": "Header",
+        "node_type": "component",
+        "path": "root.root.children[0].Header",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      },
+      {
+        "name": "Production Orders",
+        "node_type": "component",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[0].Production Orders",
+        "properties_count": 0,
+        "type": "ia.display.view"
+      },
+      {
+        "name": "Equipment States",
+        "node_type": "component",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States",
+        "properties_count": 0,
+        "type": "ia.display.view"
+      },
+      {
+        "name": "KPI Charts",
+        "node_type": "component",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts",
+        "properties_count": 0,
+        "type": "ia.display.view"
+      },
+      {
+        "name": "Left Container",
+        "node_type": "component",
+        "path": "root.root.children[1].Data.children[0].Left Container",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      },
+      {
+        "name": "Notifications",
+        "node_type": "component",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[0].Notifications",
+        "properties_count": 0,
+        "type": "ia.display.view"
+      },
+      {
+        "name": "Top Drivers",
+        "node_type": "component",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[1].Top Drivers",
+        "properties_count": 0,
+        "type": "ia.display.view"
+      },
+      {
+        "name": "SplitContainer",
+        "node_type": "component",
+        "path": "root.root.children[1].Data.children[1].SplitContainer",
+        "properties_count": 0,
+        "type": "ia.container.split"
+      },
+      {
+        "name": "Data",
+        "node_type": "component",
+        "path": "root.root.children[1].Data",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      },
+      {
+        "name": "root",
+        "node_type": "component",
+        "path": "root.root",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      }
+    ]
+  },
+  "custom_methods": {
+    "count": 2,
+    "nodes": [
+      {
+        "name": "openCustomDash",
+        "node_type": "custom_method",
+        "params": [
+          "newTab=False"
+        ],
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button.scripts.customMethods[0]",
+        "script_length": 286,
+        "script_preview": "\tsystem.perspective.sendMessage('selected-navigation', payload={'nav_name': 1})\n\tif \"custom\" in self..."
+      },
+      {
+        "name": "navigateBreadcrumb",
+        "node_type": "custom_method",
+        "params": [
+          "eq_path_url",
+          "newTab=False"
+        ],
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb.scripts.customMethods[0]",
+        "script_length": 98,
+        "script_preview": "\tsystem.perspective.navigate(url, params={\"eq_path_url\": \"/home/%s\" % eq_path_url}, newTab=newTab)"
+      }
+    ]
+  },
+  "event_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "expression_bindings": {
+    "count": 9,
+    "nodes": [
+      {
+        "config": {},
+        "expression": "runScript(\"DanPT.Model.get_eq_path_from_url\", 0, {view.params.eq_path_url})",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.eq_path"
+      },
+      {
+        "config": {},
+        "expression": "False",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.is_nav_expanded"
+      },
+      {
+        "config": {},
+        "expression": "runScript(\"DanPT.Model.get_tag_path_from_equip_path\", 0, {view.custom.eq_path})",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.partial_tag_path"
+      },
+      {
+        "config": {},
+        "expression": "None",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.time"
+      },
+      {
+        "config": {},
+        "expression": "{view.params.eq_path_url}",
+        "node_type": "expression_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.img_path"
+      },
+      {
+        "config": {},
+        "expression": "{view.params.timePeriod} + \" \" + {view.params.timeFrame}",
+        "node_type": "expression_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.period"
+      },
+      {
+        "config": {},
+        "expression": "False",
+        "node_type": "expression_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[0].Production Orders.propConfig.props.params.read_only"
+      },
+      {
+        "config": {},
+        "expression": "{view.params.timePeriod} + \" \" + {view.params.timeFrame}",
+        "node_type": "expression_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.propConfig.props.params.period"
+      },
+      {
+        "config": {},
+        "expression": "False",
+        "node_type": "expression_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.propConfig.props.params.is_equipment"
+      }
+    ]
+  },
+  "message_handlers": {
+    "count": 1,
+    "nodes": [
+      {
+        "message_type": "setTimeSelection",
+        "node_type": "message_handler",
+        "path": "root.root.scripts.messageHandlers[0]",
+        "scope": {
+          "page": true,
+          "session": false,
+          "view": false
+        },
+        "script_length": 166,
+        "script_preview": "\tif payload.get('timePeriod'):\n\t\tself.view.params.timePeriod = payload['timePeriod']\n\tif payload.get..."
+      }
+    ]
+  },
+  "properties": {
+    "count": 120,
+    "nodes": [
+      {
+        "name": "kpiTagData",
+        "node_type": "property",
+        "path": "custom.kpiTagData",
+        "value": null,
+        "value_type": "NoneType"
+      },
+      {
+        "name": "eq_path_url",
+        "node_type": "property",
+        "path": "params.eq_path_url",
+        "value": "",
+        "value_type": "str"
+      },
+      {
+        "name": "timeFrame",
+        "node_type": "property",
+        "path": "params.timeFrame",
+        "value": "",
+        "value_type": "str"
+      },
+      {
+        "name": "timePeriod",
+        "node_type": "property",
+        "path": "params.timePeriod",
+        "value": "",
+        "value_type": "str"
+      },
+      {
+        "name": "order",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.props.loading.order",
+        "value": "with-parent",
+        "value_type": "str"
+      },
+      {
+        "name": "percent",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.props.params.percent",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "size",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.props.params.size",
+        "value": "90px",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.props.path",
+        "value": "Widgets/Equipment State/Embedded Views/Equipment Image",
+        "value_type": "str"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[0].Line Name.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "classes",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[0].Line Name.props.style.classes",
+        "value": "title",
+        "value_type": "str"
+      },
+      {
+        "name": "fontWeight",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[0].Line Name.props.style.fontWeight",
+        "value": "bold",
+        "value_type": "str"
+      },
+      {
+        "name": "color",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[0].Line Name.props.textStyle.color",
+        "value": "var(--label)",
+        "value_type": "str"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "height",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button.props.image.height",
+        "value": 20,
+        "value_type": "int"
+      },
+      {
+        "name": "color",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button.props.image.icon.color",
+        "value": "var(--label-hint)",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button.props.image.icon.path",
+        "value": "materialiconsround/icons-action-dashboard",
+        "value_type": "str"
+      },
+      {
+        "name": "position",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button.props.image.position",
+        "value": "center",
+        "value_type": "str"
+      },
+      {
+        "name": "width",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button.props.image.width",
+        "value": 20,
+        "value_type": "int"
+      },
+      {
+        "name": "primary",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button.props.primary",
+        "value": false,
+        "value_type": "bool"
+      },
+      {
+        "name": "height",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button.props.style.height",
+        "value": "36px",
+        "value_type": "str"
+      },
+      {
+        "name": "width",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button.props.style.width",
+        "value": "36px",
+        "value_type": "str"
+      },
+      {
+        "name": "text",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button.props.text",
+        "value": "",
+        "value_type": "str"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "alignItems",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.props.alignItems",
+        "value": "center",
+        "value_type": "str"
+      },
+      {
+        "name": "gap",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.props.style.gap",
+        "value": "var(--s)",
+        "value_type": "str"
+      },
+      {
+        "name": "grow",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb.position.grow",
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "backgroundColor",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb.props.itemStyle.backgroundColor",
+        "value": "transparent",
+        "value_type": "str"
+      },
+      {
+        "name": "classes",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb.props.itemStyle.classes",
+        "value": "body",
+        "value_type": "str"
+      },
+      {
+        "name": "color",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb.props.itemStyle.color",
+        "value": "var(--label)",
+        "value_type": "str"
+      },
+      {
+        "name": "padding",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb.props.itemStyle.padding",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "border",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb.props.style.border",
+        "value": "none",
+        "value_type": "str"
+      },
+      {
+        "name": "classes",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb.props.style.classes",
+        "value": "visible",
+        "value_type": "str"
+      },
+      {
+        "name": "grow",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.position.grow",
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "direction",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.props.direction",
+        "value": "column",
+        "value_type": "str"
+      },
+      {
+        "name": "gap",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.props.style.gap",
+        "value": "4px",
+        "value_type": "str"
+      },
+      {
+        "name": "overflow",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.props.style.overflow",
+        "value": "visible",
+        "value_type": "str"
+      },
+      {
+        "name": "grow",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.position.grow",
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "alignContent",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.alignContent",
+        "value": "flex-end",
+        "value_type": "str"
+      },
+      {
+        "name": "alignItems",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.alignItems",
+        "value": "center",
+        "value_type": "str"
+      },
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.elementPosition.basis",
+        "value": "auto",
+        "value_type": "str"
+      },
+      {
+        "name": "grow",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.elementPosition.grow",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.elementPosition.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "justify",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.justify",
+        "value": "flex-end",
+        "value_type": "str"
+      },
+      {
+        "name": "order",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.loading.order",
+        "value": "with-parent",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.path",
+        "value": "Dashboards/Embedded View/KPI",
+        "value_type": "str"
+      },
+      {
+        "name": "gap",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.style.gap",
+        "value": "var(--s)",
+        "value_type": "str"
+      },
+      {
+        "name": "overflow",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.style.overflow",
+        "value": "visible",
+        "value_type": "str"
+      },
+      {
+        "name": "useDefaultViewHeight",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.useDefaultViewHeight",
+        "value": false,
+        "value_type": "bool"
+      },
+      {
+        "name": "useDefaultViewWidth",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.useDefaultViewWidth",
+        "value": false,
+        "value_type": "bool"
+      },
+      {
+        "name": "wrap",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.props.wrap",
+        "value": "wrap",
+        "value_type": "str"
+      },
+      {
+        "name": "grow",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.position.grow",
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "alignItems",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.props.alignItems",
+        "value": "center",
+        "value_type": "str"
+      },
+      {
+        "name": "overflow",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.props.style.overflow",
+        "value": "visible",
+        "value_type": "str"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[1].Production Picker.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "instances",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[1].Production Picker.props.instances",
+        "value": null,
+        "value_type": "NoneType"
+      },
+      {
+        "name": "order",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[1].Production Picker.props.loading.order",
+        "value": "with-parent",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[1].Production Picker.props.path",
+        "value": "Components/Time Selection/Production Picker",
+        "value_type": "str"
+      },
+      {
+        "name": "useDefaultViewHeight",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[1].Production Picker.props.useDefaultViewHeight",
+        "value": true,
+        "value_type": "bool"
+      },
+      {
+        "name": "useDefaultViewWidth",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.children[1].Production Picker.props.useDefaultViewWidth",
+        "value": true,
+        "value_type": "bool"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "alignItems",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.props.alignItems",
+        "value": "center",
+        "value_type": "str"
+      },
+      {
+        "name": "justify",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.props.justify",
+        "value": "space-between",
+        "value_type": "str"
+      },
+      {
+        "name": "gap",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.props.style.gap",
+        "value": "var(--s)",
+        "value_type": "str"
+      },
+      {
+        "name": "isolation",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.props.style.isolation",
+        "value": "isolate",
+        "value_type": "str"
+      },
+      {
+        "name": "overflow",
+        "node_type": "property",
+        "path": "root.root.children[0].Header.props.style.overflow",
+        "value": "visible",
+        "value_type": "str"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[0].Production Orders.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "order",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[0].Production Orders.props.loading.order",
+        "value": "with-parent",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[0].Production Orders.props.path",
+        "value": "Widgets/Production Order/Overview",
+        "value_type": "str"
+      },
+      {
+        "name": "classes",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[0].Production Orders.props.style.classes",
+        "value": "card",
+        "value_type": "str"
+      },
+      {
+        "name": "maxHeight",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[0].Production Orders.props.style.maxHeight",
+        "value": "40rem",
+        "value_type": "str"
+      },
+      {
+        "name": "overflow",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[0].Production Orders.props.style.overflow",
+        "value": "visible",
+        "value_type": "str"
+      },
+      {
+        "name": "padding",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[0].Production Orders.props.style.padding",
+        "value": "var(--m)",
+        "value_type": "str"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "order",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.props.loading.order",
+        "value": "with-parent",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.props.path",
+        "value": "Widgets/Equipment State/Combination",
+        "value_type": "str"
+      },
+      {
+        "name": "classes",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.props.style.classes",
+        "value": "card",
+        "value_type": "str"
+      },
+      {
+        "name": "padding",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.props.style.padding",
+        "value": "var(--m)",
+        "value_type": "str"
+      },
+      {
+        "name": "zoom",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.props.style.zoom",
+        "value": "85%",
+        "value_type": "str"
+      },
+      {
+        "name": "grow",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.position.grow",
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "order",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.props.loading.order",
+        "value": "with-parent",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.props.path",
+        "value": "Widgets/Hour by Hour/Hour by Hour",
+        "value_type": "str"
+      },
+      {
+        "name": "classes",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.props.style.classes",
+        "value": "card",
+        "value_type": "str"
+      },
+      {
+        "name": "overflow",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.props.style.overflow",
+        "value": "visible",
+        "value_type": "str"
+      },
+      {
+        "name": "padding",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.props.style.padding",
+        "value": "var(--m)",
+        "value_type": "str"
+      },
+      {
+        "name": "grow",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.position.grow",
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "direction",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.props.direction",
+        "value": "column",
+        "value_type": "str"
+      },
+      {
+        "name": "gap",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.props.style.gap",
+        "value": "var(--s)",
+        "value_type": "str"
+      },
+      {
+        "name": "overflow",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[0].Left Container.props.style.overflow",
+        "value": "visible",
+        "value_type": "str"
+      },
+      {
+        "name": "position",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[0].Notifications.position.position",
+        "value": "top",
+        "value_type": "str"
+      },
+      {
+        "name": "persistent",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[0].Notifications.propConfig.props.params.configuring.persistent",
+        "value": false,
+        "value_type": "bool"
+      },
+      {
+        "name": "persistent",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[0].Notifications.propConfig.props.params.widget_id.persistent",
+        "value": false,
+        "value_type": "bool"
+      },
+      {
+        "name": "order",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[0].Notifications.props.loading.order",
+        "value": "with-parent",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[0].Notifications.props.path",
+        "value": "Widgets/Notification/Notification Feed",
+        "value_type": "str"
+      },
+      {
+        "name": "classes",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[0].Notifications.props.style.classes",
+        "value": "card",
+        "value_type": "str"
+      },
+      {
+        "name": "padding",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[0].Notifications.props.style.padding",
+        "value": "var(--m)",
+        "value_type": "str"
+      },
+      {
+        "name": "position",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[1].Top Drivers.position.position",
+        "value": "bottom",
+        "value_type": "str"
+      },
+      {
+        "name": "order",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[1].Top Drivers.props.loading.order",
+        "value": "with-parent",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[1].Top Drivers.props.path",
+        "value": "Widgets/Top Drivers/Top Driver Line Level",
+        "value_type": "str"
+      },
+      {
+        "name": "classes",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[1].Top Drivers.props.style.classes",
+        "value": "card",
+        "value_type": "str"
+      },
+      {
+        "name": "padding",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[1].Top Drivers.props.style.padding",
+        "value": "var(--m)",
+        "value_type": "str"
+      },
+      {
+        "name": "shrink",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.position.shrink",
+        "value": 0,
+        "value_type": "int"
+      },
+      {
+        "name": "orientation",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.props.orientation",
+        "value": "vertical",
+        "value_type": "str"
+      },
+      {
+        "name": "gap",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.props.style.gap",
+        "value": "var(--s)",
+        "value_type": "str"
+      },
+      {
+        "name": "maxWidth",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.props.style.maxWidth",
+        "value": "480px",
+        "value_type": "str"
+      },
+      {
+        "name": "overflow",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.props.style.overflow",
+        "value": "visible",
+        "value_type": "str"
+      },
+      {
+        "name": "width",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.props.style.width",
+        "value": "28%",
+        "value_type": "str"
+      },
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.position.basis",
+        "value": "200px",
+        "value_type": "str"
+      },
+      {
+        "name": "grow",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.position.grow",
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "background",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.props.style.background",
+        "value": "transparent",
+        "value_type": "str"
+      },
+      {
+        "name": "border",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.props.style.border",
+        "value": "none",
+        "value_type": "str"
+      },
+      {
+        "name": "gap",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.props.style.gap",
+        "value": "var(--s)",
+        "value_type": "str"
+      },
+      {
+        "name": "isolation",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.props.style.isolation",
+        "value": "isolate",
+        "value_type": "str"
+      },
+      {
+        "name": "overflow",
+        "node_type": "property",
+        "path": "root.root.children[1].Data.props.style.overflow",
+        "value": "visible",
+        "value_type": "str"
+      },
+      {
+        "name": "key",
+        "node_type": "property",
+        "path": "root.root.custom.key",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "direction",
+        "node_type": "property",
+        "path": "root.root.props.direction",
+        "value": "column",
+        "value_type": "str"
+      },
+      {
+        "name": "classes",
+        "node_type": "property",
+        "path": "root.root.props.style.classes",
+        "value": "background-gradient",
+        "value_type": "str"
+      },
+      {
+        "name": "gap",
+        "node_type": "property",
+        "path": "root.root.props.style.gap",
+        "value": "var(--m)",
+        "value_type": "str"
+      },
+      {
+        "name": "padding",
+        "node_type": "property",
+        "path": "root.root.props.style.padding",
+        "value": "var(--m)",
+        "value_type": "str"
+      }
+    ]
+  },
+  "property_bindings": {
+    "count": 22,
+    "nodes": [
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "propConfig.custom.kpiData",
+        "target_path": "view.custom.kpiHourlyData"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.mode_name",
+        "target_path": "view.custom.mode_name"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.mode_type",
+        "target_path": "view.custom.mode_type"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.state_name",
+        "target_path": "view.custom.state_name"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[0].Line Image.propConfig.props.params.state_type",
+        "target_path": "view.custom.state_type"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[0].Line Name.propConfig.props.text",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[1].Production Picker.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[1].Production Picker.propConfig.props.params.time",
+        "target_path": "view.custom.time"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[1].Production Picker.propConfig.props.params.timeFrame",
+        "target_path": "view.params.timeFrame"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[0].Header.children[1].Production Picker.propConfig.props.params.timePeriod",
+        "target_path": "view.params.timePeriod"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[0].Production Orders.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.propConfig.props.params.eq_path_url",
+        "target_path": "view.params.eq_path_url"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.propConfig.props.params.kpiData",
+        "target_path": "view.custom.kpiData"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[1].Equipment States.propConfig.props.params.time",
+        "target_path": "view.custom.time"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.propConfig.props.params.kpiData",
+        "target_path": "view.custom.kpiHourlyData"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[0].Left Container.children[2].KPI Charts.propConfig.props.params.time",
+        "target_path": "view.custom.time"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[0].Notifications.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[1].Top Drivers.propConfig.props.params.eq_path",
+        "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "root.root.children[1].Data.children[1].SplitContainer.children[1].Top Drivers.propConfig.props.params.time",
+        "target_path": "view.custom.time"
+      }
+    ]
+  },
+  "script_transforms": {
+    "count": 0,
+    "nodes": []
+  },
+  "scripts": {
+    "count": 3,
+    "nodes": [
+      {
+        "message_type": "setTimeSelection",
+        "node_type": "message_handler",
+        "path": "root.root.scripts.messageHandlers[0]",
+        "scope": {
+          "page": true,
+          "session": false,
+          "view": false
+        },
+        "script_length": 166,
+        "script_preview": "\tif payload.get('timePeriod'):\n\t\tself.view.params.timePeriod = payload['timePeriod']\n\tif payload.get..."
+      },
+      {
+        "name": "openCustomDash",
+        "node_type": "custom_method",
+        "params": [
+          "newTab=False"
+        ],
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[1].Custom Dashboard Button.scripts.customMethods[0]",
+        "script_length": 286,
+        "script_preview": "\tsystem.perspective.sendMessage('selected-navigation', payload={'nav_name': 1})\n\tif \"custom\" in self..."
+      },
+      {
+        "name": "navigateBreadcrumb",
+        "node_type": "custom_method",
+        "params": [
+          "eq_path_url",
+          "newTab=False"
+        ],
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb.scripts.customMethods[0]",
+        "script_length": 98,
+        "script_preview": "\tsystem.perspective.navigate(url, params={\"eq_path_url\": \"/home/%s\" % eq_path_url}, newTab=newTab)"
+      }
+    ]
+  },
+  "tag_bindings": {
+    "count": 5,
+    "nodes": [
+      {
+        "config": {},
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.kpiTagData",
+        "tag_path": "[DanPT]{tag_path}/AnalysisCache/{time}/KPI Data"
+      },
+      {
+        "config": {},
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.mode_name",
+        "tag_path": "{tag}/Live Analysis/Current State/Equipment Mode Name"
+      },
+      {
+        "config": {},
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.mode_type",
+        "tag_path": "{tag}/Live Analysis/Current State/Equipment Mode Type"
+      },
+      {
+        "config": {},
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.state_name",
+        "tag_path": "{tag}/Live Analysis/Current State/Line State Name"
+      },
+      {
+        "config": {},
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.state_type",
+        "tag_path": "{tag}/Live Analysis/Current State/Line State Type"
+      }
+    ]
+  }
+}

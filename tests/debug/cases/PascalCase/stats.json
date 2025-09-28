@@ -1,0 +1,94 @@
+{
+  "components_by_type": {
+    "ia.container.flex": 1,
+    "ia.display.icon": 1
+  },
+  "model_keys": [
+    "components",
+    "bindings",
+    "scripts",
+    "event_handlers",
+    "message_handlers",
+    "custom_methods",
+    "expression_bindings",
+    "property_bindings",
+    "tag_bindings",
+    "script_transforms",
+    "properties"
+  ],
+  "node_type_counts": {
+    "component": 2,
+    "property": 7
+  },
+  "rule_coverage": {
+    "BadComponentReferenceRule": {
+      "applicable_node_count": 0,
+      "target_types": [
+        "custom_method",
+        "transform",
+        "event_handler",
+        "message_handler",
+        "expression_binding"
+      ]
+    },
+    "ExampleBindingCountRule": {
+      "applicable_node_count": 2,
+      "target_types": [
+        "tag_binding",
+        "property_binding",
+        "expression_binding",
+        "component"
+      ]
+    },
+    "ExampleMixedSeverityRule": {
+      "applicable_node_count": 2,
+      "target_types": [
+        "component"
+      ]
+    },
+    "ExampleNameLengthRule": {
+      "applicable_node_count": 2,
+      "target_types": [
+        "component"
+      ]
+    },
+    "NamePatternRule": {
+      "applicable_node_count": 2,
+      "target_types": [
+        "component"
+      ]
+    },
+    "PollingIntervalRule": {
+      "applicable_node_count": 0,
+      "target_types": [
+        "tag_binding",
+        "property_binding",
+        "expression_binding"
+      ]
+    },
+    "PylintScriptRule": {
+      "applicable_node_count": 0,
+      "target_types": [
+        "custom_method",
+        "transform",
+        "message_handler",
+        "event_handler"
+      ]
+    },
+    "UnusedCustomPropertiesRule": {
+      "applicable_node_count": 9,
+      "target_types": [
+        "custom_method",
+        "property",
+        "message_handler",
+        "tag_binding",
+        "property_binding",
+        "expression_binding",
+        "event_handler",
+        "transform",
+        "component"
+      ]
+    }
+  },
+  "total_nodes": 9
+}

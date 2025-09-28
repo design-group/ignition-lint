@@ -1,0 +1,342 @@
+{
+  "bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "components": {
+    "count": 7,
+    "nodes": [
+      {
+        "name": "GoodLabelName",
+        "node_type": "component",
+        "path": "root.root.children[0].GoodLabelName",
+        "properties_count": 0,
+        "type": "ia.display.label"
+      },
+      {
+        "name": "EmbeddedPotato",
+        "node_type": "component",
+        "path": "root.root.children[1].FlexContainer.children[0].EmbeddedPotato",
+        "properties_count": 0,
+        "type": "ia.display.view"
+      },
+      {
+        "name": "badEmbeddedPotato_0",
+        "node_type": "component",
+        "path": "root.root.children[1].FlexContainer.children[1].badEmbeddedPotato_0",
+        "properties_count": 0,
+        "type": "ia.display.view"
+      },
+      {
+        "name": "FlexContainer",
+        "node_type": "component",
+        "path": "root.root.children[1].FlexContainer",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      },
+      {
+        "name": "bad potato",
+        "node_type": "component",
+        "path": "root.root.children[2].bad potato",
+        "properties_count": 0,
+        "type": "ia.display.view"
+      },
+      {
+        "name": "anotherBadPotato",
+        "node_type": "component",
+        "path": "root.root.children[3].anotherBadPotato",
+        "properties_count": 0,
+        "type": "ia.display.view"
+      },
+      {
+        "name": "root",
+        "node_type": "component",
+        "path": "root.root",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      }
+    ]
+  },
+  "custom_methods": {
+    "count": 0,
+    "nodes": []
+  },
+  "event_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "expression_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "message_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "properties": {
+    "count": 35,
+    "nodes": [
+      {
+        "name": "PrettyBigIssue",
+        "node_type": "property",
+        "path": "custom.PrettyBigIssue",
+        "value": "nope1",
+        "value_type": "str"
+      },
+      {
+        "name": "THISIsQuestionable",
+        "node_type": "property",
+        "path": "custom.THISIsQuestionable",
+        "value": "nope2",
+        "value_type": "str"
+      },
+      {
+        "name": "TRYAGAIN",
+        "node_type": "property",
+        "path": "custom.TRYAGAIN",
+        "value": "nope3",
+        "value_type": "str"
+      },
+      {
+        "name": "EmbeddedNope",
+        "node_type": "property",
+        "path": "custom.goodKey.EmbeddedNope",
+        "value": "still no",
+        "value_type": "str"
+      },
+      {
+        "name": "this_is_illegal",
+        "node_type": "property",
+        "path": "custom.this_is_illegal",
+        "value": "nope4",
+        "value_type": "str"
+      },
+      {
+        "name": "VeryBadPractice",
+        "node_type": "property",
+        "path": "params.VeryBadPractice",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "BadLabelCustomProp",
+        "node_type": "property",
+        "path": "root.root.children[0].GoodLabelName.custom.BadLabelCustomProp",
+        "value": "Oops",
+        "value_type": "str"
+      },
+      {
+        "name": "key",
+        "node_type": "property",
+        "path": "root.root.children[0].GoodLabelName.custom.key",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "labelCustomProperty",
+        "node_type": "property",
+        "path": "root.root.children[0].GoodLabelName.custom.labelCustomProperty",
+        "value": "hi",
+        "value_type": "str"
+      },
+      {
+        "name": "HaHaHaHaHa",
+        "node_type": "property",
+        "path": "root.root.children[0].GoodLabelName.custom.sneakyBad.HaHaHaHaHa",
+        "value": "asdf",
+        "value_type": "str"
+      },
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[0].GoodLabelName.position.basis",
+        "value": "32px",
+        "value_type": "str"
+      },
+      {
+        "name": "text",
+        "node_type": "property",
+        "path": "root.root.children[0].GoodLabelName.props.text",
+        "value": "Bad Label",
+        "value_type": "str"
+      },
+      {
+        "name": "key",
+        "node_type": "property",
+        "path": "root.root.children[1].FlexContainer.children[0].EmbeddedPotato.custom.key",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "notSoBad",
+        "node_type": "property",
+        "path": "root.root.children[1].FlexContainer.children[0].EmbeddedPotato.custom.notSoBad",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "grow",
+        "node_type": "property",
+        "path": "root.root.children[1].FlexContainer.children[0].EmbeddedPotato.position.grow",
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "BadStillDontCheck",
+        "node_type": "property",
+        "path": "root.root.children[1].FlexContainer.children[0].EmbeddedPotato.props.params.BadStillDontCheck",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "dontCheckMeGood",
+        "node_type": "property",
+        "path": "root.root.children[1].FlexContainer.children[0].EmbeddedPotato.props.params.dontCheckMeGood",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[1].FlexContainer.children[0].EmbeddedPotato.props.path",
+        "value": "Exchange/MikesPotato",
+        "value_type": "str"
+      },
+      {
+        "name": "VeryVeryBadProperty",
+        "node_type": "property",
+        "path": "root.root.children[1].FlexContainer.children[1].badEmbeddedPotato_0.custom.VeryVeryBadProperty",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[1].FlexContainer.children[1].badEmbeddedPotato_0.position.basis",
+        "value": "320px",
+        "value_type": "str"
+      },
+      {
+        "name": "BadStillDontCheck",
+        "node_type": "property",
+        "path": "root.root.children[1].FlexContainer.children[1].badEmbeddedPotato_0.props.params.BadStillDontCheck",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "dontCheckMeGood",
+        "node_type": "property",
+        "path": "root.root.children[1].FlexContainer.children[1].badEmbeddedPotato_0.props.params.dontCheckMeGood",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[1].FlexContainer.children[1].badEmbeddedPotato_0.props.path",
+        "value": "Exchange/MikesPotato",
+        "value_type": "str"
+      },
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[1].FlexContainer.position.basis",
+        "value": "320px",
+        "value_type": "str"
+      },
+      {
+        "name": "VeryVeryBadProperty",
+        "node_type": "property",
+        "path": "root.root.children[2].bad potato.custom.VeryVeryBadProperty",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[2].bad potato.position.basis",
+        "value": "320px",
+        "value_type": "str"
+      },
+      {
+        "name": "BadStillDontCheck",
+        "node_type": "property",
+        "path": "root.root.children[2].bad potato.props.params.BadStillDontCheck",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "dontCheckMeGood",
+        "node_type": "property",
+        "path": "root.root.children[2].bad potato.props.params.dontCheckMeGood",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[2].bad potato.props.path",
+        "value": "Exchange/MikesPotato",
+        "value_type": "str"
+      },
+      {
+        "name": "VeryVeryBadProperty",
+        "node_type": "property",
+        "path": "root.root.children[3].anotherBadPotato.custom.VeryVeryBadProperty",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[3].anotherBadPotato.position.basis",
+        "value": "320px",
+        "value_type": "str"
+      },
+      {
+        "name": "BadStillDontCheck",
+        "node_type": "property",
+        "path": "root.root.children[3].anotherBadPotato.props.params.BadStillDontCheck",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "dontCheckMeGood",
+        "node_type": "property",
+        "path": "root.root.children[3].anotherBadPotato.props.params.dontCheckMeGood",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[3].anotherBadPotato.props.path",
+        "value": "Exchange/MikesPotato",
+        "value_type": "str"
+      },
+      {
+        "name": "direction",
+        "node_type": "property",
+        "path": "root.root.props.direction",
+        "value": "column",
+        "value_type": "str"
+      }
+    ]
+  },
+  "property_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "script_transforms": {
+    "count": 0,
+    "nodes": []
+  },
+  "scripts": {
+    "count": 0,
+    "nodes": []
+  },
+  "tag_bindings": {
+    "count": 0,
+    "nodes": []
+  }
+}

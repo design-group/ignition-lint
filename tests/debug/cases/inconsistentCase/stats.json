@@ -1,0 +1,95 @@
+{
+  "components_by_type": {
+    "ia.container.flex": 2,
+    "ia.display.label": 1,
+    "ia.display.view": 4
+  },
+  "model_keys": [
+    "components",
+    "bindings",
+    "scripts",
+    "event_handlers",
+    "message_handlers",
+    "custom_methods",
+    "expression_bindings",
+    "property_bindings",
+    "tag_bindings",
+    "script_transforms",
+    "properties"
+  ],
+  "node_type_counts": {
+    "component": 7,
+    "property": 35
+  },
+  "rule_coverage": {
+    "BadComponentReferenceRule": {
+      "applicable_node_count": 0,
+      "target_types": [
+        "custom_method",
+        "transform",
+        "event_handler",
+        "message_handler",
+        "expression_binding"
+      ]
+    },
+    "ExampleBindingCountRule": {
+      "applicable_node_count": 7,
+      "target_types": [
+        "property_binding",
+        "component",
+        "tag_binding",
+        "expression_binding"
+      ]
+    },
+    "ExampleMixedSeverityRule": {
+      "applicable_node_count": 7,
+      "target_types": [
+        "component"
+      ]
+    },
+    "ExampleNameLengthRule": {
+      "applicable_node_count": 7,
+      "target_types": [
+        "component"
+      ]
+    },
+    "NamePatternRule": {
+      "applicable_node_count": 7,
+      "target_types": [
+        "component"
+      ]
+    },
+    "PollingIntervalRule": {
+      "applicable_node_count": 0,
+      "target_types": [
+        "property_binding",
+        "tag_binding",
+        "expression_binding"
+      ]
+    },
+    "PylintScriptRule": {
+      "applicable_node_count": 0,
+      "target_types": [
+        "transform",
+        "custom_method",
+        "event_handler",
+        "message_handler"
+      ]
+    },
+    "UnusedCustomPropertiesRule": {
+      "applicable_node_count": 42,
+      "target_types": [
+        "transform",
+        "property_binding",
+        "event_handler",
+        "expression_binding",
+        "component",
+        "custom_method",
+        "property",
+        "tag_binding",
+        "message_handler"
+      ]
+    }
+  },
+  "total_nodes": 42
+}
