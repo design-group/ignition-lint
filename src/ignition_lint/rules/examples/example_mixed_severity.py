@@ -10,9 +10,9 @@ SEVERITY GUIDELINES:
 This is an EXAMPLE ONLY - not included in default rule configurations.
 """
 
-from .common import LintingRule
-from .registry import register_rule
-from ..model.node_types import NodeType
+from ..common import LintingRule
+from ..registry import register_rule
+from ...model.node_types import NodeType
 
 
 @register_rule

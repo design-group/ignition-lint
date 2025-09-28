@@ -15,31 +15,8 @@ from pathlib import Path
 # Add the src directory to the PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
-from fixtures.config_framework import ConfigurableTestFramework, create_sample_test_configs
+# ConfigurableTestFramework is used indirectly via test_config_framework.py
 
-
-def _print_expectation_detail(detail):
-	"""Print details for a failed expectation."""
-	print(f"  Rule {detail['rule_name']}:")
-	# Handle both old and new format
-	if 'expected_count' in detail:
-		print(f"    Expected {detail['expected_count']} errors, got {detail['actual_count']}")
-	else:
-		print(f"    Expected {detail['expected_warnings']} warnings, got {detail['actual_warnings']}")
-		print(f"    Expected {detail['expected_errors']} errors, got {detail['actual_errors']}")
-	# Handle pattern matches for both old and new format
-	if 'pattern_matches' in detail and detail['pattern_matches']:
-		for pm in detail['pattern_matches']:
-			if not pm['found']:
-				print(f"    Missing pattern: '{pm['pattern']}'")
-	elif 'error_pattern_matches' in detail or 'warning_pattern_matches' in detail:
-		# New format with separate error and warning patterns
-		for pm in detail.get('error_pattern_matches', []):
-			if not pm['found']:
-				print(f"    Missing error pattern: '{pm['pattern']}'")
-		for pm in detail.get('warning_pattern_matches', []):
-			if not pm['found']:
-				print(f"    Missing warning pattern: '{pm['pattern']}'")
 
 
 def discover_and_run_unit_tests(test_pattern=None, verbosity=2):
@@ -121,45 +98,6 @@ def run_specific_test_file(test_file, verbosity=2):
 		return False
 
 
-def run_config_tests(tags=None):
-	"""Run configuration-driven tests."""
-	print("\n" + "=" * 60)
-	print("RUNNING CONFIGURATION-DRIVEN TESTS")
-	print("=" * 60)
-
-	framework = ConfigurableTestFramework()
-	results = framework.run_all_tests(tags=tags)
-
-	print("\nConfiguration Test Results:")
-	print(f"Total: {results['total']}")
-	print(f"Passed: {results['passed']}")
-	print(f"Failed: {results['failed']}")
-	print(f"Skipped: {results['skipped']}")
-	print(f"Errors: {results['errors']}")
-
-	# Print detailed results for failures
-	if not results['failed'] and not results['errors']:
-		print("All configuration tests passed!")
-		return True
-
-	print("\nDetailed Results:")
-	for result in results['results']:
-		if result['status'] not in ['failed', 'error']:
-			continue
-
-		print(f"\n{result['status'].upper()}: {result['name']}")
-		if result['reason']:
-			print(f"  Reason: {result['reason']}")
-
-		if 'expectation_details' not in result:
-			continue
-
-		for detail in result['expectation_details']:
-			if not detail['met']:
-				_print_expectation_detail(detail)
-
-	return results['failed'] == 0 and results['errors'] == 0
-
 
 def list_available_tests():
 	"""List all available test modules and categories."""
@@ -181,28 +119,8 @@ def list_available_tests():
 		for test_file in sorted(integration_dir.glob("test_*.py")):
 			print(f"   - {test_file.stem}")
 
-	# List configuration-driven tests
-	print("\n3. Configuration-driven Tests:")
-	framework = ConfigurableTestFramework()
-	test_cases = framework.load_test_configurations()
-
-	if test_cases:
-		# Group by tags
-		by_tags = {}
-		for tc in test_cases:
-			for tag in tc.tags:
-				by_tags.setdefault(tag, [])
-				by_tags[tag].append(tc.name)
-
-		for tag, cases in by_tags.items():
-			print(f"   Tag '{tag}':")
-			for case in cases:
-				print(f"     - {case}")
-	else:
-		print("   No configuration files found. Run with --create-configs first.")
-
 	# List test case directories
-	print("\n4. Test Cases Directory Structure:")
+	print("\n3. Test Cases Directory Structure:")
 	cases_dir = base_dir / "cases"
 	if cases_dir.exists():
 		for case_dir in sorted(cases_dir.iterdir()):
@@ -241,12 +159,6 @@ def setup_test_environment():
 		if not init_file.exists():
 			init_file.write_text('"""Test package module."""\n')
 			print(f"Created: {init_file}")
-
-	# Create sample configurations
-	try:
-		create_sample_test_configs()
-	except (OSError, PermissionError, json.JSONDecodeError) as e:
-		print(f"Warning: Could not create sample configs: {e}")
 
 	print("\nTest environment setup complete!")
 	print("You can now run tests with:")
@@ -287,12 +199,9 @@ def main():
 	Examples:
 		python test_runner.py --run-unit                    # Run all unit tests
 		python test_runner.py --run-integration             # Run all integration tests
-		python test_runner.py --run-config                  # Run configuration-driven tests
 		python test_runner.py --run-all                     # Run all tests
 		python test_runner.py --list                        # List available tests
 		python test_runner.py --setup                       # Set up test environment
-		python test_runner.py --run-config --tags component_naming
-															# Run tests with specific tags
 		python test_runner.py --test component_naming       # Run specific test by name
 		python test_runner.py --unit-pattern "test_component*" # Run unit tests matching pattern
 	"""
@@ -300,8 +209,7 @@ def main():
 
 	# Test execution options
 	parser.add_argument("--run-unit", action="store_true", help="Run unit tests")
-	parser.add_argument("--run-integration", action="store_true", help="Run integration tests")
-	parser.add_argument("--run-config", action="store_true", help="Run configuration-driven tests")
+	parser.add_argument("--run-integration", action="store_true", help="Run integration tests (includes configuration-driven tests)")
 	parser.add_argument("--run-all", action="store_true", help="Run all available tests")
 
 	# Specific test execution
@@ -310,11 +218,9 @@ def main():
 	parser.add_argument("--integration-pattern", help="Pattern for discovering integration tests")
 
 	# Configuration and setup options
-	parser.add_argument("--create-configs", action="store_true", help="Create sample test configuration files")
 	parser.add_argument("--setup", action="store_true", help="Set up the test environment")
 
-	# Test filtering and information
-	parser.add_argument("--tags", nargs="+", help="Filter configuration tests by tags")
+	# Test information
 	parser.add_argument("--list", action="store_true", help="List all available tests")
 
 	# Output options
@@ -338,11 +244,6 @@ def main():
 		list_available_tests()
 		return 0
 
-	# Handle config creation
-	if args.create_configs:
-		create_sample_test_configs()
-		return 0
-
 	# Handle specific test execution
 	if args.test:
 		success = run_test_by_name(args.test, verbosity)
@@ -351,10 +252,9 @@ def main():
 	# Determine which tests to run
 	run_unit = args.run_unit or args.run_all
 	run_integration = args.run_integration or args.run_all
-	run_config = args.run_config or args.run_all
 
-	if not (run_unit or run_integration or run_config):
-		print("No test type specified. Use --run-unit, --run-integration, --run-config, or --run-all")
+	if not (run_unit or run_integration):
+		print("No test type specified. Use --run-unit, --run-integration, or --run-all")
 		parser.print_help()
 		return 1
 
@@ -367,10 +267,6 @@ def main():
 	# Run integration tests
 	if run_integration:
 		success = discover_and_run_integration_tests(args.integration_pattern, verbosity) and success
-
-	# Run configuration tests
-	if run_config:
-		success = run_config_tests(tags=args.tags) and success
 
 	# Final result
 	print("\n" + "=" * 60)

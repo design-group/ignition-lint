@@ -14,8 +14,8 @@ from io import StringIO
 from pylint import lint
 from pylint.reporters.text import TextReporter
 
-from .common import ScriptRule
-from ..model.node_types import ScriptNode
+from ..common import ScriptRule
+from ...model.node_types import ScriptNode
 
 
 class PylintScriptRule(ScriptRule):

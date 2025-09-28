@@ -4,8 +4,8 @@ Fixed NamePatternRule that properly handles node-specific pattern configurations
 import re
 from typing import Dict, Optional, Set, Callable, Any
 from dataclasses import dataclass
-from .common import LintingRule
-from ..model.node_types import ViewNode, NodeType
+from ..common import LintingRule
+from ...model.node_types import ViewNode, NodeType
 
 
 @dataclass

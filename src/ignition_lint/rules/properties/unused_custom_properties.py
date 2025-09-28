@@ -27,9 +27,9 @@ These properties are considered "used" if they are referenced in:
 
 import re
 from typing import Set, Dict, Any
-from .common import LintingRule
-from .registry import register_rule
-from ..model.node_types import NodeType
+from ..common import LintingRule
+from ..registry import register_rule
+from ...model.node_types import NodeType
 
 
 @register_rule

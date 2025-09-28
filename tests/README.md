@@ -132,7 +132,6 @@ Created directory: .../tests/configs
 Created directory: .../tests/results
 Created: .../tests/__init__.py
 Created: .../tests/unit/__init__.py
-Created configuration file: .../tests/configs/component_naming_tests.json
 ...
 Test environment setup complete!
 ```

@@ -7,8 +7,8 @@ brittle dependencies on view structure. Based on Ignition documentation, these p
 should be avoided in favor of view.custom properties or message handling.
 """
 
-from .common import LintingRule
-from ..model.node_types import NodeType, ALL_SCRIPTS
+from ..common import LintingRule
+from ...model.node_types import NodeType, ALL_SCRIPTS
 
 
 class BadComponentReferenceRule(LintingRule):

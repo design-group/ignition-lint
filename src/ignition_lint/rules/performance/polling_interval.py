@@ -6,8 +6,8 @@ to prevent performance issues in Ignition Perspective views.
 """
 
 import re
-from .common import BindingRule
-from ..model.node_types import NodeType
+from ..common import BindingRule
+from ...model.node_types import NodeType
 
 
 class PollingIntervalRule(BindingRule):

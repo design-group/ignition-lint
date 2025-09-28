@@ -6,9 +6,9 @@ for ignition-lint without modifying core framework files.
 """
 
 from typing import Set
-from .common import LintingRule
-from .registry import register_rule
-from ..model.node_types import ViewNode, NodeType, ALL_BINDINGS
+from ..common import LintingRule
+from ..registry import register_rule
+from ...model.node_types import ViewNode, NodeType, ALL_BINDINGS
 
 
 # Example 1: Simple rule using decorator registration

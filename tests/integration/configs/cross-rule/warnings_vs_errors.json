@@ -1,6 +1,6 @@
 {
-  "test_suite_name": "Warnings vs Errors Demo Tests",
-  "description": "Demonstration of the enhanced warnings vs errors testing infrastructure",
+  "test_suite_name": "Warnings vs Errors Confirmation Tests",
+  "description": "Confirmation of the enhanced warnings vs errors testing infrastructure",
   "test_cases": [
     {
       "name": "name_pattern_warning_demo",

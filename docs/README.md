@@ -28,6 +28,7 @@ Welcome to the comprehensive developer documentation for ignition-lint! This gui
 
 | Document | Description | Best For |
 |----------|-------------|----------|
+| [**Rule Organization Guide**](rule-organization-guide.md) | Rule and test structure organization | Rule developers, project architects |
 | [**Local GitHub Actions Testing**](local-github-actions-testing.md) | Test CI/CD workflows locally | Contributors, CI debugging |
 | [**Brownfield Architecture**](brownfield-architecture.md) | Project evolution and architecture | Understanding project history |
 | [**PRD (Product Requirements)**](prd.md) | Product requirements and planning | Project planning, feature development |
@@ -175,9 +176,10 @@ class MyRule(LintingRule):
 3. **Debug:** [Troubleshooting Guide](troubleshooting-rule-development.md) for specific issues
 
 ### For Contributors and Maintainers
-1. **Architecture:** [Brownfield Architecture](brownfield-architecture.md) for system understanding
-2. **Testing:** [Local GitHub Actions Testing](local-github-actions-testing.md) for CI validation
-3. **Planning:** [PRD Documentation](prd.md) for feature requirements
+1. **Organization:** [Rule Organization Guide](rule-organization-guide.md) for project structure
+2. **Architecture:** [Brownfield Architecture](brownfield-architecture.md) for system understanding
+3. **Testing:** [Local GitHub Actions Testing](local-github-actions-testing.md) for CI validation
+4. **Planning:** [PRD Documentation](prd.md) for feature requirements
 
 ## 📝 Quick Commands Reference
 
