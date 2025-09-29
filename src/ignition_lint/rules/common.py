@@ -4,11 +4,11 @@ This module contains common and base node types for rule implementation
 
 from abc import ABC, abstractmethod
 from typing import Set, List, Dict, Any, Literal
-from ..model.node_types import ViewNode, NodeType, ScriptNode, ALL_BINDINGS, ALL_SCRIPTS
+from ..model.node_types import Property, ViewNode, NodeType, ScriptNode, ALL_BINDINGS, ALL_SCRIPTS
 
 # Type definition for severity levels
 Severity = Literal["warning", "error"]
-
+RESERVED_KEY_NAMES = {"_JavaDate"}
 
 class NodeVisitor(ABC):
 	"""Simplified base visitor class that rules can extend."""
@@ -48,15 +48,19 @@ class NodeVisitor(ABC):
 class LintingRule(NodeVisitor):
 	"""Base class for linting rules with simplified interface and self-processing capability."""
 
-	def __init__(self, target_node_types: Set[NodeType] = None):
+	def __init__(self, target_node_types: Set[NodeType] = None, severity: str = "error", include_private_properties: bool = False):
 		"""
 		Initialize the rule.
-		
+
 		Args:
-			target_node_types: Set of node types this rule applies to. 
+			target_node_types: Set of node types this rule applies to.
 							  If None, applies to all nodes.
+			severity: Default severity level for violations ("warning" or "error")
+			include_private_properties: Whether to include properties starting with '_' (default: False)
 		"""
 		self.target_node_types = target_node_types or set()
+		self.severity = severity if severity in ["warning", "error"] else "error"
+		self.include_private_properties = include_private_properties
 		self.errors = []
 		self.warnings = []
 
@@ -65,10 +69,10 @@ class LintingRule(NodeVisitor):
 		"""
 		Preprocess configuration before rule instantiation.
 		Override this method in subclasses that need special config handling.
-		
+
 		Args:
 			config: Raw configuration dictionary from JSON
-			
+
 		Returns:
 			Processed configuration dictionary ready for __init__
 		"""
@@ -78,19 +82,33 @@ class LintingRule(NodeVisitor):
 	def create_from_config(cls, config: Dict[str, Any]):
 		"""
 		Create a rule instance from configuration, applying any necessary preprocessing.
-		
+
 		Args:
 			config: Raw configuration dictionary from JSON
-			
+
 		Returns:
 			Rule instance
 		"""
 		processed_config = cls.preprocess_config(config)
 		return cls(**processed_config)
 
+	def _is_private_property(self, node: ViewNode) -> bool:
+		"""Check if a node represents a private property (name starts with '_')."""
+		if node.node_type == NodeType.PROPERTY and isinstance(node, Property):
+			return node.name.startswith('_') or node.name in RESERVED_KEY_NAMES
+		return False
+
 	def applies_to(self, node: ViewNode) -> bool:
 		"""Check if this rule applies to the given node."""
-		return node.applies_to_rule(self.target_node_types)
+		# First check if the node type matches the rule's target types
+		if not node.applies_to_rule(self.target_node_types):
+			return False
+
+		# Filter out private properties unless explicitly included
+		if self._is_private_property(node) and not self.include_private_properties:
+			return False
+
+		return True
 
 	def process_nodes(self, nodes: List[ViewNode]):
 		"""Process a list of nodes, applying the rule to applicable ones."""
@@ -110,6 +128,20 @@ class LintingRule(NodeVisitor):
 	def post_process(self):
 		"""Override this method if you need to do batch processing after visiting all nodes."""
 
+	def add_violation(self, message: str, severity: str = None):
+		"""
+		Add a violation with the specified severity.
+
+		Args:
+			message: The violation message
+			severity: Override the default severity ("warning" or "error")
+		"""
+		actual_severity = severity if severity in ["warning", "error"] else self.severity
+		if actual_severity == "error":
+			self.errors.append(message)
+		else:
+			self.warnings.append(message)
+
 	@property
 	@abstractmethod
 	def error_message(self) -> str:
@@ -124,19 +156,19 @@ class LintingRule(NodeVisitor):
 class BindingRule(LintingRule):
 	"""Base class for binding-specific rules."""
 
-	def __init__(self, target_node_types: Set[NodeType] = None):
+	def __init__(self, target_node_types: Set[NodeType] = None, severity: str = "error", include_private_properties: bool = False):
 		if target_node_types is None:
 			target_node_types = ALL_BINDINGS
-		super().__init__(target_node_types)
+		super().__init__(target_node_types, severity, include_private_properties)
 
 
 class ScriptRule(LintingRule):
 	"""Base class for script-specific rules with built-in script collection."""
 
-	def __init__(self, target_node_types: Set[NodeType] = None):
+	def __init__(self, target_node_types: Set[NodeType] = None, severity: str = "error", include_private_properties: bool = False):
 		if target_node_types is None:
 			target_node_types = ALL_SCRIPTS
-		super().__init__(target_node_types)
+		super().__init__(target_node_types, severity, include_private_properties)
 		self.collected_scripts = {}
 
 	def process_nodes(self, nodes: List[ViewNode]):

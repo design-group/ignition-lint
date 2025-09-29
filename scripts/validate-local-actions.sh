@@ -56,7 +56,7 @@ for workflow in .github/workflows/*.yml .github/workflows/*.yaml; do
     if [ -f "$workflow" ]; then
         workflow_name=$(basename "$workflow")
         echo -n "  $workflow_name: "
-        
+
         # Test if the workflow file is valid
         if act --dry-run -W "$workflow" > /dev/null 2>&1; then
             echo -e "${GREEN}✓${NC}"
@@ -71,6 +71,6 @@ echo -e "${GREEN}🎉 Local GitHub Actions setup validation complete!${NC}"
 echo
 echo "Usage examples:"
 echo "  ./test-actions.sh                    # Run all workflows"
-echo "  ./test-actions.sh ci                 # Run CI workflow only"  
+echo "  ./test-actions.sh ci                 # Run CI workflow only"
 echo "  ./test-actions.sh unittest           # Run unittest workflow only"
 echo "  ./test-actions.sh list               # List available workflows"

@@ -1,0 +1,3 @@
+.ia_radioGroupComponent--disabled {
+    color: var(--label--disabled);
+}

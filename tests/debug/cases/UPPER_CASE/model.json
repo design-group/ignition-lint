@@ -1,0 +1,121 @@
+{
+  "bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "components": {
+    "count": 2,
+    "nodes": [
+      {
+        "name": "ICON_UPPER_CASE",
+        "node_type": "component",
+        "path": "root.root.children[0].ICON_UPPER_CASE",
+        "properties_count": 0,
+        "type": "ia.display.icon"
+      },
+      {
+        "name": "root",
+        "node_type": "component",
+        "path": "root.root",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      }
+    ]
+  },
+  "custom_methods": {
+    "count": 0,
+    "nodes": []
+  },
+  "event_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "expression_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "expression_struct_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "message_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "properties": {
+    "count": 7,
+    "nodes": [
+      {
+        "name": "CUSTOM_VIEW_PARAM",
+        "node_type": "property",
+        "path": "custom.CUSTOM_VIEW_PARAM",
+        "persistent": true,
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "VIEW_PARAM",
+        "node_type": "property",
+        "path": "params.VIEW_PARAM",
+        "persistent": true,
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "COMPONENT_CUSTOM_PARAM",
+        "node_type": "property",
+        "path": "root.root.children[0].ICON_UPPER_CASE.custom.COMPONENT_CUSTOM_PARAM",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[0].ICON_UPPER_CASE.position.basis",
+        "value": "30px",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[0].ICON_UPPER_CASE.props.path",
+        "value": "material/insert_emoticon",
+        "value_type": "str"
+      },
+      {
+        "name": "ROOT_CUSTOM_PARAM",
+        "node_type": "property",
+        "path": "root.root.custom.ROOT_CUSTOM_PARAM",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "direction",
+        "node_type": "property",
+        "path": "root.root.props.direction",
+        "value": "column",
+        "value_type": "str"
+      }
+    ]
+  },
+  "property_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "query_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "script_transforms": {
+    "count": 0,
+    "nodes": []
+  },
+  "scripts": {
+    "count": 0,
+    "nodes": []
+  },
+  "tag_bindings": {
+    "count": 0,
+    "nodes": []
+  }
+}

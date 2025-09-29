@@ -1,0 +1,111 @@
+{
+  "components_by_type": {
+    "ia.container.flex": 7,
+    "ia.container.split": 1,
+    "ia.display.flex-repeater": 1,
+    "ia.display.label": 1,
+    "ia.display.view": 7,
+    "ia.input.button": 1,
+    "ia.navigation.horizontalmenu": 1
+  },
+  "model_keys": [
+    "components",
+    "bindings",
+    "scripts",
+    "event_handlers",
+    "message_handlers",
+    "custom_methods",
+    "expression_bindings",
+    "expression_struct_bindings",
+    "property_bindings",
+    "tag_bindings",
+    "query_bindings",
+    "script_transforms",
+    "properties"
+  ],
+  "node_type_counts": {
+    "component": 19,
+    "custom_method": 2,
+    "expression_binding": 9,
+    "expression_struct_binding": 4,
+    "message_handler": 1,
+    "property": 120,
+    "property_binding": 22,
+    "tag_binding": 5
+  },
+  "rule_coverage": {
+    "BadComponentReferenceRule": {
+      "applicable_node_count": 12,
+      "target_types": [
+        "custom_method",
+        "transform",
+        "expression_binding",
+        "message_handler",
+        "event_handler"
+      ]
+    },
+    "ExampleBindingCountRule": {
+      "applicable_node_count": 59,
+      "target_types": [
+        "query_binding",
+        "expression_struct_binding",
+        "component",
+        "expression_binding",
+        "tag_binding",
+        "property_binding"
+      ]
+    },
+    "ExampleMixedSeverityRule": {
+      "applicable_node_count": 19,
+      "target_types": [
+        "component"
+      ]
+    },
+    "ExampleNameLengthRule": {
+      "applicable_node_count": 19,
+      "target_types": [
+        "component"
+      ]
+    },
+    "NamePatternRule": {
+      "applicable_node_count": 19,
+      "target_types": [
+        "component"
+      ]
+    },
+    "PollingIntervalRule": {
+      "applicable_node_count": 40,
+      "target_types": [
+        "expression_binding",
+        "tag_binding",
+        "query_binding",
+        "expression_struct_binding",
+        "property_binding"
+      ]
+    },
+    "PylintScriptRule": {
+      "applicable_node_count": 3,
+      "target_types": [
+        "custom_method",
+        "message_handler",
+        "transform",
+        "event_handler"
+      ]
+    },
+    "UnusedCustomPropertiesRule": {
+      "applicable_node_count": 178,
+      "target_types": [
+        "custom_method",
+        "transform",
+        "expression_binding",
+        "message_handler",
+        "tag_binding",
+        "component",
+        "property",
+        "property_binding",
+        "event_handler"
+      ]
+    }
+  },
+  "total_nodes": 182
+}

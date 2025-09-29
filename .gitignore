@@ -2,8 +2,18 @@
 **/__pycache__/
 **/*.egg-info
 
-# Debug directories
+# Debug directories (exclude golden test files)
 **/debug/*
+!scripts/debug/*
+!tests/debug/
+!tests/debug/cases/
+!tests/debug/cases/**
+
+# Ignore pylint debug files and temporary files
+debug/*.py
+debug/pylint_output.txt
+tests/debug/*.py
+tests/debug/pylint_output.txt
 
 # Local testing tools
 bin/
@@ -13,3 +23,6 @@ bin/
 
 # Build artifacts
 dist/
+
+# Ignition specific content
+.resources/

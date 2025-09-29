@@ -141,14 +141,13 @@ class TestFrameworkIntegration(BaseRuleTest):
 		}
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
 		# Should be able to run multiple rules without conflicts
-		self.assertIsInstance(errors, dict)
-		# Both rules should be present in results (even if no errors)
-		# Note: Rules only appear in results if they have errors, so we just
-		# verify the linting completed successfully
-		total_errors = sum(len(rule_errors) for rule_errors in errors.values())
+		# Verify we got valid results
+		self.assertIsNotNone(self.last_results)
+		# Verify the linting completed successfully
+		total_errors = self.get_error_count()
 		self.assertIsInstance(total_errors, int)
 
 

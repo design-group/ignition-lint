@@ -28,6 +28,7 @@ Welcome to the comprehensive developer documentation for ignition-lint! This gui
 
 | Document | Description | Best For |
 |----------|-------------|----------|
+| [**Rule Organization Guide**](rule-organization-guide.md) | Rule and test structure organization | Rule developers, project architects |
 | [**Local GitHub Actions Testing**](local-github-actions-testing.md) | Test CI/CD workflows locally | Contributors, CI debugging |
 | [**Brownfield Architecture**](brownfield-architecture.md) | Project evolution and architecture | Understanding project history |
 | [**PRD (Product Requirements)**](prd.md) | Product requirements and planning | Project planning, feature development |
@@ -100,7 +101,7 @@ ignition-lint is built on a modular architecture with these key components:
 
 **Key Concepts:**
 - **JSON Flattening**: Converts hierarchical JSON to path-value pairs
-- **Object Model**: Builds structured ViewNode representations  
+- **Object Model**: Builds structured ViewNode representations
 - **Visitor Pattern**: Rules process specific node types via visitor methods
 - **Rule Registry**: Automatic discovery and validation of custom rules
 
@@ -117,11 +118,11 @@ class MyRule(LintingRule):
     def __init__(self, param="default"):
         super().__init__({NodeType.COMPONENT})
         self.param = param
-    
+
     @property
     def error_message(self) -> str:
         return "Description of what this rule checks"
-    
+
     def visit_component(self, component):
         if some_condition:
             self.errors.append(f"{component.path}: Error message")
@@ -175,9 +176,10 @@ class MyRule(LintingRule):
 3. **Debug:** [Troubleshooting Guide](troubleshooting-rule-development.md) for specific issues
 
 ### For Contributors and Maintainers
-1. **Architecture:** [Brownfield Architecture](brownfield-architecture.md) for system understanding
-2. **Testing:** [Local GitHub Actions Testing](local-github-actions-testing.md) for CI validation
-3. **Planning:** [PRD Documentation](prd.md) for feature requirements
+1. **Organization:** [Rule Organization Guide](rule-organization-guide.md) for project structure
+2. **Architecture:** [Brownfield Architecture](brownfield-architecture.md) for system understanding
+3. **Testing:** [Local GitHub Actions Testing](local-github-actions-testing.md) for CI validation
+4. **Planning:** [PRD Documentation](prd.md) for feature requirements
 
 ## 📝 Quick Commands Reference
 

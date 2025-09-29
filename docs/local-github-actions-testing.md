@@ -71,7 +71,7 @@ git push
 # Test only unit tests (fastest)
 ./test-actions.sh unittest
 
-# Test only integration tests  
+# Test only integration tests
 ./test-actions.sh integration-test
 
 # Test pre-commit hooks
@@ -94,7 +94,7 @@ act --dry-run
 ## Configuration Files
 
 - `.actrc`: Basic act configuration
-- `.github/.actrc`: Advanced project-specific configuration  
+- `.github/.actrc`: Advanced project-specific configuration
 - `.github/act-secrets.env`: Local testing secrets (placeholders only)
 
 ## Platform Compatibility
@@ -185,7 +185,7 @@ Add to `.vscode/tasks.json`:
 ## Security Notes
 
 - Local secrets in `.github/act-secrets.env` are placeholders only
-- Never commit real secrets to version control  
+- Never commit real secrets to version control
 - Local testing uses isolated Docker containers
 - GitHub tokens in local testing are not functional
 
@@ -211,7 +211,7 @@ act --env-file .env.test
 ### Matrix Testing
 
 ```bash
-# Test specific matrix combination  
+# Test specific matrix combination
 act -j test --matrix python-version:3.11
 ```
 

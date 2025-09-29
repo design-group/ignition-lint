@@ -739,3 +739,4 @@ cd ..
 ```
 
 **Remember**: Always start from the repository root and verify your working directory with `pwd` before running commands!
+- When you run pylint, the file is @.config/.pylintrc

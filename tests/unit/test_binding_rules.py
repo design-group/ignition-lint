@@ -19,10 +19,10 @@ class TestBindingRules(BaseRuleTest):
 		rule_config = get_test_config("PollingIntervalRule", minimum_interval=5000)
 
 		view_file = load_test_view(self.test_cases_dir, "ExpressionBindings")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
 		# Verify the rule processes binding nodes
-		self.assertIsInstance(errors.get("PollingIntervalRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("PollingIntervalRule"), list)
 
 	def test_multiple_binding_types(self):
 		"""Test rules that target multiple binding types."""
@@ -35,9 +35,9 @@ class TestBindingRules(BaseRuleTest):
 			with self.subTest(case=case):
 				try:
 					view_file = load_test_view(self.test_cases_dir, case)
-					errors = self.run_lint_on_file(view_file, rule_config)
+					self.run_lint_on_file(view_file, rule_config)
 					# Just verify it runs without error
-					self.assertIsInstance(errors.get("PollingIntervalRule", []), list)
+					self.assertIsInstance(self.get_errors_for_rule("PollingIntervalRule"), list)
 				except FileNotFoundError:
 					self.skipTest(f"Test case {case} not found")
 

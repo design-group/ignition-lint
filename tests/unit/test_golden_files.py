@@ -5,7 +5,7 @@ Golden file test for LintEngine model generation.
 This test validates that the LintEngine produces consistent model output by comparing
 generated models against golden reference files. This catches regressions in:
 - JSON flattening logic
-- Model building process  
+- Model building process
 - Node creation and serialization
 - Statistics generation
 
@@ -45,13 +45,30 @@ class TestGoldenFiles(unittest.TestCase):
 		# Get test cases directory
 		cls.test_cases_dir = Path(__file__).parent.parent / 'cases'
 
-		# Get all test cases that have golden files
-		cls.test_cases_with_golden_files = []
-		for case_dir in cls.test_cases_dir.iterdir():
-			if case_dir.is_dir() and (case_dir / 'view.json').exists() and (case_dir / 'debug').exists():
-				cls.test_cases_with_golden_files.append(case_dir)
+		# Get all test cases and validate golden files exist for all
+		tests_dir = Path(__file__).parent.parent
+		debug_cases_dir = tests_dir / 'debug' / 'cases'
 
+		all_test_cases = []
+		cls.test_cases_with_golden_files = []
+
+		for case_dir in cls.test_cases_dir.iterdir():
+			if case_dir.is_dir() and (case_dir / 'view.json').exists():
+				all_test_cases.append(case_dir)
+				if (debug_cases_dir / case_dir.name).exists():
+					cls.test_cases_with_golden_files.append(case_dir)
+
+		all_test_cases.sort()
 		cls.test_cases_with_golden_files.sort()  # Ensure consistent order
+
+		# Validate that we have golden files for ALL test cases
+		missing_golden_files = [case.name for case in all_test_cases if case not in cls.test_cases_with_golden_files]
+		if missing_golden_files:
+			raise RuntimeError(
+				f"Missing golden files for {len(missing_golden_files)} test case(s): {missing_golden_files}\n"
+				f"Generate them with: python scripts/generate_debug_files.py {' '.join(missing_golden_files)}\n"
+				"run `./scripts/generate_debug_files.py` to generate for all cases."
+			)
 
 	def _create_fresh_lint_engine(self) -> LintEngine:
 		"""Create a fresh LintEngine instance to avoid state accumulation."""
@@ -122,7 +139,9 @@ class TestGoldenFiles(unittest.TestCase):
 	def _assert_flattened_json_matches(self, case_dir: Path):
 		"""Assert that flattened JSON matches the golden file."""
 		view_file = case_dir / 'view.json'
-		golden_file = case_dir / 'debug' / 'flattened.json'
+		# Updated path to tests/debug/cases/{case_name}/flattened.json
+		tests_dir = Path(__file__).parent.parent
+		golden_file = tests_dir / 'debug' / 'cases' / case_dir.name / 'flattened.json'
 
 		# Generate current flattened JSON
 		json_data = read_json_file(view_file)
@@ -147,7 +166,9 @@ class TestGoldenFiles(unittest.TestCase):
 	def _assert_model_matches(self, case_dir: Path):
 		"""Assert that the model matches the golden file."""
 		view_file = case_dir / 'view.json'
-		golden_file = case_dir / 'debug' / 'model.json'
+		# Updated path to tests/debug/cases/{case_name}/model.json
+		tests_dir = Path(__file__).parent.parent
+		golden_file = tests_dir / 'debug' / 'cases' / case_dir.name / 'model.json'
 
 		# Generate current model with fresh lint engine
 		json_data = read_json_file(view_file)
@@ -174,7 +195,9 @@ class TestGoldenFiles(unittest.TestCase):
 	def _assert_stats_match(self, case_dir: Path):
 		"""Assert that statistics match the golden file."""
 		view_file = case_dir / 'view.json'
-		golden_file = case_dir / 'debug' / 'stats.json'
+		# Updated path to tests/debug/cases/{case_name}/stats.json
+		tests_dir = Path(__file__).parent.parent
+		golden_file = tests_dir / 'debug' / 'cases' / case_dir.name / 'stats.json'
 
 		# Generate current stats with fresh lint engine
 		json_data = read_json_file(view_file)

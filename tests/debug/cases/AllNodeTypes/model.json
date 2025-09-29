@@ -1,0 +1,423 @@
+{
+  "bindings": {
+    "count": 13,
+    "nodes": [
+      {
+        "config": {},
+        "expression": "abs({view.params.valInt})",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.expr"
+      },
+      {
+        "config": {
+          "waitOnAll": true
+        },
+        "node_type": "expression_struct_binding",
+        "path": "propConfig.custom.exprStruct",
+        "struct": {
+          "key1": "{view.params.valInt}",
+          "key2": "upper({view.params.valString})"
+        }
+      },
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "propConfig.custom.property",
+        "target_path": "view.params.valString"
+      },
+      {
+        "config": {},
+        "node_type": "query_binding",
+        "parameters": {
+          "param_val": "{view.custom.tag}"
+        },
+        "path": "propConfig.custom.query",
+        "query_path": "Test Query"
+      },
+      {
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "direct",
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.tag",
+        "references": {},
+        "tag_path": "[default]Basic Tag"
+      },
+      {
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "expression",
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.tagExpression",
+        "references": {},
+        "tag_path": "\"[default]\" + {view.custom.tagFolder} + \"/Nested Tag\""
+      },
+      {
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "indirect",
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.tagIndirect",
+        "references": {
+          "1": "{view.custom.tagFolder}"
+        },
+        "tag_path": "[default]{1}/Nested Tag"
+      },
+      {
+        "config": {},
+        "expression": "now(5000)",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformExpression"
+      },
+      {
+        "config": {},
+        "expression": "\"tester: \" + {value}",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformExpression.binding.transforms[0]"
+      },
+      {
+        "config": {},
+        "expression": "toBoolean(1)",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformMap"
+      },
+      {
+        "config": {},
+        "expression": "None",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformScript"
+      },
+      {
+        "config": {},
+        "expression": "false",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transofrmExpression"
+      },
+      {
+        "config": {},
+        "expression": "upper({value})",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transofrmExpression.binding.transforms[0]"
+      }
+    ]
+  },
+  "components": {
+    "count": 1,
+    "nodes": [
+      {
+        "name": "root",
+        "node_type": "component",
+        "path": "root.root",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      }
+    ]
+  },
+  "custom_methods": {
+    "count": 0,
+    "nodes": []
+  },
+  "event_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "expression_bindings": {
+    "count": 7,
+    "nodes": [
+      {
+        "config": {},
+        "expression": "abs({view.params.valInt})",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.expr"
+      },
+      {
+        "config": {},
+        "expression": "now(5000)",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformExpression"
+      },
+      {
+        "config": {},
+        "expression": "\"tester: \" + {value}",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformExpression.binding.transforms[0]"
+      },
+      {
+        "config": {},
+        "expression": "toBoolean(1)",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformMap"
+      },
+      {
+        "config": {},
+        "expression": "None",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformScript"
+      },
+      {
+        "config": {},
+        "expression": "false",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transofrmExpression"
+      },
+      {
+        "config": {},
+        "expression": "upper({value})",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transofrmExpression.binding.transforms[0]"
+      }
+    ]
+  },
+  "expression_struct_bindings": {
+    "count": 1,
+    "nodes": [
+      {
+        "config": {
+          "waitOnAll": true
+        },
+        "node_type": "expression_struct_binding",
+        "path": "propConfig.custom.exprStruct",
+        "struct": {
+          "key1": "{view.params.valInt}",
+          "key2": "upper({view.params.valString})"
+        }
+      }
+    ]
+  },
+  "message_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "properties": {
+    "count": 20,
+    "nodes": [
+      {
+        "name": "expr",
+        "node_type": "property",
+        "path": "custom.expr",
+        "persistent": true,
+        "private_access": true,
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "key1",
+        "node_type": "property",
+        "path": "custom.exprStruct.key1",
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "key2",
+        "node_type": "property",
+        "path": "custom.exprStruct.key2",
+        "value": "VALUE",
+        "value_type": "str"
+      },
+      {
+        "name": "property",
+        "node_type": "property",
+        "path": "custom.property",
+        "persistent": true,
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "query",
+        "node_type": "property",
+        "path": "custom.query",
+        "persistent": true,
+        "value": null,
+        "value_type": "NoneType"
+      },
+      {
+        "name": "tag",
+        "node_type": "property",
+        "path": "custom.tag",
+        "persistent": true,
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "tagExpression",
+        "node_type": "property",
+        "path": "custom.tagExpression",
+        "persistent": true,
+        "value": 2,
+        "value_type": "int"
+      },
+      {
+        "name": "tagFolder",
+        "node_type": "property",
+        "path": "custom.tagFolder",
+        "persistent": true,
+        "value": "Tag Folder",
+        "value_type": "str"
+      },
+      {
+        "name": "tagIndirect",
+        "node_type": "property",
+        "path": "custom.tagIndirect",
+        "persistent": true,
+        "value": 2,
+        "value_type": "int"
+      },
+      {
+        "name": "transformExpression",
+        "node_type": "property",
+        "path": "custom.transformExpression",
+        "persistent": true,
+        "value": "tester: 2025-09-29 06:24:59.460",
+        "value_type": "str"
+      },
+      {
+        "name": "transformMap",
+        "node_type": "property",
+        "path": "custom.transformMap",
+        "persistent": true,
+        "value": "test",
+        "value_type": "str"
+      },
+      {
+        "name": "transformScript",
+        "node_type": "property",
+        "path": "custom.transformScript",
+        "persistent": true,
+        "value": "This is the script",
+        "value_type": "str"
+      },
+      {
+        "name": "transofrmExpression",
+        "node_type": "property",
+        "path": "custom.transofrmExpression",
+        "persistent": true,
+        "value": "FALSE",
+        "value_type": "str"
+      },
+      {
+        "name": "_JavaDate",
+        "node_type": "property",
+        "path": "params.valDate._JavaDate",
+        "value": 1759121802945,
+        "value_type": "int"
+      },
+      {
+        "name": "valInt",
+        "node_type": "property",
+        "path": "params.valInt",
+        "persistent": true,
+        "value": 1,
+        "value_type": "int"
+      },
+      {
+        "name": "valList[0]",
+        "node_type": "property",
+        "path": "params.valList[0]",
+        "value": "one",
+        "value_type": "str"
+      },
+      {
+        "name": "valList[1]",
+        "node_type": "property",
+        "path": "params.valList[1]",
+        "value": "two",
+        "value_type": "str"
+      },
+      {
+        "name": "foo",
+        "node_type": "property",
+        "path": "params.valObj.foo",
+        "value": "bar",
+        "value_type": "str"
+      },
+      {
+        "name": "valString",
+        "node_type": "property",
+        "path": "params.valString",
+        "persistent": true,
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "direction",
+        "node_type": "property",
+        "path": "root.root.props.direction",
+        "value": "column",
+        "value_type": "str"
+      }
+    ]
+  },
+  "property_bindings": {
+    "count": 1,
+    "nodes": [
+      {
+        "config": {},
+        "node_type": "property_binding",
+        "path": "propConfig.custom.property",
+        "target_path": "view.params.valString"
+      }
+    ]
+  },
+  "query_bindings": {
+    "count": 1,
+    "nodes": [
+      {
+        "config": {},
+        "node_type": "query_binding",
+        "parameters": {
+          "param_val": "{view.custom.tag}"
+        },
+        "path": "propConfig.custom.query",
+        "query_path": "Test Query"
+      }
+    ]
+  },
+  "script_transforms": {
+    "count": 0,
+    "nodes": []
+  },
+  "scripts": {
+    "count": 0,
+    "nodes": []
+  },
+  "tag_bindings": {
+    "count": 3,
+    "nodes": [
+      {
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "direct",
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.tag",
+        "references": {},
+        "tag_path": "[default]Basic Tag"
+      },
+      {
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "expression",
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.tagExpression",
+        "references": {},
+        "tag_path": "\"[default]\" + {view.custom.tagFolder} + \"/Nested Tag\""
+      },
+      {
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "indirect",
+        "node_type": "tag_binding",
+        "path": "propConfig.custom.tagIndirect",
+        "references": {
+          "1": "{view.custom.tagFolder}"
+        },
+        "tag_path": "[default]{1}/Nested Tag"
+      }
+    ]
+  }
+}

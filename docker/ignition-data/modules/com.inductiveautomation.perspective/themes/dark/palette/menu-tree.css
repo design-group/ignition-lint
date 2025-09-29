@@ -1,0 +1,3 @@
+.ia_menuTreeComponent__item:not(.ia_menuTreeComponent__header):hover {
+    filter: brightness(1.2);
+}

@@ -1,12 +1,12 @@
 {
     // yapf settings
     "yapf.interpreter": ["python3"],
-    "yapf.args": ["--style=.style.yapf"],
-    // Python settings  
+    "yapf.args": ["--style=${workspaceFolder}/.config/.style.yapf"],
+    // Python settings
     "pylint.interpreter": ["python3"],
     "python.analysis.typeCheckingMode": "basic",
     "pylint.args": [
-        "--rcfile=${workspaceFolder}/.pylintrc"
+        "--rcfile=${workspaceFolder}/.config/.pylintrc"
     ],
     "[python]": {
         "diffEditor.ignoreTrimWhitespace": false,
