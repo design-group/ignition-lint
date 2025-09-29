@@ -1,6 +1,6 @@
 {
   "bindings": {
-    "count": 36,
+    "count": 40,
     "nodes": [
       {
         "config": {},
@@ -21,21 +21,63 @@
         "target_path": "view.custom.kpiHourlyData"
       },
       {
-        "config": {},
+        "config": {
+          "waitOnAll": true
+        },
+        "node_type": "expression_struct_binding",
+        "path": "propConfig.custom.kpiHourlyData",
+        "struct": {
+          "data": "{view.custom.kpiTagData}",
+          "eq_path": "{view.custom.eq_path}",
+          "update": "{view.custom.time.update}"
+        }
+      },
+      {
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "indirect",
         "node_type": "tag_binding",
         "path": "propConfig.custom.kpiTagData",
+        "references": {
+          "tag_path": "{view.custom.partial_tag_path}",
+          "time": "{view.params.timePeriod} + \" \" + {view.params.timeFrame}"
+        },
         "tag_path": "[DanPT]{tag_path}/AnalysisCache/{time}/KPI Data"
       },
       {
-        "config": {},
+        "config": {
+          "waitOnAll": true
+        },
+        "node_type": "expression_struct_binding",
+        "path": "propConfig.custom.kpiTargets",
+        "struct": {
+          "eq_path": "{view.custom.eq_path}",
+          "start": "{view.custom.time.start}"
+        }
+      },
+      {
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "indirect",
         "node_type": "tag_binding",
         "path": "propConfig.custom.mode_name",
+        "references": {
+          "tag": "{view.custom.partial_tag_path}"
+        },
         "tag_path": "{tag}/Live Analysis/Current State/Equipment Mode Name"
       },
       {
-        "config": {},
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "indirect",
         "node_type": "tag_binding",
         "path": "propConfig.custom.mode_type",
+        "references": {
+          "tag": "{view.custom.partial_tag_path}"
+        },
         "tag_path": "{tag}/Live Analysis/Current State/Equipment Mode Type"
       },
       {
@@ -45,15 +87,27 @@
         "path": "propConfig.custom.partial_tag_path"
       },
       {
-        "config": {},
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "indirect",
         "node_type": "tag_binding",
         "path": "propConfig.custom.state_name",
+        "references": {
+          "tag": "{view.custom.partial_tag_path}"
+        },
         "tag_path": "{tag}/Live Analysis/Current State/Line State Name"
       },
       {
-        "config": {},
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "indirect",
         "node_type": "tag_binding",
         "path": "propConfig.custom.state_type",
+        "references": {
+          "tag": "{view.custom.partial_tag_path}"
+        },
         "tag_path": "{tag}/Live Analysis/Current State/Line State Type"
       },
       {
@@ -109,6 +163,27 @@
         "node_type": "property_binding",
         "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[0].Name.children[0].Line Name.propConfig.props.text",
         "target_path": "view.custom.eq_path"
+      },
+      {
+        "config": {
+          "waitOnAll": true
+        },
+        "node_type": "expression_struct_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb.propConfig.props.items",
+        "struct": {
+          "eq_path_url": "{view.params.eq_path_url}"
+        }
+      },
+      {
+        "config": {
+          "waitOnAll": true
+        },
+        "node_type": "expression_struct_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.propConfig.props.instances",
+        "struct": {
+          "data": "{view.custom.kpiData}",
+          "targets": "{view.custom.kpiTargets[0]}"
+        }
       },
       {
         "config": {},
@@ -447,6 +522,55 @@
       }
     ]
   },
+  "expression_struct_bindings": {
+    "count": 4,
+    "nodes": [
+      {
+        "config": {
+          "waitOnAll": true
+        },
+        "node_type": "expression_struct_binding",
+        "path": "propConfig.custom.kpiHourlyData",
+        "struct": {
+          "data": "{view.custom.kpiTagData}",
+          "eq_path": "{view.custom.eq_path}",
+          "update": "{view.custom.time.update}"
+        }
+      },
+      {
+        "config": {
+          "waitOnAll": true
+        },
+        "node_type": "expression_struct_binding",
+        "path": "propConfig.custom.kpiTargets",
+        "struct": {
+          "eq_path": "{view.custom.eq_path}",
+          "start": "{view.custom.time.start}"
+        }
+      },
+      {
+        "config": {
+          "waitOnAll": true
+        },
+        "node_type": "expression_struct_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[1].Left Labels.children[1].Breadcrumb.propConfig.props.items",
+        "struct": {
+          "eq_path_url": "{view.params.eq_path_url}"
+        }
+      },
+      {
+        "config": {
+          "waitOnAll": true
+        },
+        "node_type": "expression_struct_binding",
+        "path": "root.root.children[0].Header.children[0].FlexContainer.children[2].KPI Repeater Static.propConfig.props.instances",
+        "struct": {
+          "data": "{view.custom.kpiData}",
+          "targets": "{view.custom.kpiTargets[0]}"
+        }
+      }
+    ]
+  },
   "message_handlers": {
     "count": 1,
     "nodes": [
@@ -471,6 +595,7 @@
         "name": "kpiTagData",
         "node_type": "property",
         "path": "custom.kpiTagData",
+        "persistent": true,
         "value": null,
         "value_type": "NoneType"
       },
@@ -478,6 +603,7 @@
         "name": "eq_path_url",
         "node_type": "property",
         "path": "params.eq_path_url",
+        "persistent": true,
         "value": "",
         "value_type": "str"
       },
@@ -485,6 +611,7 @@
         "name": "timeFrame",
         "node_type": "property",
         "path": "params.timeFrame",
+        "persistent": true,
         "value": "",
         "value_type": "str"
       },
@@ -492,6 +619,7 @@
         "name": "timePeriod",
         "node_type": "property",
         "path": "params.timePeriod",
+        "persistent": true,
         "value": "",
         "value_type": "str"
       },
@@ -1446,6 +1574,10 @@
       }
     ]
   },
+  "query_bindings": {
+    "count": 0,
+    "nodes": []
+  },
   "script_transforms": {
     "count": 0,
     "nodes": []
@@ -1492,33 +1624,64 @@
     "count": 5,
     "nodes": [
       {
-        "config": {},
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "indirect",
         "node_type": "tag_binding",
         "path": "propConfig.custom.kpiTagData",
+        "references": {
+          "tag_path": "{view.custom.partial_tag_path}",
+          "time": "{view.params.timePeriod} + \" \" + {view.params.timeFrame}"
+        },
         "tag_path": "[DanPT]{tag_path}/AnalysisCache/{time}/KPI Data"
       },
       {
-        "config": {},
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "indirect",
         "node_type": "tag_binding",
         "path": "propConfig.custom.mode_name",
+        "references": {
+          "tag": "{view.custom.partial_tag_path}"
+        },
         "tag_path": "{tag}/Live Analysis/Current State/Equipment Mode Name"
       },
       {
-        "config": {},
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "indirect",
         "node_type": "tag_binding",
         "path": "propConfig.custom.mode_type",
+        "references": {
+          "tag": "{view.custom.partial_tag_path}"
+        },
         "tag_path": "{tag}/Live Analysis/Current State/Equipment Mode Type"
       },
       {
-        "config": {},
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "indirect",
         "node_type": "tag_binding",
         "path": "propConfig.custom.state_name",
+        "references": {
+          "tag": "{view.custom.partial_tag_path}"
+        },
         "tag_path": "{tag}/Live Analysis/Current State/Line State Name"
       },
       {
-        "config": {},
+        "config": {
+          "fallbackDelay": 2.5
+        },
+        "mode": "indirect",
         "node_type": "tag_binding",
         "path": "propConfig.custom.state_type",
+        "references": {
+          "tag": "{view.custom.partial_tag_path}"
+        },
         "tag_path": "{tag}/Live Analysis/Current State/Line State Type"
       }
     ]

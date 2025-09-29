@@ -34,6 +34,10 @@
     "count": 0,
     "nodes": []
   },
+  "expression_struct_bindings": {
+    "count": 0,
+    "nodes": []
+  },
   "message_handlers": {
     "count": 0,
     "nodes": []
@@ -65,6 +69,10 @@
     ]
   },
   "property_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "query_bindings": {
     "count": 0,
     "nodes": []
   },

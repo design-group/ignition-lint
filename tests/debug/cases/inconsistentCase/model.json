@@ -69,6 +69,10 @@
     "count": 0,
     "nodes": []
   },
+  "expression_struct_bindings": {
+    "count": 0,
+    "nodes": []
+  },
   "message_handlers": {
     "count": 0,
     "nodes": []
@@ -80,6 +84,7 @@
         "name": "PrettyBigIssue",
         "node_type": "property",
         "path": "custom.PrettyBigIssue",
+        "persistent": true,
         "value": "nope1",
         "value_type": "str"
       },
@@ -87,6 +92,7 @@
         "name": "THISIsQuestionable",
         "node_type": "property",
         "path": "custom.THISIsQuestionable",
+        "persistent": true,
         "value": "nope2",
         "value_type": "str"
       },
@@ -94,6 +100,7 @@
         "name": "TRYAGAIN",
         "node_type": "property",
         "path": "custom.TRYAGAIN",
+        "persistent": true,
         "value": "nope3",
         "value_type": "str"
       },
@@ -108,6 +115,7 @@
         "name": "this_is_illegal",
         "node_type": "property",
         "path": "custom.this_is_illegal",
+        "persistent": true,
         "value": "nope4",
         "value_type": "str"
       },
@@ -115,6 +123,7 @@
         "name": "VeryBadPractice",
         "node_type": "property",
         "path": "params.VeryBadPractice",
+        "persistent": true,
         "value": "value",
         "value_type": "str"
       },
@@ -324,6 +333,10 @@
     ]
   },
   "property_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "query_bindings": {
     "count": 0,
     "nodes": []
   },

@@ -13,8 +13,10 @@ class NodeType(Enum):
 	"""Enum for node types used in linting rules."""
 	COMPONENT = "component"
 	EXPRESSION_BINDING = "expression_binding"
+	EXPRESSION_STRUCT_BINDING = "expression_struct_binding"
 	PROPERTY_BINDING = "property_binding"
 	TAG_BINDING = "tag_binding"
+	QUERY_BINDING = "query_binding"
 	MESSAGE_HANDLER = "message_handler"
 	CUSTOM_METHOD = "custom_method"
 	TRANSFORM = "transform"
@@ -23,7 +25,10 @@ class NodeType(Enum):
 
 
 # Grouped node types - defined outside the enum to avoid enum member confusion
-ALL_BINDINGS = {NodeType.EXPRESSION_BINDING, NodeType.PROPERTY_BINDING, NodeType.TAG_BINDING}
+ALL_BINDINGS = {
+	NodeType.EXPRESSION_BINDING, NodeType.EXPRESSION_STRUCT_BINDING, NodeType.PROPERTY_BINDING,
+	NodeType.TAG_BINDING, NodeType.QUERY_BINDING
+}
 ALL_SCRIPTS = {NodeType.MESSAGE_HANDLER, NodeType.CUSTOM_METHOD, NodeType.TRANSFORM, NodeType.EVENT_HANDLER}
 
 
@@ -85,6 +90,26 @@ class ExpressionBinding(ViewNode):
 		return {'expression': self.expression, 'config': self.config}
 
 
+class ExpressionStructBinding(ViewNode):
+	"""Represents an expression structure binding with multiple key-expression mappings."""
+
+	def __init__(self, path: str, struct: Dict[str, str], config: Dict = None):
+		super().__init__(path, NodeType.EXPRESSION_STRUCT_BINDING)
+		self.struct = struct  # Dict mapping keys to expression strings
+		self.config = config or {}
+
+	def _get_serializable_attrs(self) -> Dict[str, Any]:
+		return {'struct': self.struct, 'config': self.config}
+
+	def get_expressions(self) -> List[str]:
+		"""Get all expression strings from the struct."""
+		return list(self.struct.values())
+
+	def get_struct_keys(self) -> List[str]:
+		"""Get all keys from the struct."""
+		return list(self.struct.keys())
+
+
 class PropertyBinding(ViewNode):
 	"""Represents a property binding."""
 
@@ -98,15 +123,73 @@ class PropertyBinding(ViewNode):
 
 
 class TagBinding(ViewNode):
-	"""Represents a tag binding."""
+	"""Represents a tag binding with support for direct, indirect, and expression modes."""
 
-	def __init__(self, path: str, tag_path: str, config: Dict = None):
+	def __init__(self, path: str, tag_path: str, *, mode: str = "direct", references: Dict[str, str] = None, config: Dict = None):
 		super().__init__(path, NodeType.TAG_BINDING)
 		self.tag_path = tag_path
+		self.mode = mode  # 'direct', 'indirect', or 'expression'
+		self.references = references or {}  # For indirect tags: maps placeholder keys to expressions
 		self.config = config or {}
 
 	def _get_serializable_attrs(self) -> Dict[str, Any]:
-		return {'tag_path': self.tag_path, 'config': self.config}
+		return {
+			'tag_path': self.tag_path,
+			'mode': self.mode,
+			'references': self.references,
+			'config': self.config
+		}
+
+	def get_expressions(self) -> List[str]:
+		"""Get all expressions from this tag binding based on its mode."""
+		expressions = []
+
+		if self.mode == 'expression':
+			# Expression mode: tagPath is an expression
+			expressions.append(self.tag_path)
+		elif self.mode == 'indirect':
+			# Indirect mode: reference values are expressions
+			expressions.extend(self.references.values())
+		# Direct mode has no expressions
+
+		return expressions
+
+	def get_reference_expressions(self) -> Dict[str, str]:
+		"""Get the reference expressions for indirect tag bindings."""
+		return self.references.copy() if self.mode == 'indirect' else {}
+
+	def is_expression_tag(self) -> bool:
+		"""Check if this is an expression tag binding."""
+		return self.mode == 'expression'
+
+	def is_indirect_tag(self) -> bool:
+		"""Check if this is an indirect tag binding."""
+		return self.mode == 'indirect'
+
+	def is_direct_tag(self) -> bool:
+		"""Check if this is a direct tag binding."""
+		return self.mode == 'direct'
+
+
+class QueryBinding(ViewNode):
+	"""Represents a query binding with a query path and parameters containing expressions."""
+
+	def __init__(self, path: str, query_path: str, parameters: Dict[str, str], config: Dict = None):
+		super().__init__(path, NodeType.QUERY_BINDING)
+		self.query_path = query_path
+		self.parameters = parameters  # Dict mapping parameter names to expression strings
+		self.config = config or {}
+
+	def _get_serializable_attrs(self) -> Dict[str, Any]:
+		return {'query_path': self.query_path, 'parameters': self.parameters, 'config': self.config}
+
+	def get_parameter_expressions(self) -> List[str]:
+		"""Get all parameter expression strings."""
+		return list(self.parameters.values())
+
+	def get_parameter_names(self) -> List[str]:
+		"""Get all parameter names."""
+		return list(self.parameters.keys())
 
 
 class ScriptNode(ViewNode):
@@ -197,13 +280,20 @@ class EventHandlerScript(ScriptNode):
 class Property(ViewNode):
 	"""Represents a component property."""
 
-	def __init__(self, path: str, name: str, value: Any):
+	def __init__(self, path: str, name: str, value: Any, *, persistent: bool = None, private_access: bool = None):
 		super().__init__(path, NodeType.PROPERTY)
 		self.name = name
 		self.value = value
+		self.persistent = persistent  # True if property is persistent, False if not, None if unknown
+		self.private_access = private_access  # True if access mode is 'PRIVATE', False if not, None if unknown
 
 	def _get_serializable_attrs(self) -> Dict[str, Any]:
-		return {'name': self.name, 'value': self.value, 'value_type': type(self.value).__name__}
+		attrs = {'name': self.name, 'value': self.value, 'value_type': type(self.value).__name__}
+		if self.persistent is not None:
+			attrs['persistent'] = self.persistent
+		if self.private_access is not None:
+			attrs['private_access'] = self.private_access
+		return attrs
 
 
 class NodeUtils:

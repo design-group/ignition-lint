@@ -1,12 +1,22 @@
 {
   "bindings": {
-    "count": 6,
+    "count": 7,
     "nodes": [
       {
         "config": {},
         "expression": "now()",
         "node_type": "expression_binding",
         "path": "propConfig.custom.expressionPolling"
+      },
+      {
+        "config": {
+          "waitOnAll": true
+        },
+        "node_type": "expression_struct_binding",
+        "path": "propConfig.custom.expressionStructurePolling",
+        "struct": {
+          "badPolling": "now()"
+        }
       },
       {
         "config": {},
@@ -121,6 +131,21 @@
       }
     ]
   },
+  "expression_struct_bindings": {
+    "count": 1,
+    "nodes": [
+      {
+        "config": {
+          "waitOnAll": true
+        },
+        "node_type": "expression_struct_binding",
+        "path": "propConfig.custom.expressionStructurePolling",
+        "struct": {
+          "badPolling": "now()"
+        }
+      }
+    ]
+  },
   "message_handlers": {
     "count": 0,
     "nodes": []
@@ -132,6 +157,7 @@
         "name": "test",
         "node_type": "property",
         "path": "custom.test",
+        "persistent": true,
         "value": 4,
         "value_type": "int"
       },
@@ -139,6 +165,7 @@
         "name": "inputProp",
         "node_type": "property",
         "path": "params.inputProp",
+        "persistent": true,
         "value": false,
         "value_type": "bool"
       },
@@ -153,7 +180,7 @@
         "name": "formattedValue",
         "node_type": "property",
         "path": "root.root.children[0].BadPollingDateTimeInput.props.formattedValue",
-        "value": "Sep 28, 2025 10:33 PM",
+        "value": "Sep 29, 2025 6:04 AM",
         "value_type": "str"
       },
       {
@@ -182,6 +209,10 @@
         "target_path": "view.params.inputProp"
       }
     ]
+  },
+  "query_bindings": {
+    "count": 0,
+    "nodes": []
   },
   "script_transforms": {
     "count": 0,

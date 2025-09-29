@@ -109,11 +109,76 @@ def _get_component_path(data, path):
 	return path
 
 
+def _is_java_date_object(data):
+	"""
+	Check if a dictionary represents a Java Date object.
+
+	Java Date objects are serialized as:
+	{
+		"$": ["ts", <precision>, <nanos>],
+		"$ts": <millis_timestamp>
+	}
+
+	Args:
+		data (dict): Dictionary to check
+
+	Returns:
+		bool: True if this looks like a Java Date object
+	"""
+	if not isinstance(data, dict):
+		return False
+
+	# Must have both "$" and "$ts" keys
+	if "$" not in data or "$ts" not in data:
+		return False
+
+	# "$" should be a list with 3 elements: ["ts", precision, nanos]
+	dollar_value = data["$"]
+	if not isinstance(dollar_value, list) or len(dollar_value) != 3:
+		return False
+
+	# First element should be "ts", second and third should be numbers
+	if (dollar_value[0] != "ts" or
+		not isinstance(dollar_value[1], (int, float)) or
+		not isinstance(dollar_value[2], (int, float))):
+		return False
+
+	# "$ts" should be a number (the millis timestamp)
+	if not isinstance(data["$ts"], (int, float)):
+		return False
+
+	# Additional validation: should only have these two keys
+	if len(data) != 2:
+		return False
+
+	return True
+
+
+def _extract_java_date_timestamp(data):
+	"""
+	Extract the timestamp from a Java Date object.
+
+	Args:
+		data (dict): Java Date object dictionary
+
+	Returns:
+		int: The milliseconds timestamp from "$ts"
+	"""
+	return data["$ts"]
+
+
 def _process_dict_item(key, value, path, results):
 	"""Process a single key-value pair from a dictionary."""
 	current_path = f"{path}.{key}" if path else key
 	if isinstance(value, dict):
-		flatten_json(value, current_path, results)
+		# Check if this is a Java Date object
+		if _is_java_date_object(value):
+			# Store as a single encoded date value
+			timestamp = _extract_java_date_timestamp(value)
+			results[f"{current_path}._JavaDate"] = timestamp
+		else:
+			# Regular dictionary - flatten recursively
+			flatten_json(value, current_path, results)
 	elif isinstance(value, list):
 		_process_list_items(value, current_path, results)
 	else:

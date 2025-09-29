@@ -16,8 +16,10 @@
     "message_handlers",
     "custom_methods",
     "expression_bindings",
+    "expression_struct_bindings",
     "property_bindings",
     "tag_bindings",
+    "query_bindings",
     "script_transforms",
     "properties"
   ],
@@ -25,6 +27,7 @@
     "component": 19,
     "custom_method": 2,
     "expression_binding": 9,
+    "expression_struct_binding": 4,
     "message_handler": 1,
     "property": 120,
     "property_binding": 22,
@@ -34,20 +37,22 @@
     "BadComponentReferenceRule": {
       "applicable_node_count": 12,
       "target_types": [
-        "expression_binding",
         "message_handler",
         "event_handler",
-        "custom_method",
-        "transform"
+        "transform",
+        "expression_binding",
+        "custom_method"
       ]
     },
     "ExampleBindingCountRule": {
-      "applicable_node_count": 55,
+      "applicable_node_count": 59,
       "target_types": [
-        "tag_binding",
         "component",
+        "query_binding",
+        "property_binding",
         "expression_binding",
-        "property_binding"
+        "tag_binding",
+        "expression_struct_binding"
       ]
     },
     "ExampleMixedSeverityRule": {
@@ -69,36 +74,38 @@
       ]
     },
     "PollingIntervalRule": {
-      "applicable_node_count": 36,
+      "applicable_node_count": 40,
       "target_types": [
-        "tag_binding",
         "expression_binding",
+        "tag_binding",
+        "expression_struct_binding",
+        "query_binding",
         "property_binding"
       ]
     },
     "PylintScriptRule": {
       "applicable_node_count": 3,
       "target_types": [
+        "transform",
         "message_handler",
-        "custom_method",
         "event_handler",
-        "transform"
+        "custom_method"
       ]
     },
     "UnusedCustomPropertiesRule": {
       "applicable_node_count": 178,
       "target_types": [
-        "expression_binding",
-        "event_handler",
-        "property_binding",
         "transform",
-        "component",
-        "property",
-        "message_handler",
+        "expression_binding",
         "tag_binding",
-        "custom_method"
+        "component",
+        "message_handler",
+        "event_handler",
+        "custom_method",
+        "property_binding",
+        "property"
       ]
     }
   },
-  "total_nodes": 178
+  "total_nodes": 182
 }

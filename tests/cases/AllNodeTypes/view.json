@@ -1,0 +1,149 @@
+{
+  "custom": {
+    "expr": 1,
+    "exprStruct": {
+      "key1": 1,
+      "key2": "VALUE"
+    },
+    "property": "value",
+    "query": null,
+    "tag": 1,
+    "tagExpression": 2,
+    "tagFolder": "Tag Folder",
+    "tagIndirect": 2
+  },
+  "params": {
+    "valDate": {
+      "$": [
+        "ts",
+        192,
+        1759121805791
+      ],
+      "$ts": 1759121802945
+    },
+    "valInt": 1,
+    "valList": [
+      "one",
+      "two"
+    ],
+    "valObj": {
+      "foo": "bar"
+    },
+    "valString": "value"
+  },
+  "propConfig": {
+    "custom.expr": {
+      "access": "PRIVATE",
+      "binding": {
+        "config": {
+          "expression": "abs({view.params.valInt})"
+        },
+        "type": "expr"
+      },
+      "persistent": true
+    },
+    "custom.exprStruct": {
+      "binding": {
+        "config": {
+          "struct": {
+            "key1": "{view.params.valInt}",
+            "key2": "upper({view.params.valString})"
+          },
+          "waitOnAll": true
+        },
+        "type": "expr-struct"
+      },
+      "persistent": true
+    },
+    "custom.property": {
+      "binding": {
+        "config": {
+          "path": "view.params.valString"
+        },
+        "type": "property"
+      },
+      "persistent": true
+    },
+    "custom.query": {
+      "binding": {
+        "config": {
+          "parameters": {
+            "param_val": "{view.custom.tag}"
+          },
+          "queryPath": "Test Query"
+        },
+        "type": "query"
+      },
+      "persistent": true
+    },
+    "custom.tag": {
+      "binding": {
+        "config": {
+          "fallbackDelay": 2.5,
+          "mode": "direct",
+          "tagPath": "[default]Basic Tag"
+        },
+        "type": "tag"
+      },
+      "persistent": true
+    },
+    "custom.tagExpression": {
+      "binding": {
+        "config": {
+          "fallbackDelay": 2.5,
+          "mode": "expression",
+          "tagPath": "\"[default]\" + {view.custom.tagFolder} + \"/Nested Tag\""
+        },
+        "type": "tag"
+      },
+      "persistent": true
+    },
+    "custom.tagFolder": {
+      "persistent": true
+    },
+    "custom.tagIndirect": {
+      "binding": {
+        "config": {
+          "fallbackDelay": 2.5,
+          "mode": "indirect",
+          "references": {
+            "1": "{view.custom.tagFolder}"
+          },
+          "tagPath": "[default]{1}/Nested Tag"
+        },
+        "type": "tag"
+      },
+      "persistent": true
+    },
+    "params.valDate": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.valInt": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.valList": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.valObj": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.valString": {
+      "paramDirection": "input",
+      "persistent": true
+    }
+  },
+  "props": {},
+  "root": {
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column"
+    },
+    "type": "ia.container.flex"
+  }
+}
