@@ -1,6 +1,6 @@
 {
   "bindings": {
-    "count": 7,
+    "count": 13,
     "nodes": [
       {
         "config": {},
@@ -65,6 +65,42 @@
           "1": "{view.custom.tagFolder}"
         },
         "tag_path": "[default]{1}/Nested Tag"
+      },
+      {
+        "config": {},
+        "expression": "now(5000)",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformExpression"
+      },
+      {
+        "config": {},
+        "expression": "\"tester: \" + {value}",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformExpression.binding.transforms[0]"
+      },
+      {
+        "config": {},
+        "expression": "toBoolean(1)",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformMap"
+      },
+      {
+        "config": {},
+        "expression": "None",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformScript"
+      },
+      {
+        "config": {},
+        "expression": "false",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transofrmExpression"
+      },
+      {
+        "config": {},
+        "expression": "upper({value})",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transofrmExpression.binding.transforms[0]"
       }
     ]
   },
@@ -89,13 +125,49 @@
     "nodes": []
   },
   "expression_bindings": {
-    "count": 1,
+    "count": 7,
     "nodes": [
       {
         "config": {},
         "expression": "abs({view.params.valInt})",
         "node_type": "expression_binding",
         "path": "propConfig.custom.expr"
+      },
+      {
+        "config": {},
+        "expression": "now(5000)",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformExpression"
+      },
+      {
+        "config": {},
+        "expression": "\"tester: \" + {value}",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformExpression.binding.transforms[0]"
+      },
+      {
+        "config": {},
+        "expression": "toBoolean(1)",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformMap"
+      },
+      {
+        "config": {},
+        "expression": "None",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transformScript"
+      },
+      {
+        "config": {},
+        "expression": "false",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transofrmExpression"
+      },
+      {
+        "config": {},
+        "expression": "upper({value})",
+        "node_type": "expression_binding",
+        "path": "propConfig.custom.transofrmExpression.binding.transforms[0]"
       }
     ]
   },
@@ -120,7 +192,7 @@
     "nodes": []
   },
   "properties": {
-    "count": 16,
+    "count": 20,
     "nodes": [
       {
         "name": "expr",
@@ -192,6 +264,38 @@
         "persistent": true,
         "value": 2,
         "value_type": "int"
+      },
+      {
+        "name": "transformExpression",
+        "node_type": "property",
+        "path": "custom.transformExpression",
+        "persistent": true,
+        "value": "tester: 2025-09-29 06:24:59.460",
+        "value_type": "str"
+      },
+      {
+        "name": "transformMap",
+        "node_type": "property",
+        "path": "custom.transformMap",
+        "persistent": true,
+        "value": "test",
+        "value_type": "str"
+      },
+      {
+        "name": "transformScript",
+        "node_type": "property",
+        "path": "custom.transformScript",
+        "persistent": true,
+        "value": "This is the script",
+        "value_type": "str"
+      },
+      {
+        "name": "transofrmExpression",
+        "node_type": "property",
+        "path": "custom.transofrmExpression",
+        "persistent": true,
+        "value": "FALSE",
+        "value_type": "str"
       },
       {
         "name": "_JavaDate",

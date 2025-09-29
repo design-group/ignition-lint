@@ -24,3 +24,4 @@ These files help developers understand:
 2. What nodes the model builder creates
 3. Which rules apply to which nodes
 4. Statistics about the view structure
+

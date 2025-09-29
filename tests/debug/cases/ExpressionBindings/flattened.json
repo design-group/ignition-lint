@@ -27,7 +27,7 @@
   "root.root.children[0].BadPollingDateTimeInput.position.basis": "32px",
   "root.root.children[0].BadPollingDateTimeInput.propConfig.props.value.binding.config.expression": "now()",
   "root.root.children[0].BadPollingDateTimeInput.propConfig.props.value.binding.type": "expr",
-  "root.root.children[0].BadPollingDateTimeInput.props.formattedValue": "Sep 29, 2025 6:04 AM",
+  "root.root.children[0].BadPollingDateTimeInput.props.formattedValue": "Sep 29, 2025 6:24 AM",
   "root.root.children[0].BadPollingDateTimeInput.type": "ia.input.date-time-input",
   "root.root.children[1].Button.events.component.onActionPerformed.config.script": "\treturn event",
   "root.root.children[1].Button.events.component.onActionPerformed.scope": "G",

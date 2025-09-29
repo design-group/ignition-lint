@@ -180,7 +180,7 @@
         "name": "formattedValue",
         "node_type": "property",
         "path": "root.root.children[0].BadPollingDateTimeInput.props.formattedValue",
-        "value": "Sep 29, 2025 6:04 AM",
+        "value": "Sep 29, 2025 6:24 AM",
         "value_type": "str"
       },
       {

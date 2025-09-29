@@ -10,7 +10,11 @@
     "tag": 1,
     "tagExpression": 2,
     "tagFolder": "Tag Folder",
-    "tagIndirect": 2
+    "tagIndirect": 2,
+    "transformExpression": "tester: 2025-09-29 06:24:59.460",
+    "transformMap": "test",
+    "transformScript": "This is the script",
+    "transofrmExpression": "FALSE"
   },
   "params": {
     "valDate": {
@@ -112,6 +116,78 @@
           "tagPath": "[default]{1}/Nested Tag"
         },
         "type": "tag"
+      },
+      "persistent": true
+    },
+    "custom.transformExpression": {
+      "binding": {
+        "config": {
+          "expression": "now(5000)"
+        },
+        "transforms": [
+          {
+            "expression": "\"tester: \" + {value}",
+            "type": "expression"
+          }
+        ],
+        "type": "expr"
+      },
+      "persistent": true
+    },
+    "custom.transformMap": {
+      "binding": {
+        "config": {
+          "expression": "toBoolean(1)"
+        },
+        "transforms": [
+          {
+            "fallback": "test fallback",
+            "inputType": "scalar",
+            "mappings": [
+              {
+                "input": true,
+                "output": "test"
+              },
+              {
+                "input": false,
+                "output": "not test"
+              }
+            ],
+            "outputType": "scalar",
+            "type": "map"
+          }
+        ],
+        "type": "expr"
+      },
+      "persistent": true
+    },
+    "custom.transformScript": {
+      "binding": {
+        "config": {
+          "expression": "None"
+        },
+        "transforms": [
+          {
+            "code": "\treturn \"This is the script\"",
+            "type": "script"
+          }
+        ],
+        "type": "expr"
+      },
+      "persistent": true
+    },
+    "custom.transofrmExpression": {
+      "binding": {
+        "config": {
+          "expression": "false"
+        },
+        "transforms": [
+          {
+            "expression": "upper({value})",
+            "type": "expression"
+          }
+        ],
+        "type": "expr"
       },
       "persistent": true
     },

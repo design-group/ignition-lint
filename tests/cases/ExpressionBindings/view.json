@@ -84,7 +84,7 @@
           }
         },
         "props": {
-          "formattedValue": "Sep 29, 2025 6:04 AM"
+          "formattedValue": "Sep 29, 2025 6:24 AM"
         },
         "type": "ia.input.date-time-input"
       },
