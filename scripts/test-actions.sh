@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Local GitHub Actions Testing Script
-# 
+#
 # This script allows developers to test GitHub Actions workflows locally
 # before committing changes, preventing CI failures.
 #
@@ -14,7 +14,7 @@
 #
 # Examples:
 #   ./test-actions.sh                    # Run all workflows on push event
-#   ./test-actions.sh ci                 # Run CI workflow  
+#   ./test-actions.sh ci                 # Run CI workflow
 #   ./test-actions.sh unittest pull_request  # Run unittest workflow on PR event
 #
 
@@ -57,9 +57,9 @@ echo
 run_workflow() {
     local workflow_file=$1
     local event_type=$2
-    
+
     echo -e "${YELLOW}Running workflow: $workflow_file${NC}"
-    
+
     if [ -n "$workflow_file" ]; then
         act "$event_type" -W ".github/workflows/$workflow_file"
     else

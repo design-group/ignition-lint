@@ -17,7 +17,7 @@ class TestNamePatternPascalCase(BaseRuleTest):
 		super().setUp()
 		self.rule_config = get_test_config(
 			"NamePatternRule", target_node_types=["component"], convention="PascalCase", allow_numbers=True,
-			min_length=1
+			min_length=1, severity="error"
 		)
 
 	def test_pascal_case_passes_pascal_case_rule(self):
@@ -47,7 +47,7 @@ class TestNamePatternCamelCase(BaseRuleTest):
 		super().setUp()
 		self.rule_config = get_test_config(
 			"NamePatternRule", target_node_types=["component"], convention="camelCase", allow_numbers=True,
-			min_length=1
+			min_length=1, severity="error"
 		)
 
 	def test_camel_case_passes_camel_case_rule(self):
@@ -73,7 +73,7 @@ class TestNamePatternSnakeCase(BaseRuleTest):
 		super().setUp()
 		self.rule_config = get_test_config(
 			"NamePatternRule", target_node_types=["component"], convention="snake_case", allow_numbers=True,
-			min_length=1
+			min_length=1, severity="error"
 		)
 
 	def test_snake_case_passes_snake_case_rule(self):
@@ -130,10 +130,10 @@ class TestNamePatternMultipleNodeTypes(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
 		# Verify rule runs without crashing
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 	def test_components_and_custom_methods_same_convention(self):
 		"""Test applying same convention to components and custom methods."""
@@ -143,10 +143,10 @@ class TestNamePatternMultipleNodeTypes(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "camelCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
 		# Verify rule runs without crashing
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 	def test_different_conventions_per_node_type(self):
 		"""Test different naming conventions for different node types."""
@@ -171,10 +171,10 @@ class TestNamePatternMultipleNodeTypes(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
 		# Verify rule runs without crashing
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 
 class TestNamePatternEdgeCases(BaseRuleTest):
@@ -187,10 +187,10 @@ class TestNamePatternEdgeCases(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
 		# Verify the rule runs without crashing
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 	def test_max_length_validation(self):
 		"""Test maximum length validation."""
@@ -200,10 +200,10 @@ class TestNamePatternEdgeCases(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
 		# Verify the rule runs without crashing
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 	def test_numbers_allowed_vs_disallowed(self):
 		"""Test allowing/disallowing numbers in component names."""
@@ -218,11 +218,13 @@ class TestNamePatternEdgeCases(BaseRuleTest):
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
 
 		# Run both configs and verify they both work (results may differ)
-		errors_with_numbers = self.run_lint_on_file(view_file, rule_config_with_numbers)
-		errors_no_numbers = self.run_lint_on_file(view_file, rule_config_no_numbers)
+		self.run_lint_on_file(view_file, rule_config_with_numbers)
+		errors_with_numbers = self.get_errors_for_rule("NamePatternRule")
+		self.run_lint_on_file(view_file, rule_config_no_numbers)
+		errors_no_numbers = self.get_errors_for_rule("NamePatternRule")
 
-		self.assertIsInstance(errors_with_numbers.get("NamePatternRule", []), list)
-		self.assertIsInstance(errors_no_numbers.get("NamePatternRule", []), list)
+		self.assertIsInstance(errors_with_numbers, list)
+		self.assertIsInstance(errors_no_numbers, list)
 
 	def test_forbidden_names(self):
 		"""Test forbidden component names."""
@@ -232,10 +234,10 @@ class TestNamePatternEdgeCases(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
 		# Verify the rule runs without crashing
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 	def test_custom_abbreviations(self):
 		"""Test custom abbreviations handling."""
@@ -245,10 +247,10 @@ class TestNamePatternEdgeCases(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
 		# Verify the rule runs without crashing
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 	def test_skip_names(self):
 		"""Test skipping certain names from validation."""
@@ -258,10 +260,10 @@ class TestNamePatternEdgeCases(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
 		# Verify the rule runs without crashing
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 	def test_custom_pattern(self):
 		"""Test custom regex pattern instead of predefined conventions."""
@@ -271,10 +273,10 @@ class TestNamePatternEdgeCases(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
 		# Verify the rule runs without crashing
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 
 class TestNamePatternSpecificNodeTypes(BaseRuleTest):
@@ -290,9 +292,9 @@ class TestNamePatternSpecificNodeTypes(BaseRuleTest):
 		# This test assumes your test views have custom methods
 		# You might need to create specific test views with custom methods
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 	def test_message_handler_naming(self):
 		"""Test naming validation for message handlers."""
@@ -302,9 +304,9 @@ class TestNamePatternSpecificNodeTypes(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 	def test_property_naming_camel_case(self):
 		"""Test naming validation for properties using camelCase."""
@@ -314,9 +316,9 @@ class TestNamePatternSpecificNodeTypes(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 	def test_event_handler_naming(self):
 		"""Test naming validation for event handlers."""
@@ -326,9 +328,9 @@ class TestNamePatternSpecificNodeTypes(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
+		self.run_lint_on_file(view_file, rule_config)
 
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 
 class TestStandardNamingConventions(BaseRuleTest):
@@ -361,8 +363,8 @@ class TestStandardNamingConventions(BaseRuleTest):
 			with self.subTest(case=case):
 				try:
 					view_file = load_test_view(self.test_cases_dir, case)
-					errors = self.run_lint_on_file(view_file, rule_config)
-					self.assertIsInstance(errors.get("NamePatternRule", []), list)
+					self.run_lint_on_file(view_file, rule_config)
+					self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 				except FileNotFoundError:
 					self.skipTest(f"Test case {case} not found")
 
@@ -394,8 +396,8 @@ class TestStandardNamingConventions(BaseRuleTest):
 		)
 
 		view_file = load_test_view(self.test_cases_dir, "PascalCase")
-		errors = self.run_lint_on_file(view_file, rule_config)
-		self.assertIsInstance(errors.get("NamePatternRule", []), list)
+		self.run_lint_on_file(view_file, rule_config)
+		self.assertIsInstance(self.get_errors_for_rule("NamePatternRule"), list)
 
 	def test_pascal_case_components_camel_case_properties(self):
 		"""Test that components follow PascalCase and properties follow camelCase."""
@@ -459,7 +461,7 @@ class TestStandardNamingConventions(BaseRuleTest):
 
 		# Should have no warnings since properties are already camelCase
 		# The camelCase view has camelCase properties, so they should pass the camelCase rule
-		results = self.run_lint_on_file_detailed(view_file, rule_config)
+		results = self.run_lint_on_file(view_file, rule_config)
 		rule_warnings = results.warnings.get("NamePatternRule", [])
 		self.assertEqual(len(rule_warnings), 0)
 

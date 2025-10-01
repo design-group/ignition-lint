@@ -3,28 +3,29 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: poetry run pylint
+        entry: pylint
         language: system
-        args:
-          - "--rcfile=.pylintrc"
         types: [python]
-        files: ^src/ignition_lint/.*\.py$
+        args: [
+          "--rcfile=.config/.pylintrc",
+          "--msg-template=\"{path}({line}): [{obj}] {msg} ({symbol})\"",
+        ]
 
-      - id: ignition-lint
-        name: ignition-lint
-        entry: poetry run python src/ignition_lint
-        language: system
-        args:
-          - "--config=.ignition-lint-precommit.json"
-          - "--files"
-        files: '.*view\.json$'
-        types: [json]
-        exclude: '^tests/cases/.*'  # Exclude test files that intentionally have violations
+      # - id: markdownlint
+      #   name: markdownlint
+      #   entry: markdownlint
+      #   language: system
+      #   types: [markdown]
+      #   args: [
+      #     "--config=.config/.markdownlint.json",
+      #     "--ignore-path=.config/.markdownlintignore"
+      #   ]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
+        types: [python]
       - id: check-yaml
       - id: check-added-large-files

@@ -10,10 +10,10 @@ from .common import LintingRule, NodeVisitor, BindingRule
 from .registry import register_rule, get_registry, get_all_rules, discover_rules
 
 # Import and register built-in rules
-from .lint_script import PylintScriptRule
-from .polling_interval import PollingIntervalRule
-from .name_pattern import NamePatternRule
-from .bad_component_reference import BadComponentReferenceRule
+from .scripts.lint_script import PylintScriptRule
+from .performance.polling_interval import PollingIntervalRule
+from .naming.name_pattern import NamePatternRule
+from .structure.bad_component_reference import BadComponentReferenceRule
 
 # Auto-discover and register all rules in this package
 _discovered_rules = discover_rules()

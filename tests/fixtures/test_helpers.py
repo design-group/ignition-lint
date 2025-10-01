@@ -11,11 +11,11 @@ from typing import Dict, Any, List
 def create_mock_view(components: List[Dict[str, Any]], custom_properties: Dict[str, Any] = None) -> str:
 	"""
 	Create a mock view.json content for testing.
-	
+
 	Args:
 		components: List of component definitions
 		custom_properties: Additional properties to add to the view
-		
+
 	Returns:
 		JSON string representing the view
 	"""
@@ -50,10 +50,10 @@ def create_mock_view(components: List[Dict[str, Any]], custom_properties: Dict[s
 def create_temp_view_file(view_content: str) -> Path:
 	"""
 	Create a temporary view.json file with the given content.
-	
+
 	Args:
 		view_content: JSON content for the view file
-		
+
 	Returns:
 		Path to the temporary file
 	"""
@@ -67,7 +67,7 @@ def assert_rule_errors(
 ):
 	"""
 	Assert that a rule has the expected errors.
-	
+
 	Args:
 		errors: Dictionary of errors by rule name
 		rule_name: Name of the rule to check
@@ -90,7 +90,7 @@ def assert_rule_errors(
 def assert_no_errors(errors: Dict[str, List[str]], rule_name: str = None):
 	"""
 	Assert that there are no errors for a specific rule or overall.
-	
+
 	Args:
 		errors: Dictionary of errors by rule name
 		rule_name: Specific rule to check, or None for all rules
@@ -106,11 +106,11 @@ def assert_no_errors(errors: Dict[str, List[str]], rule_name: str = None):
 def get_test_config(rule_name: str, **kwargs) -> Dict[str, Dict[str, Any]]:
 	"""
 	Create a test configuration for a specific rule.
-	
+
 	Args:
 		rule_name: Name of the rule
 		**kwargs: Keyword arguments for the rule
-		
+
 	Returns:
 		Configuration dictionary
 	"""
@@ -120,11 +120,11 @@ def get_test_config(rule_name: str, **kwargs) -> Dict[str, Dict[str, Any]]:
 def load_test_view(test_cases_dir: Path, case_name: str) -> Path:
 	"""
 	Load a test view file by case name.
-	
+
 	Args:
 		test_cases_dir: Path to test cases directory
 		case_name: Name of the test case subdirectory
-		
+
 	Returns:
 		Path to the view.json file
 	"""
@@ -142,16 +142,16 @@ def load_test_view(test_cases_dir: Path, case_name: str) -> Path:
 def create_mock_script(script_type: str, source_code: str, component_name: str = "TestComponent") -> str:
 	"""
 	Create a mock view.json with a script for testing script-based rules.
-	
+
 	Args:
 		script_type: Type of script ("message_handler", "custom_method", "transform", "event_handler")
 		source_code: Python source code for the script
 		component_name: Name of the component containing the script
-		
+
 	Returns:
 		JSON string representing the view with the script
 	"""
-	
+
 	if script_type == "message_handler":
 		# Message handlers are at root level scripts.messageHandlers
 		view_data = {
@@ -182,7 +182,7 @@ def create_mock_script(script_type: str, source_code: str, component_name: str =
 				}
 			}
 		}
-		
+
 	elif script_type == "custom_method":
 		# Custom methods are at component level scripts.customMethods
 		view_data = {
@@ -211,14 +211,14 @@ def create_mock_script(script_type: str, source_code: str, component_name: str =
 				"type": "ia.container.coord"
 			}
 		}
-		
+
 	elif script_type == "transform":
 		# Transform scripts are in binding transforms
 		view_data = {
 			"custom": {},
 			"params": {},
 			"propConfig": {
-				f"root.children[0].props.text": {
+				"root.children[0].props.text": {
 					"binding": {
 						"type": "property",
 						"config": {"path": "view.params.inputValue"},
@@ -244,7 +244,7 @@ def create_mock_script(script_type: str, source_code: str, component_name: str =
 				"type": "ia.container.coord"
 			}
 		}
-		
+
 	elif script_type == "event_handler":
 		# Event handlers are at component level events
 		view_data = {
@@ -272,5 +272,5 @@ def create_mock_script(script_type: str, source_code: str, component_name: str =
 		}
 	else:
 		raise ValueError(f"Unknown script type: {script_type}. Available: message_handler, custom_method, transform, event_handler")
-	
+
 	return json.dumps(view_data, indent=2)

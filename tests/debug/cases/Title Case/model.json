@@ -1,0 +1,91 @@
+{
+  "bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "components": {
+    "count": 2,
+    "nodes": [
+      {
+        "name": "Icon Title Case",
+        "node_type": "component",
+        "path": "root.root.children[0].Icon Title Case",
+        "properties_count": 0,
+        "type": "ia.display.icon"
+      },
+      {
+        "name": "root",
+        "node_type": "component",
+        "path": "root.root",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      }
+    ]
+  },
+  "custom_methods": {
+    "count": 0,
+    "nodes": []
+  },
+  "event_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "expression_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "expression_struct_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "message_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "properties": {
+    "count": 3,
+    "nodes": [
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[0].Icon Title Case.position.basis",
+        "value": "30px",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[0].Icon Title Case.props.path",
+        "value": "material/insert_emoticon",
+        "value_type": "str"
+      },
+      {
+        "name": "direction",
+        "node_type": "property",
+        "path": "root.root.props.direction",
+        "value": "column",
+        "value_type": "str"
+      }
+    ]
+  },
+  "property_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "query_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "script_transforms": {
+    "count": 0,
+    "nodes": []
+  },
+  "scripts": {
+    "count": 0,
+    "nodes": []
+  },
+  "tag_bindings": {
+    "count": 0,
+    "nodes": []
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "test_suite_name": "Warnings vs Errors Confirmation Tests",
+  "description": "Confirmation of the enhanced warnings vs errors testing infrastructure",
+  "test_cases": [
+    {
+      "name": "name_pattern_warning_demo",
+      "description": "Demonstrate NamePatternRule produces warnings",
+      "view_file": "camelCase/view.json",
+      "rule_config": {
+        "NamePatternRule": {
+          "enabled": true,
+          "kwargs": {
+            "target_node_types": ["component"],
+            "convention": "PascalCase",
+            "min_length": 1
+          }
+        }
+      },
+      "expectations": [
+        {
+          "rule_name": "NamePatternRule",
+          "warning_count": 1,
+          "error_count": 0,
+          "should_pass": true,
+          "warning_patterns": ["doesn't follow", "PascalCase"],
+          "error_patterns": []
+        }
+      ],
+      "tags": ["warnings", "naming", "demo"]
+    },
+    {
+      "name": "polling_interval_error_demo",
+      "description": "Demonstrate PollingIntervalRule produces errors",
+      "view_file": "ExpressionBindings/view.json",
+      "rule_config": {
+        "PollingIntervalRule": {
+          "enabled": true,
+          "kwargs": {
+            "minimum_interval": 5000
+          }
+        }
+      },
+      "expectations": [
+        {
+          "rule_name": "PollingIntervalRule",
+          "warning_count": 0,
+          "error_count": 4,
+          "should_pass": false,
+          "warning_patterns": [],
+          "error_patterns": []
+        }
+      ],
+      "tags": ["errors", "polling", "demo"]
+    },
+    {
+      "name": "perfect_view_no_issues",
+      "description": "Demonstrate a view with no warnings or errors",
+      "view_file": "PascalCase/view.json",
+      "rule_config": {
+        "NamePatternRule": {
+          "enabled": true,
+          "kwargs": {
+            "target_node_types": ["component"],
+            "convention": "PascalCase",
+            "min_length": 1
+          }
+        }
+      },
+      "expectations": [
+        {
+          "rule_name": "NamePatternRule",
+          "warning_count": 0,
+          "error_count": 0,
+          "should_pass": true,
+          "warning_patterns": [],
+          "error_patterns": []
+        }
+      ],
+      "tags": ["clean", "passing", "demo"]
+    }
+  ]
+}

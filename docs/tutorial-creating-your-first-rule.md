@@ -77,20 +77,20 @@ from ..model.node_types import ViewNode, NodeType
 class ComponentDescriptionRule(LintingRule):
     """
     Ensures components have meaningful descriptions.
-    
+
     This rule checks that components have non-empty descriptions
     that meet minimum length requirements and don't contain
     placeholder text.
     """
-    
-    def __init__(self, 
+
+    def __init__(self,
                  min_length: int = 10,
                  max_length: int = 200,
                  forbidden_phrases: List[str] = None,
                  target_node_types: Set[NodeType] = None):
         """
         Initialize the component description rule.
-        
+
         Args:
             min_length: Minimum description length (default: 10)
             max_length: Maximum description length (default: 200)
@@ -101,15 +101,15 @@ class ComponentDescriptionRule(LintingRule):
         self.min_length = min_length
         self.max_length = max_length
         self.forbidden_phrases = forbidden_phrases or [
-            "todo", "description here", "add description", 
+            "todo", "description here", "add description",
             "placeholder", "tbd", "fixme"
         ]
-    
+
     @property
     def error_message(self) -> str:
         """Required property describing what this rule checks."""
         return f"Components must have meaningful descriptions ({self.min_length}-{self.max_length} characters)"
-    
+
     def visit_component(self, component: ViewNode):
         """Called for each component node."""
         # This is where we'll implement our logic
@@ -124,40 +124,40 @@ Now let's implement the actual checking logic in the `visit_component` method:
 def visit_component(self, component: ViewNode):
     """Called for each component node."""
     component_name = component.path.split('.')[-1]
-    
+
     # Check if component has a description property
     description = self._get_component_description(component)
-    
+
     if description is None:
         self.errors.append(
             f"{component.path}: Component '{component_name}' is missing a description property"
         )
         return
-    
+
     # Check if description is empty or whitespace
     if not description or description.strip() == "":
         self.errors.append(
             f"{component.path}: Component '{component_name}' has an empty description"
         )
         return
-    
+
     # Clean description for analysis
     clean_description = description.strip()
-    
+
     # Check minimum length
     if len(clean_description) < self.min_length:
         self.errors.append(
             f"{component.path}: Component '{component_name}' description is too short "
             f"({len(clean_description)} < {self.min_length} characters)"
         )
-    
+
     # Check maximum length
     if len(clean_description) > self.max_length:
         self.errors.append(
             f"{component.path}: Component '{component_name}' description is too long "
             f"({len(clean_description)} > {self.max_length} characters)"
         )
-    
+
     # Check for forbidden phrases
     description_lower = clean_description.lower()
     for phrase in self.forbidden_phrases:
@@ -170,34 +170,34 @@ def visit_component(self, component: ViewNode):
 def _get_component_description(self, component: ViewNode) -> str:
     """
     Extract the description from a component.
-    
+
     In Ignition views, descriptions might be stored in different places:
     - component.props.meta.description
-    - component.meta.description  
+    - component.meta.description
     - component.description
     """
     # Try different possible locations for description
     if hasattr(component, 'props') and hasattr(component.props, 'meta'):
         if hasattr(component.props.meta, 'description'):
             return getattr(component.props.meta, 'description', None)
-    
+
     if hasattr(component, 'meta') and hasattr(component.meta, 'description'):
         return getattr(component.meta, 'description', None)
-        
+
     if hasattr(component, 'description'):
         return getattr(component, 'description', None)
-    
+
     # Check in the raw flattened data
     description_paths = [
         f"{component.path}.props.meta.description",
         f"{component.path}.meta.description",
         f"{component.path}.description"
     ]
-    
+
     for path in description_paths:
         if hasattr(component, 'flattened_data') and path in component.flattened_data:
             return component.flattened_data[path]
-    
+
     return None
 ```
 
@@ -210,21 +210,21 @@ Let's add configuration preprocessing to handle string inputs more gracefully:
 def preprocess_config(cls, config):
     """Preprocess configuration before rule instantiation."""
     processed = config.copy()
-    
+
     # Convert string numbers to integers
     if 'min_length' in processed and isinstance(processed['min_length'], str):
         processed['min_length'] = int(processed['min_length'])
-        
+
     if 'max_length' in processed and isinstance(processed['max_length'], str):
         processed['max_length'] = int(processed['max_length'])
-    
+
     # Handle forbidden_phrases as string or list
     if 'forbidden_phrases' in processed:
         phrases = processed['forbidden_phrases']
         if isinstance(phrases, str):
             # Split comma-separated string into list
             processed['forbidden_phrases'] = [p.strip() for p in phrases.split(',')]
-    
+
     return processed
 ```
 
@@ -259,8 +259,8 @@ from tests.fixtures.test_helpers import get_test_config, create_mock_view
 class TestComponentDescriptionRule(BaseRuleTest):
     def setUp(self):
         super().setUp()
-        self.rule_config = get_test_config("ComponentDescriptionRule", 
-                                         min_length=10, 
+        self.rule_config = get_test_config("ComponentDescriptionRule",
+                                         min_length=10,
                                          max_length=50)
 
     def test_missing_description(self):
@@ -277,7 +277,7 @@ class TestComponentDescriptionRule(BaseRuleTest):
                 ]
             }
         })
-        
+
         errors = self.run_rule_on_view(view_content, self.rule_config, "ComponentDescriptionRule")
         self.assertEqual(len(errors), 1)
         self.assertIn("missing a description", errors[0])
@@ -286,7 +286,7 @@ class TestComponentDescriptionRule(BaseRuleTest):
         """Test that empty descriptions are flagged."""
         view_content = create_mock_view({
             "root": {
-                "type": "@root", 
+                "type": "@root",
                 "children": [
                     {
                         "type": "ia.display.button",
@@ -298,7 +298,7 @@ class TestComponentDescriptionRule(BaseRuleTest):
                 ]
             }
         })
-        
+
         errors = self.run_rule_on_view(view_content, self.rule_config, "ComponentDescriptionRule")
         self.assertEqual(len(errors), 1)
         self.assertIn("empty description", errors[0])
@@ -310,7 +310,7 @@ class TestComponentDescriptionRule(BaseRuleTest):
                 "type": "@root",
                 "children": [
                     {
-                        "type": "ia.display.button", 
+                        "type": "ia.display.button",
                         "name": "TestButton",
                         "meta": {
                             "description": "Short"  # Only 5 characters
@@ -319,7 +319,7 @@ class TestComponentDescriptionRule(BaseRuleTest):
                 ]
             }
         })
-        
+
         errors = self.run_rule_on_view(view_content, self.rule_config, "ComponentDescriptionRule")
         self.assertEqual(len(errors), 1)
         self.assertIn("too short", errors[0])
@@ -332,7 +332,7 @@ class TestComponentDescriptionRule(BaseRuleTest):
                 "children": [
                     {
                         "type": "ia.display.button",
-                        "name": "TestButton", 
+                        "name": "TestButton",
                         "meta": {
                             "description": "This button triggers the main workflow process"
                         }
@@ -340,7 +340,7 @@ class TestComponentDescriptionRule(BaseRuleTest):
                 ]
             }
         })
-        
+
         errors = self.run_rule_on_view(view_content, self.rule_config, "ComponentDescriptionRule")
         self.assertEqual(len(errors), 0)
 
@@ -348,7 +348,7 @@ class TestComponentDescriptionRule(BaseRuleTest):
         """Test that forbidden phrases are detected."""
         rule_config = get_test_config("ComponentDescriptionRule",
                                     forbidden_phrases=["TODO", "placeholder"])
-        
+
         view_content = create_mock_view({
             "root": {
                 "type": "@root",
@@ -363,7 +363,7 @@ class TestComponentDescriptionRule(BaseRuleTest):
                 ]
             }
         })
-        
+
         errors = self.run_rule_on_view(view_content, rule_config, "ComponentDescriptionRule")
         self.assertEqual(len(errors), 1)
         self.assertIn("placeholder text", errors[0])
@@ -413,13 +413,13 @@ You can add additional metadata to help users understand your rule:
 class ComponentDescriptionRule(LintingRule):
     """
     Ensures components have meaningful descriptions.
-    
+
     This rule helps maintain code quality by ensuring all components
     have descriptive documentation that helps with maintenance.
-    
+
     Configuration Options:
     - min_length: Minimum description length (default: 10)
-    - max_length: Maximum description length (default: 200) 
+    - max_length: Maximum description length (default: 200)
     - forbidden_phrases: List of placeholder phrases to avoid
     """
     # ... rest of implementation
@@ -438,7 +438,7 @@ def visit_component(self, component: ViewNode):
     if not hasattr(self, '_components_checked'):
         self._components_checked = 0
     self._components_checked += 1
-    
+
     # ... rest of visit logic
 ```
 
@@ -515,31 +515,31 @@ from ..model.node_types import ViewNode, NodeType
 class ComponentDescriptionRule(LintingRule):
     """
     Ensures components have meaningful descriptions.
-    
+
     This rule checks that components have non-empty descriptions
     that meet minimum length requirements and don't contain
     placeholder text.
     """
-    
+
     @classmethod
     def preprocess_config(cls, config):
         """Preprocess configuration before rule instantiation."""
         processed = config.copy()
-        
+
         if 'min_length' in processed and isinstance(processed['min_length'], str):
             processed['min_length'] = int(processed['min_length'])
-            
+
         if 'max_length' in processed and isinstance(processed['max_length'], str):
             processed['max_length'] = int(processed['max_length'])
-        
+
         if 'forbidden_phrases' in processed:
             phrases = processed['forbidden_phrases']
             if isinstance(phrases, str):
                 processed['forbidden_phrases'] = [p.strip() for p in phrases.split(',')]
-        
+
         return processed
-    
-    def __init__(self, 
+
+    def __init__(self,
                  min_length: int = 10,
                  max_length: int = 200,
                  forbidden_phrases: List[str] = None,
@@ -549,46 +549,46 @@ class ComponentDescriptionRule(LintingRule):
         self.min_length = min_length
         self.max_length = max_length
         self.forbidden_phrases = forbidden_phrases or [
-            "todo", "description here", "add description", 
+            "todo", "description here", "add description",
             "placeholder", "tbd", "fixme"
         ]
-    
+
     @property
     def error_message(self) -> str:
         """Required property describing what this rule checks."""
         return f"Components must have meaningful descriptions ({self.min_length}-{self.max_length} characters)"
-    
+
     def visit_component(self, component: ViewNode):
         """Called for each component node."""
         component_name = component.path.split('.')[-1]
         description = self._get_component_description(component)
-        
+
         if description is None:
             self.errors.append(
                 f"{component.path}: Component '{component_name}' is missing a description property"
             )
             return
-        
+
         if not description or description.strip() == "":
             self.errors.append(
                 f"{component.path}: Component '{component_name}' has an empty description"
             )
             return
-        
+
         clean_description = description.strip()
-        
+
         if len(clean_description) < self.min_length:
             self.errors.append(
                 f"{component.path}: Component '{component_name}' description is too short "
                 f"({len(clean_description)} < {self.min_length} characters)"
             )
-        
+
         if len(clean_description) > self.max_length:
             self.errors.append(
                 f"{component.path}: Component '{component_name}' description is too long "
                 f"({len(clean_description)} > {self.max_length} characters)"
             )
-        
+
         description_lower = clean_description.lower()
         for phrase in self.forbidden_phrases:
             if phrase.lower() in description_lower:
@@ -603,13 +603,13 @@ class ComponentDescriptionRule(LintingRule):
         if hasattr(component, 'props') and hasattr(component.props, 'meta'):
             if hasattr(component.props.meta, 'description'):
                 return getattr(component.props.meta, 'description', None)
-        
+
         if hasattr(component, 'meta') and hasattr(component.meta, 'description'):
             return getattr(component.meta, 'description', None)
-            
+
         if hasattr(component, 'description'):
             return getattr(component, 'description', None)
-        
+
         return None
 ```
 

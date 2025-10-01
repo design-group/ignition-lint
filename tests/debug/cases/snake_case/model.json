@@ -1,0 +1,121 @@
+{
+  "bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "components": {
+    "count": 2,
+    "nodes": [
+      {
+        "name": "icon_snake_case",
+        "node_type": "component",
+        "path": "root.root.children[0].icon_snake_case",
+        "properties_count": 0,
+        "type": "ia.display.icon"
+      },
+      {
+        "name": "root",
+        "node_type": "component",
+        "path": "root.root",
+        "properties_count": 0,
+        "type": "ia.container.flex"
+      }
+    ]
+  },
+  "custom_methods": {
+    "count": 0,
+    "nodes": []
+  },
+  "event_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "expression_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "expression_struct_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "message_handlers": {
+    "count": 0,
+    "nodes": []
+  },
+  "properties": {
+    "count": 7,
+    "nodes": [
+      {
+        "name": "custom_view_param",
+        "node_type": "property",
+        "path": "custom.custom_view_param",
+        "persistent": true,
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "view_param",
+        "node_type": "property",
+        "path": "params.view_param",
+        "persistent": true,
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "component_custom_param",
+        "node_type": "property",
+        "path": "root.root.children[0].icon_snake_case.custom.component_custom_param",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "basis",
+        "node_type": "property",
+        "path": "root.root.children[0].icon_snake_case.position.basis",
+        "value": "30px",
+        "value_type": "str"
+      },
+      {
+        "name": "path",
+        "node_type": "property",
+        "path": "root.root.children[0].icon_snake_case.props.path",
+        "value": "material/insert_emoticon",
+        "value_type": "str"
+      },
+      {
+        "name": "root_custom_param",
+        "node_type": "property",
+        "path": "root.root.custom.root_custom_param",
+        "value": "value",
+        "value_type": "str"
+      },
+      {
+        "name": "direction",
+        "node_type": "property",
+        "path": "root.root.props.direction",
+        "value": "column",
+        "value_type": "str"
+      }
+    ]
+  },
+  "property_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "query_bindings": {
+    "count": 0,
+    "nodes": []
+  },
+  "script_transforms": {
+    "count": 0,
+    "nodes": []
+  },
+  "scripts": {
+    "count": 0,
+    "nodes": []
+  },
+  "tag_bindings": {
+    "count": 0,
+    "nodes": []
+  }
+}

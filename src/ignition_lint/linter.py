@@ -52,7 +52,7 @@ class LintEngine:
 		# that contain the same nodes as specific collections, causing duplicates
 		specific_collections = [
 			'components', 'message_handlers', 'custom_methods', 'expression_bindings',
-			'property_bindings', 'tag_bindings', 'script_transforms', 'event_handlers', 'properties'
+			'expression_struct_bindings', 'property_bindings', 'tag_bindings', 'query_bindings', 'script_transforms', 'event_handlers', 'properties'
 		]
 		all_nodes = []
 		for collection_name in specific_collections:
@@ -89,7 +89,7 @@ class LintEngine:
 		# Get all nodes for analysis, excluding generic collections to avoid duplicates
 		specific_collections = [
 			'components', 'message_handlers', 'custom_methods', 'expression_bindings',
-			'property_bindings', 'tag_bindings', 'script_transforms', 'event_handlers', 'properties'
+			'expression_struct_bindings', 'property_bindings', 'tag_bindings', 'query_bindings', 'script_transforms', 'event_handlers', 'properties'
 		]
 		all_nodes = []
 		for collection_name in specific_collections:

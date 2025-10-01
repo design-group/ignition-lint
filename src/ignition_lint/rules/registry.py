@@ -94,14 +94,16 @@ class RuleRegistry:
 
 		discovered_rules = []
 
-		# Walk through Python files in the package
-		for py_file in package_path.glob("*.py"):
+		# Walk through Python files in the package recursively
+		for py_file in package_path.rglob("*.py"):
 			if py_file.name in ["__init__.py", "registry.py", "common.py"]:
 				continue
 
 			try:
-				# Import the module
-				module_name = f"ignition_lint.rules.{py_file.stem}"
+				# Import the module - build the correct module path for subdirectories
+				relative_path = py_file.relative_to(package_path)
+				module_parts = list(relative_path.parts[:-1]) + [relative_path.stem]
+				module_name = f"ignition_lint.rules.{'.'.join(module_parts)}"
 				module = importlib.import_module(module_name)
 
 				# Find rule classes in the module

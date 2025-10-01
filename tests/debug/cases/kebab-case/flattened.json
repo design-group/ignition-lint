@@ -1,0 +1,16 @@
+{
+  "custom.custom-view-param": "value",
+  "params.view-param": "value",
+  "propConfig.custom.custom-view-param.persistent": true,
+  "propConfig.params.view-param.paramDirection": "input",
+  "propConfig.params.view-param.persistent": true,
+  "root.root.children[0].icon-kebab-case.custom.component-custom-param": "value",
+  "root.root.children[0].icon-kebab-case.meta.name": "icon-kebab-case",
+  "root.root.children[0].icon-kebab-case.position.basis": "30px",
+  "root.root.children[0].icon-kebab-case.props.path": "material/insert_emoticon",
+  "root.root.children[0].icon-kebab-case.type": "ia.display.icon",
+  "root.root.custom.root-custom-param": "value",
+  "root.root.meta.name": "root",
+  "root.root.props.direction": "column",
+  "root.root.type": "ia.container.flex"
+}

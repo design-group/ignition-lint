@@ -1,3 +1,4 @@
+# pylint: disable=wrong-import-position,import-error
 """
 Integration test for the configuration-driven testing framework.
 This test validates that the ConfigurableTestFramework works correctly.
@@ -30,27 +31,27 @@ class ConfigurableTestRunner(unittest.TestCase):
 		for result in results['results']:
 			if result['status'] == 'failed':
 				print(f"\nFAILED: {result['name']}")
-				if 'expectation_details' in result:
-					for detail in result['expectation_details']:
-						if not detail['met']:
-							print(f"  Rule: {detail['rule_name']}")
+				if 'expectation_details' not in result:
+					continue
+				for detail in result['expectation_details']:
+					if not detail['met']:
+						print(f"  Rule: {detail['rule_name']}")
+						# Handle both old and new expectation detail formats
+						if 'expected_count' in detail:
+							# Old format (backward compatibility)
+							print(
+								f"    Expected count: {detail['expected_count']}, Got: {detail['actual_count']}"
+							)
+						else:
+							# New format with separate warnings/errors
+							print(
+								f"    Expected {detail['expected_warnings']} warnings, got {detail['actual_warnings']}"
+							)
+							print(
+								f"    Expected {detail['expected_errors']} errors, got {detail['actual_errors']}"
+							)
 
-							# Handle both old and new expectation detail formats
-							if 'expected_count' in detail:
-								# Old format (backward compatibility)
-								print(
-									f"    Expected count: {detail['expected_count']}, Got: {detail['actual_count']}"
-								)
-							else:
-								# New format with separate warnings/errors
-								print(
-									f"    Expected {detail['expected_warnings']} warnings, got {detail['actual_warnings']}"
-								)
-								print(
-									f"    Expected {detail['expected_errors']} errors, got {detail['actual_errors']}"
-								)
-
-							print(f"    Should pass: {detail['should_pass']}")
+						print(f"    Should pass: {detail['should_pass']}")
 			elif result['status'] == 'error':
 				print(f"\nERROR: {result['name']} - {result['reason']}")
 

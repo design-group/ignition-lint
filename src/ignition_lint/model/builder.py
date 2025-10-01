@@ -10,8 +10,10 @@ from .node_types import (
 	ViewNode,
 	Component,
 	ExpressionBinding,
+	ExpressionStructBinding,
 	PropertyBinding,
 	TagBinding,
+	QueryBinding,
 	MessageHandlerScript,
 	CustomMethodScript,
 	TransformScript,
@@ -33,8 +35,10 @@ class ViewModelBuilder:
 			'message_handlers': [],
 			'custom_methods': [],
 			'expression_bindings': [],
+			'expression_struct_bindings': [],
 			'property_bindings': [],
 			'tag_bindings': [],
+			'query_bindings': [],
 			'script_transforms': [],
 			'properties': []
 		}
@@ -59,6 +63,86 @@ class ViewModelBuilder:
 	def _get_tag_path(self, binding_path: str) -> str:
 		"""Get the tag path from a tag binding."""
 		return self._search_for_path_value(binding_path, "binding.config.tagPath", "unknown")
+
+	def _get_tag_mode(self, binding_path: str) -> str:
+		"""Get the mode from a tag binding (direct, indirect, or expression)."""
+		return self._search_for_path_value(binding_path, "binding.config.mode", "direct")
+
+	def _get_tag_references(self, binding_path: str) -> Dict[str, str]:
+		"""Get the references dictionary from an indirect tag binding."""
+		references = {}
+		references_prefix = f"{binding_path}.binding.config.references."
+		for path, value in self.flattened_json.items():
+			if path.startswith(references_prefix):
+				# Extract the reference key from the path
+				key = path[len(references_prefix):]
+				if isinstance(value, str):
+					references[key] = value
+		return references
+
+	def _get_tag_config(self, binding_path: str) -> Dict[str, Any]:
+		"""Get the configuration for a tag binding, excluding mode, tagPath, and references."""
+		config = {}
+		config_prefix = f"{binding_path}.binding.config."
+		for path, value in self.flattened_json.items():
+			if (path.startswith(config_prefix) and
+				not path.startswith(f"{config_prefix}references.") and
+				not path.endswith("tagPath") and
+				not path.endswith("mode")):
+				# Extract the config key
+				key = path[len(config_prefix):]
+				config[key] = value
+		return config
+
+	def _get_expression_struct(self, binding_path: str) -> Dict[str, str]:
+		"""Get the struct dictionary from an expression struct binding."""
+		struct = {}
+		struct_prefix = f"{binding_path}.binding.config.struct."
+		for path, value in self.flattened_json.items():
+			if path.startswith(struct_prefix):
+				# Extract the key from the path
+				key = path[len(struct_prefix):]
+				if isinstance(value, str):
+					struct[key] = value
+		return struct
+
+	def _get_expression_struct_config(self, binding_path: str) -> Dict[str, Any]:
+		"""Get the configuration for an expression struct binding."""
+		config = {}
+		config_prefix = f"{binding_path}.binding.config."
+		for path, value in self.flattened_json.items():
+			if path.startswith(config_prefix) and not path.startswith(f"{config_prefix}struct."):
+				# Extract the config key
+				key = path[len(config_prefix):]
+				config[key] = value
+		return config
+
+	def _get_query_path(self, binding_path: str) -> str:
+		"""Get the query path from a query binding."""
+		return self._search_for_path_value(binding_path, "binding.config.queryPath", "unknown")
+
+	def _get_query_parameters(self, binding_path: str) -> Dict[str, str]:
+		"""Get the parameters dictionary from a query binding."""
+		parameters = {}
+		parameters_prefix = f"{binding_path}.binding.config.parameters."
+		for path, value in self.flattened_json.items():
+			if path.startswith(parameters_prefix):
+				# Extract the parameter name from the path
+				param_name = path[len(parameters_prefix):]
+				if isinstance(value, str):
+					parameters[param_name] = value
+		return parameters
+
+	def _get_query_config(self, binding_path: str) -> Dict[str, Any]:
+		"""Get the configuration for a query binding, excluding queryPath and parameters."""
+		config = {}
+		config_prefix = f"{binding_path}.binding.config."
+		for path, value in self.flattened_json.items():
+			if path.startswith(config_prefix) and not path.startswith(f"{config_prefix}parameters.") and not path.endswith("queryPath"):
+				# Extract the config key
+				key = path[len(config_prefix):]
+				config[key] = value
+		return config
 
 	def _get_script_transforms(self, binding_path: str) -> List[tuple]:
 		"""Get script transforms from a binding."""
@@ -122,14 +206,14 @@ class ViewModelBuilder:
 	def _is_property_persistent(self, property_path: str) -> bool:
 		"""
 		Check if a property is persistent (exists at startup) or non-persistent (created by bindings).
-		
+
 		Properties are considered persistent if:
 		1. They have no propConfig entry (default behavior)
 		2. They have propConfig.{property_path}.persistent = True
-		
+
 		Args:
 			property_path: The path to the property (e.g., "custom.myProp" or "root.root.children[0].Button.custom.myProp")
-		
+
 		Returns:
 			True if the property should be persistent, False if it's created by bindings at runtime
 		"""
@@ -153,6 +237,19 @@ class ViewModelBuilder:
 		# No configuration at all - default to persistent
 		return True
 
+	def _get_property_persistence(self, property_path: str) -> bool:
+		"""Get the persistence value for a property, returning None if not specified."""
+		config_path = f"propConfig.{property_path}.persistent"
+		return self.flattened_json.get(config_path)
+
+	def _get_property_access_mode(self, property_path: str) -> bool:
+		"""Get whether a property has private access mode, returning None if not specified."""
+		config_path = f"propConfig.{property_path}.access"
+		access_value = self.flattened_json.get(config_path)
+		if access_value is not None:
+			return access_value == 'PRIVATE'
+		return None
+
 	def _collect_components(self):
 		# First, identify components by looking for meta.name entries
 		for path, value in self.flattened_json.items():
@@ -173,39 +270,79 @@ class ViewModelBuilder:
 			if binding_path not in visited_paths:
 				visited_paths.append(binding_path)
 
-				if binding_type in ('expression', 'expr'):
-					expression = self._get_expression(binding_path)
-					binding = ExpressionBinding(binding_path, expression)
-					self.model['expression_bindings'].append(binding)
-					self.model['bindings'].append(binding)
+				# Create the specific binding type
+				binding = self._create_binding_by_type(binding_type, binding_path)
+				if binding:
+					self._add_binding_to_model(binding, binding_type)
 
-				elif binding_type == 'property':
-					target_path = self._get_property_path(binding_path)
-					binding = PropertyBinding(binding_path, target_path)
-					self.model['property_bindings'].append(binding)
-					self.model['bindings'].append(binding)
+				# Process transforms for this binding
+				self._process_binding_transforms(binding_path)
 
-				elif binding_type == 'tag':
-					tag_path = self._get_tag_path(binding_path)
-					binding = TagBinding(binding_path, tag_path)
-					self.model['tag_bindings'].append(binding)
-					self.model['bindings'].append(binding)
+	def _create_binding_by_type(self, binding_type: str, binding_path: str):
+		"""Create a binding instance based on its type."""
+		if binding_type in ('expression', 'expr'):
+			expression = self._get_expression(binding_path)
+			return ExpressionBinding(binding_path, expression)
 
-				# Look for script transforms in the binding
-				full_binding_path = f"{binding_path}.binding"
-				transforms = self._get_script_transforms(full_binding_path)
-				for transform_path, script in transforms:
-					transform = TransformScript(transform_path, script, binding_path)
-					self.model['script_transforms'].append(transform)
-					self.model['scripts'].append(transform)
+		elif binding_type == 'expr-struct':
+			struct = self._get_expression_struct(binding_path)
+			config = self._get_expression_struct_config(binding_path)
+			return ExpressionStructBinding(binding_path, struct, config)
 
-				# Look for expression transforms in the binding
-				expression_transforms = self._get_expression_transforms(full_binding_path)
-				for transform_path, expression in expression_transforms:
-					# Create ExpressionBinding nodes for each expression transform
-					expression_binding = ExpressionBinding(transform_path, expression)
-					self.model['expression_bindings'].append(expression_binding)
-					self.model['bindings'].append(expression_binding)
+		elif binding_type == 'property':
+			target_path = self._get_property_path(binding_path)
+			return PropertyBinding(binding_path, target_path)
+
+		elif binding_type == 'tag':
+			tag_path = self._get_tag_path(binding_path)
+			mode = self._get_tag_mode(binding_path)
+			references = self._get_tag_references(binding_path)
+			config = self._get_tag_config(binding_path)
+			return TagBinding(binding_path, tag_path, mode=mode, references=references, config=config)
+
+		elif binding_type == 'query':
+			query_path = self._get_query_path(binding_path)
+			parameters = self._get_query_parameters(binding_path)
+			config = self._get_query_config(binding_path)
+			return QueryBinding(binding_path, query_path, parameters, config)
+
+		return None
+
+	def _add_binding_to_model(self, binding, binding_type: str):
+		"""Add a binding to the appropriate model collections."""
+		# Add to general bindings collection
+		self.model['bindings'].append(binding)
+
+		# Add to type-specific collection
+		if binding_type in ('expression', 'expr'):
+			self.model['expression_bindings'].append(binding)
+		elif binding_type == 'expr-struct':
+			self.model['expression_struct_bindings'].append(binding)
+		elif binding_type == 'property':
+			self.model['property_bindings'].append(binding)
+		elif binding_type == 'tag':
+			self.model['tag_bindings'].append(binding)
+		elif binding_type == 'query':
+			self.model['query_bindings'].append(binding)
+
+	def _process_binding_transforms(self, binding_path: str):
+		"""Process script and expression transforms for a binding."""
+		full_binding_path = f"{binding_path}.binding"
+
+		# Process script transforms
+		transforms = self._get_script_transforms(full_binding_path)
+		for transform_path, script in transforms:
+			transform = TransformScript(transform_path, script, binding_path)
+			self.model['script_transforms'].append(transform)
+			self.model['scripts'].append(transform)
+
+		# Process expression transforms
+		expression_transforms = self._get_expression_transforms(full_binding_path)
+		for transform_path, expression in expression_transforms:
+			# Create ExpressionBinding nodes for each expression transform
+			expression_binding = ExpressionBinding(transform_path, expression)
+			self.model['expression_bindings'].append(expression_binding)
+			self.model['bindings'].append(expression_binding)
 
 	def _collect_message_handlers(self):
 		"""Collect all message handlers from the flattened JSON."""
@@ -282,7 +419,7 @@ class ViewModelBuilder:
 				else:
 					# Standard format: path.events.eventType.script
 					event_path_parts = path.split('.script')[0]
-				
+
 				event_path = event_path_parts
 
 				# Extract event type from path (e.g., 'onActionPerformed', 'onStartup')
@@ -290,7 +427,7 @@ class ViewModelBuilder:
 				event_type_match = re.search(r'\.events\.([^.]+)$', event_path_parts)
 				if event_type_match:
 					event_type = event_type_match.group(1)  # e.g., 'onActionPerformed', 'onStartup'
-					
+
 					# Get the scope from the same event path
 					scope_path = f"{event_path_parts}.scope"
 					scope = self.flattened_json.get(scope_path, "L")
@@ -318,7 +455,9 @@ class ViewModelBuilder:
 				# Check if this is a persistent property
 				if self._is_property_persistent(path):
 					property_name = path.split(".")[-1]
-					prop = Property(path, property_name, value)
+					persistent = self._get_property_persistence(path)
+					private_access = self._get_property_access_mode(path)
+					prop = Property(path, property_name, value, persistent=persistent, private_access=private_access)
 					self.model['properties'].append(prop)
 				continue
 
@@ -337,7 +476,9 @@ class ViewModelBuilder:
 
 				property_name = path.split(".")[-1]
 
-				prop = Property(path, property_name, value)
+				persistent = self._get_property_persistence(path)
+				private_access = self._get_property_access_mode(path)
+				prop = Property(path, property_name, value, persistent=persistent, private_access=private_access)
 				self.model['properties'].append(prop)
 				# Add the property to the component
 				if component_path in self.model['components']:
@@ -365,8 +506,10 @@ class ViewModelBuilder:
 			'message_handlers': [],
 			'custom_methods': [],
 			'expression_bindings': [],
+			'expression_struct_bindings': [],
 			'property_bindings': [],
 			'tag_bindings': [],
+			'query_bindings': [],
 			'script_transforms': [],
 			'properties': []
 		}

@@ -45,7 +45,7 @@ jobs:
         run: poetry install
 
       - name: Run linting with pylint
-        run: poetry run pylint ignition_lint/
+        run: poetry run pylint --rcfile=.config/.pylintrc ignition_lint/
 
       - name: Run unit tests
         run: |
